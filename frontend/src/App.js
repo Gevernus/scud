@@ -19,53 +19,6 @@ const AppContent = () => {
     WebApp.showAlert(`Location Error: ${error}`);
   };
 
-  const initializeLocationManager = () => {
-    return new Promise((resolve) => {
-      if (WebApp.LocationManager.isInited) {
-        resolve(true);
-        return;
-      }
-
-      WebApp.LocationManager.init(() => {
-        resolve(true);
-      });
-    });
-  };
-
-  const checkLocationSupport = () => {
-    if (!WebApp.LocationManager.isLocationAvailable) {
-      handleLocationError('Location services are not available');
-      return false;
-    }
-    return true;
-  };
-
-  const handleLocationAccess = () => {
-    return new Promise((resolve) => {
-      if (WebApp.LocationManager.isAccessGranted) {
-        resolve(true);
-        return;
-      }
-
-      if (!WebApp.LocationManager.isAccessRequested) {
-        WebApp.showConfirm(
-          'Location access is required for this feature. Open settings?',
-          (confirmed) => {
-            if (confirmed) {
-              console.log('trying to open settings')
-              WebApp.LocationManager.openSettings();
-            }
-            resolve(false);
-          }
-        );
-        return;
-      }
-
-      handleLocationError('Location access was previously denied');
-      resolve(false);
-    });
-  };
-
   const getCurrentLocation = () => {
     return new Promise((resolve) => {
       WebApp.LocationManager.getLocation((locationData) => {
@@ -85,8 +38,6 @@ const AppContent = () => {
       });
     });
   };
-
-
 
   const scanQR = async () => {
     try {
