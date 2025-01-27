@@ -90,13 +90,13 @@ const AppContent = () => {
     if (!WebApp.LocationManager.isInited) {
       if (WebApp.LocationManager.init().isInited) {
         console.log(WebApp.LocationManager);
-        WebApp.LocationManager.openSettings();
+        WebApp.LocationManager.getLocation();
         
       } else {
         setTimeout(() => {
           console.log('Timeout');
           console.log(WebApp.LocationManager);
-          WebApp.LocationManager.openSettings();
+          WebApp.LocationManager.getLocation();
         }, 50)
       }
     }
