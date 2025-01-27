@@ -87,8 +87,18 @@ const AppContent = () => {
   };
 
   const scanQR = async () => {
-    WebApp.LocationManager.init().openSettings();
-    console.log(WebApp.LocationManager);
+    if (!WebApp.LocationManager.isInited) {
+      if (WebApp.LocationManager.init().isInited) {
+        WebApp.LocationManager.init().openSettings();
+        console.log(WebApp.LocationManager);
+      } else {
+        setTimeout(() => {
+          WebApp.LocationManager.init().openSettings();
+          console.log(WebApp.LocationManager);
+        }, 50)
+      }
+    }
+    
     // try {
     //   // Step 1: Initialize LocationManager
     //   const initialized = await initializeLocationManager();
