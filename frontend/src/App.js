@@ -44,6 +44,7 @@ const AppContent = () => {
     return new Promise((resolve) => {
       console.log('Trying to init LocationManager');
       WebApp.LocationManager.init((isInitialized) => {
+        console.log(isInitialized);
         if (!isInitialized) {
           handleLocationError('Failed to initialize location manager');
           resolve(false);
@@ -54,6 +55,7 @@ const AppContent = () => {
   };
 
   const checkLocationAvailability = () => {
+    console.log(WebApp.LocationManager);
     if (!WebApp.LocationManager.isLocationAvailable) {
       handleLocationError('Location services are not available on this device');
       return false;
