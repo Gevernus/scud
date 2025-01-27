@@ -42,12 +42,12 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`touch-the-beauty-ai.shop`)"
+      - "traefik.http.routers.frontend.rule=Host(`aura-tg.ru`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
-      - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api
+      - REACT_APP_API_URL=https://aura-tg.ru/api
       - NODE_ENV=production
     volumes:
       - /etc/ssl/certs:/etc/ssl/certs:ro
@@ -66,12 +66,12 @@ services:
       - "4000:4000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.rule=Host(`aura-tg.ru`) && PathPrefix(`/admin`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.routers.admin.tls.certresolver=myresolver"
       - "traefik.http.services.admin.loadbalancer.server.port=4000"
     environment:
-      - REACT_APP_API_URL=https://touch-the-beauty-ai.shop/api/admin
+      - REACT_APP_API_URL=https://aura-tg.ru/api/admin
       - NODE_ENV=production
     volumes:
       - ./admin:/app
@@ -91,16 +91,14 @@ services:
       - "8000:8000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`aura-tg.ru`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
-      - CLOUDINARY_CLOUD_NAME=dm31xhpot
-      - CLOUDINARY_API_KEY=559895215387326
-      - CLOUDINARY_API_SECRET=IwddD8Bf5Jwdj_ohf_HXNMy9klo
+      - TELEGRAM_BOT_TOKEN=7836686968:AAHTbIBVxQFcEHy3eOedtjE3_Geve3uQvKc
     volumes:
       - /etc/ssl/certs:/etc/ssl/certs:ro
     restart: unless-stopped

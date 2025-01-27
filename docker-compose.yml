@@ -23,14 +23,11 @@ services:
   mongo:
     image: mongo:latest
     container_name: mongo
-    ports:
-      - "27017:27017" # Expose the MongoDB port
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: GevPass12
     volumes:
-      - mongodb_data:/data/db # Persistent storage for MongoDB data
-      # - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js # Run initialization script on startup
+      - mongodb_data:/data/db
     networks:
       - web
     restart: unless-stopped
@@ -44,7 +41,7 @@ services:
       - "3000:3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`touch-the-beauty-ai.shop`)"
+      - "traefik.http.routers.frontend.rule=Host(`aura-tg.ru`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
@@ -69,7 +66,7 @@ services:
       - "4000:4000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop/admin`)"
+      - "traefik.http.routers.admin.rule=Host(`aura-tg.ru/admin`)"
       - "traefik.http.routers.admin.entrypoints=websecure"
       - "traefik.http.routers.admin.tls.certresolver=myresolver"
       - "traefik.http.services.admin.loadbalancer.server.port=4000"
@@ -94,16 +91,13 @@ services:
       - "8000:8000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.rule=Host(`aura-tg.ru`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     environment:
       - NODE_ENV=production
       - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
-      - CLOUDINARY_CLOUD_NAME=dm31xhpot
-      - CLOUDINARY_API_KEY=559895215387326
-      - CLOUDINARY_API_SECRET=IwddD8Bf5Jwdj_ohf_HXNMy9klo
     networks:
       - web
     restart: unless-stopped
