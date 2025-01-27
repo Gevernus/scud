@@ -55,7 +55,7 @@ const App = () => {
             className="back-button"
             onClick={() => setShowOTPDisplay(false)}
           >
-            ← Back
+            ◄ Back
           </button>
           <OTPDisplay />
         </div>
