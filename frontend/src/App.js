@@ -86,63 +86,57 @@ const AppContent = () => {
     });
   };
 
+
+
   const scanQR = async () => {
-    if (!WebApp.LocationManager.isInited) {
-      if (WebApp.LocationManager.init().isInited) {
-        console.log(WebApp.LocationManager);
-        WebApp.LocationManager.getLocation();
-        
+    try {
+      if (!WebApp.LocationManager.isInited) {
+        WebApp.LocationManager.init(async () => {
+          if (!WebApp.LocationManager.isInited) {
+            console.error("Can't get locationg");
+          }
+          const locationData = await getCurrentLocation();
+          if (!locationData) return;
+          setLocation(locationData);
+          WebApp.showScanQrPopup(
+            { text: 'Scan code' },
+            (qrData) => {
+              if (!qrData) {
+                WebApp.showAlert('Failed to scan QR code');
+                return;
+              }
+
+              console.log('Scan successful:', {
+                qrData,
+                location: locationData,
+                timestamp: new Date().toISOString()
+              });
+            }
+          );
+        });
       } else {
-        setTimeout(() => {
-          console.log('Timeout');
-          console.log(WebApp.LocationManager);
-          WebApp.LocationManager.getLocation();
-        }, 50)
+        const locationData = await getCurrentLocation();
+        if (!locationData) return;
+        setLocation(locationData);
+        WebApp.showScanQrPopup(
+          { text: 'Scan code' },
+          (qrData) => {
+            if (!qrData) {
+              WebApp.showAlert('Failed to scan QR code');
+              return;
+            }
+
+            console.log('Scan successful:', {
+              qrData,
+              location: locationData,
+              timestamp: new Date().toISOString()
+            });
+          }
+        );
       }
+    } catch (error) {
+      console.error(error);
     }
-    
-    // try {
-    //   // Step 1: Initialize LocationManager
-    //   const initialized = await initializeLocationManager();
-    //   if (!initialized) return;
-    //   WebApp.LocationManager.openSettings();
-    //   // Step 2: Check location support
-    //   if (!checkLocationSupport()) return;
-    //   // Step 3: Handle access permissions
-    //   const accessGranted = await handleLocationAccess();
-    //   console.log(WebApp.LocationManager)
-    //   if (!accessGranted) return;
-
-    //   console.log(WebApp.LocationManager)
-    //   // Step 4: Get location data
-    //   const locationData = await getCurrentLocation();
-    //   if (!locationData) return;
-
-    //   console.log(WebApp.LocationManager)
-
-    //   // Step 5: Store location
-    //   setLocation(locationData);
-
-    //   // Step 6: Show QR scanner
-    //   WebApp.showScanQrPopup(
-    //     { text: 'Scan restaurant code' },
-    //     (qrData) => {
-    //       if (!qrData) {
-    //         WebApp.showAlert('Failed to scan QR code');
-    //         return;
-    //       }
-
-    //       console.log('Scan successful:', {
-    //         qrData,
-    //         location: locationData,
-    //         timestamp: new Date().toISOString()
-    //       });
-    //     }
-    //   );
-
-    // } catch (error) {
-    //   handleLocationError(error instanceof Error ? error.message : 'Unknown error');
-    // }
   };
 
   const showOTP = () => {
