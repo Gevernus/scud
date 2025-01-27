@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import WebApp from '@twa-dev/sdk';
 import OTPDisplay from './components/OTPDisplay';
 import { UserProvider, useUser } from './context/UserContext';
@@ -14,27 +14,6 @@ const AppContent = () => {
     WebApp.expand();
   }, []);
 
-  // const scanQR = () => {
-  //   try {
-  //     WebApp.requestLocation((locationResult) => {
-  //       if (locationResult) {
-  //         setLocation(locationResult);
-
-  //         // Then show QR scanner
-  //         WebApp.showScanQrPopup({ text: 'Scan code' }, (qrData) => {
-  //           console.log('Scanned:', qrData);
-  //           console.log('Location:', locationResult);
-  //         });
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const MAX_RETRIES = 2;
-  let locationRetryCount = 0;
-
   const handleLocationError = (error) => {
     console.error(error);
     WebApp.showAlert(`Location Error: ${error}`);
@@ -42,102 +21,110 @@ const AppContent = () => {
 
   const initializeLocationManager = () => {
     return new Promise((resolve) => {
-      console.log('Trying to init LocationManager');
-      WebApp.LocationManager.init((isInitialized) => {
-        console.log(isInitialized);
-        if (!isInitialized) {
-          handleLocationError('Failed to initialize location manager');
-          resolve(false);
-        }
+      if (WebApp.LocationManager.isInited) {
+        resolve(true);
+        return;
+      }
+
+      WebApp.LocationManager.init(() => {
         resolve(true);
       });
     });
   };
 
-  const checkLocationAvailability = () => {
-    console.log(WebApp.LocationManager);
+  const checkLocationSupport = () => {
     if (!WebApp.LocationManager.isLocationAvailable) {
-      handleLocationError('Location services are not available on this device');
+      handleLocationError('Location services are not available');
       return false;
     }
     return true;
   };
 
-  const handleLocationAccess = async () => {
-    if (!WebApp.LocationManager.isAccessGranted) {
-      WebApp.showConfirm(
-        'Location access is required. Open settings?',
-        (confirmed) => {
-          if (confirmed) {
-            WebApp.LocationManager.openSettings();
-            // You might want to add a way to check again after returning
+  const handleLocationAccess = () => {
+    return new Promise((resolve) => {
+      if (WebApp.LocationManager.isAccessGranted) {
+        resolve(true);
+        return;
+      }
+
+      if (!WebApp.LocationManager.isAccessRequested) {
+        WebApp.showConfirm(
+          'Location access is required for this feature. Open settings?',
+          (confirmed) => {
+            if (confirmed) {
+              WebApp.LocationManager.openSettings();
+            }
+            resolve(false);
           }
-        }
-      );
-      return false;
-    }
-    return true;
+        );
+        return;
+      }
+
+      handleLocationError('Location access was previously denied');
+      resolve(false);
+    });
   };
 
   const getCurrentLocation = () => {
     return new Promise((resolve) => {
       WebApp.LocationManager.getLocation((locationData) => {
         if (!locationData) {
-          if (locationRetryCount < MAX_RETRIES) {
-            locationRetryCount++;
-            WebApp.showAlert('Retrying location detection...');
-            setTimeout(() => getCurrentLocation().then(resolve), 1000);
-            return;
-          }
-          handleLocationError('Could not retrieve location after retries');
+          handleLocationError('Could not retrieve location');
           resolve(null);
+          return;
         }
-        locationRetryCount = 0; // Reset retry counter on success
-        resolve(locationData);
+
+        resolve({
+          latitude: locationData.latitude,
+          longitude: locationData.longitude,
+          altitude: locationData.altitude || null,
+          accuracy: locationData.horizontal_accuracy || null,
+          timestamp: Date.now()
+        });
       });
     });
   };
 
   const scanQR = async () => {
     try {
-      // 1. Initialize LocationManager
-      const isInitialized = await initializeLocationManager();
-      if (!isInitialized) return;
+      // Step 1: Initialize LocationManager
+      const initialized = await initializeLocationManager();
+      console.log(WebApp.LocationManager)
+      if (!initialized) return;
 
-      // 2. Check device capabilities
-      if (!checkLocationAvailability()) return;
+      // Step 2: Check location support
+      if (!checkLocationSupport()) return;
+      console.log(WebApp.LocationManager)
+      // Step 3: Handle access permissions
+      const accessGranted = await handleLocationAccess();
+      if (!accessGranted) return;
 
-      // 3. Handle permissions
-      const hasAccess = await handleLocationAccess();
-      if (!hasAccess) return;
-
-      // 4. Get location with retry logic
+      // Step 4: Get location data
       const locationData = await getCurrentLocation();
       if (!locationData) return;
 
-      // 5. Store location
+      // Step 5: Store location
       setLocation(locationData);
 
-      // 6. Show QR Scanner
+      // Step 6: Show QR scanner
       WebApp.showScanQrPopup(
-        { text: 'Scan code' },
+        { text: 'Scan restaurant code' },
         (qrData) => {
           if (!qrData) {
-            WebApp.showAlert('QR Scan failed');
+            WebApp.showAlert('Failed to scan QR code');
             return;
           }
 
-          console.log('Successful scan:', {
+          console.log('Scan successful:', {
             qrData,
-            location: locationData
+            location: locationData,
+            timestamp: new Date().toISOString()
           });
-
-          // Process QR data with location here
         }
       );
 
     } catch (error) {
-      handleLocationError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      handleLocationError(error instanceof Error ? error.message : 'Unknown error');
     }
   };
 
@@ -184,7 +171,6 @@ const AppContent = () => {
   );
 };
 
-// Main App component that wraps everything with UserProvider
 const App = () => {
   return (
     <UserProvider>
