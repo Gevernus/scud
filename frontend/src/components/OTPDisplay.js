@@ -3,39 +3,52 @@ import React, { useState, useEffect } from 'react';
 const OTPDisplay = () => {
     const [otp, setOtp] = useState('');
     const [timeLeft, setTimeLeft] = useState(30);
+    const circumference = 2 * Math.PI * 48; // Full circumference of the circle
 
-    const generateOTP = () => {
+    const seededRandom = (seed) => {
+        const m = 2147483647;
+        const a = 16807;
+        let s = seed % m;
+        if (s <= 0) s += m; // Ensure the seed is positive
+        return () => {
+            s = (a * s) % m;
+            return s / m;
+        };
+    };
+
+    const generateOTP = (seed) => {
         const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const rand = seededRandom(seed);
         let result = '';
         for (let i = 0; i < 5; i++) {
-            result += chars[Math.floor(Math.random() * chars.length)];
+            const index = Math.floor(rand() * chars.length);
+            result += chars[index];
         }
         return result;
     };
 
     const calculateProgress = () => {
-        return ((30 - timeLeft) / 30) * 100;
-    };
-
-    const resetTimer = () => {
-        setTimeLeft(30);
-        setOtp(generateOTP());
+        return (30 - timeLeft) / 30;
     };
 
     useEffect(() => {
-        setOtp(generateOTP());
+        const update = () => {
+            const now = Date.now();
+            const currentEpoch = Math.floor(now / 30000) * 30000;
+            const nextEpoch = currentEpoch + 30000;
+            const secondsLeft = Math.ceil((nextEpoch - now) / 1000);
 
-        const timer = setInterval(() => {
-            setTimeLeft((prevTime) => {
-                if (prevTime <= 1) {
-                    resetTimer();
-                    return 30;
-                }
-                return prevTime - 1;
+            setTimeLeft(secondsLeft);
+            setOtp((prevOtp) => {
+                const newOtp = generateOTP(currentEpoch);
+                return newOtp !== prevOtp ? newOtp : prevOtp;
             });
-        }, 1000);
+        };
 
-        return () => clearInterval(timer);
+        const timerId = setInterval(update, 1000);
+        update(); // Initial call to set OTP and time left
+
+        return () => clearInterval(timerId);
     }, []);
 
     return (
@@ -57,13 +70,14 @@ const OTPDisplay = () => {
                             fill="none"
                             stroke="#0096FF"
                             strokeWidth="4"
-                            strokeDasharray={`${calculateProgress() * 3.14}, 1000`}
+                            strokeDasharray={`${calculateProgress() * circumference} 1000`}
                             className="transition-all duration-1000 ease-linear"
                         />
                     </svg>
 
                     <div className="absolute inset-0 flex items-center justify-center flex-col">
                         <div className="text-3xl font-bold tracking-wider">{otp}</div>
+                        <div className="text-sm text-gray-400 mt-1">{timeLeft}s</div>
                     </div>
                 </div>
 
