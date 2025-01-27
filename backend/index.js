@@ -1,11 +1,15 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require("cors");
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 
 const app = express();
+app.use(cors({
+    exposedHeaders: ['Content-Range']
+}));
 app.use(express.json());
 
 // MongoDB connection

@@ -14,21 +14,128 @@ const AppContent = () => {
     WebApp.expand();
   }, []);
 
-  const scanQR = () => {
-    try {
-      WebApp.requestLocation((locationResult) => {
-        if (locationResult) {
-          setLocation(locationResult);
+  // const scanQR = () => {
+  //   try {
+  //     WebApp.requestLocation((locationResult) => {
+  //       if (locationResult) {
+  //         setLocation(locationResult);
 
-          // Then show QR scanner
-          WebApp.showScanQrPopup({ text: 'Scan code' }, (qrData) => {
-            console.log('Scanned:', qrData);
-            console.log('Location:', locationResult);
-          });
+  //         // Then show QR scanner
+  //         WebApp.showScanQrPopup({ text: 'Scan code' }, (qrData) => {
+  //           console.log('Scanned:', qrData);
+  //           console.log('Location:', locationResult);
+  //         });
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const MAX_RETRIES = 2;
+  let locationRetryCount = 0;
+
+  const handleLocationError = (error) => {
+    console.error(error);
+    WebApp.showAlert(`Location Error: ${error}`);
+  };
+
+  const initializeLocationManager = () => {
+    return new Promise((resolve) => {
+      console.log('Trying to init LocationManager');
+      WebApp.LocationManager.init((isInitialized) => {
+        if (!isInitialized) {
+          handleLocationError('Failed to initialize location manager');
+          resolve(false);
         }
+        resolve(true);
       });
+    });
+  };
+
+  const checkLocationAvailability = () => {
+    if (!WebApp.LocationManager.isLocationAvailable) {
+      handleLocationError('Location services are not available on this device');
+      return false;
+    }
+    return true;
+  };
+
+  const handleLocationAccess = async () => {
+    if (!WebApp.LocationManager.isAccessGranted) {
+      WebApp.showConfirm(
+        'Location access is required. Open settings?',
+        (confirmed) => {
+          if (confirmed) {
+            WebApp.LocationManager.openSettings();
+            // You might want to add a way to check again after returning
+          }
+        }
+      );
+      return false;
+    }
+    return true;
+  };
+
+  const getCurrentLocation = () => {
+    return new Promise((resolve) => {
+      WebApp.LocationManager.getLocation((locationData) => {
+        if (!locationData) {
+          if (locationRetryCount < MAX_RETRIES) {
+            locationRetryCount++;
+            WebApp.showAlert('Retrying location detection...');
+            setTimeout(() => getCurrentLocation().then(resolve), 1000);
+            return;
+          }
+          handleLocationError('Could not retrieve location after retries');
+          resolve(null);
+        }
+        locationRetryCount = 0; // Reset retry counter on success
+        resolve(locationData);
+      });
+    });
+  };
+
+  const scanQR = async () => {
+    try {
+      // 1. Initialize LocationManager
+      const isInitialized = await initializeLocationManager();
+      if (!isInitialized) return;
+
+      // 2. Check device capabilities
+      if (!checkLocationAvailability()) return;
+
+      // 3. Handle permissions
+      const hasAccess = await handleLocationAccess();
+      if (!hasAccess) return;
+
+      // 4. Get location with retry logic
+      const locationData = await getCurrentLocation();
+      if (!locationData) return;
+
+      // 5. Store location
+      setLocation(locationData);
+
+      // 6. Show QR Scanner
+      WebApp.showScanQrPopup(
+        { text: 'Scan code' },
+        (qrData) => {
+          if (!qrData) {
+            WebApp.showAlert('QR Scan failed');
+            return;
+          }
+
+          console.log('Successful scan:', {
+            qrData,
+            location: locationData
+          });
+
+          // Process QR data with location here
+        }
+      );
+
     } catch (error) {
-      console.error(error);
+      handleLocationError(`Unexpected error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
