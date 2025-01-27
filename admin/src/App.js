@@ -8,3 +8,5 @@ const App = () => (
     <Resource name="users" list={ListGuesser} />
   </Admin>
 );
+
+export default App;

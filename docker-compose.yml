@@ -22,7 +22,7 @@ services:
 
   mongo:
     image: mongo:latest
-    container_name: mongo
+    container_name: scud-mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: GevPass12
@@ -36,7 +36,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: loves-react-frontend
+    container_name: scud-frontend
     ports:
       - "3000:3000"
     labels:
@@ -61,7 +61,7 @@ services:
     build:
       context: ./admin
       dockerfile: Dockerfile
-    container_name: loves-react-admin
+    container_name: scud-admin
     ports:
       - "4000:4000"
     labels:
@@ -86,7 +86,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: loves-react-backend
+    container_name: scud-backend
     ports:
       - "8000:8000"
     labels:

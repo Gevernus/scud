@@ -1,6 +1,7 @@
 import './App.css';
+import { useEffect } from 'react';
 
-function App() {
+const App = () => {
   // Telegram WebApp initialization
   useEffect(() => {
     window.Telegram.WebApp.ready();
