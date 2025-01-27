@@ -87,48 +87,50 @@ const AppContent = () => {
   };
 
   const scanQR = async () => {
-    try {
-      // Step 1: Initialize LocationManager
-      const initialized = await initializeLocationManager();
-      if (!initialized) return;
-      WebApp.LocationManager.openSettings();
-      // Step 2: Check location support
-      if (!checkLocationSupport()) return;
-      // Step 3: Handle access permissions
-      const accessGranted = await handleLocationAccess();
-      console.log(WebApp.LocationManager)
-      if (!accessGranted) return;
+    WebApp.LocationManager.init().openSettings();
+    console.log(WebApp.LocationManager);
+    // try {
+    //   // Step 1: Initialize LocationManager
+    //   const initialized = await initializeLocationManager();
+    //   if (!initialized) return;
+    //   WebApp.LocationManager.openSettings();
+    //   // Step 2: Check location support
+    //   if (!checkLocationSupport()) return;
+    //   // Step 3: Handle access permissions
+    //   const accessGranted = await handleLocationAccess();
+    //   console.log(WebApp.LocationManager)
+    //   if (!accessGranted) return;
 
-      console.log(WebApp.LocationManager)
-      // Step 4: Get location data
-      const locationData = await getCurrentLocation();
-      if (!locationData) return;
+    //   console.log(WebApp.LocationManager)
+    //   // Step 4: Get location data
+    //   const locationData = await getCurrentLocation();
+    //   if (!locationData) return;
 
-      console.log(WebApp.LocationManager)
+    //   console.log(WebApp.LocationManager)
 
-      // Step 5: Store location
-      setLocation(locationData);
+    //   // Step 5: Store location
+    //   setLocation(locationData);
 
-      // Step 6: Show QR scanner
-      WebApp.showScanQrPopup(
-        { text: 'Scan restaurant code' },
-        (qrData) => {
-          if (!qrData) {
-            WebApp.showAlert('Failed to scan QR code');
-            return;
-          }
+    //   // Step 6: Show QR scanner
+    //   WebApp.showScanQrPopup(
+    //     { text: 'Scan restaurant code' },
+    //     (qrData) => {
+    //       if (!qrData) {
+    //         WebApp.showAlert('Failed to scan QR code');
+    //         return;
+    //       }
 
-          console.log('Scan successful:', {
-            qrData,
-            location: locationData,
-            timestamp: new Date().toISOString()
-          });
-        }
-      );
+    //       console.log('Scan successful:', {
+    //         qrData,
+    //         location: locationData,
+    //         timestamp: new Date().toISOString()
+    //       });
+    //     }
+    //   );
 
-    } catch (error) {
-      handleLocationError(error instanceof Error ? error.message : 'Unknown error');
-    }
+    // } catch (error) {
+    //   handleLocationError(error instanceof Error ? error.message : 'Unknown error');
+    // }
   };
 
   const showOTP = () => {
