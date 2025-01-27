@@ -91,7 +91,7 @@ const AppContent = () => {
       // Step 1: Initialize LocationManager
       const initialized = await initializeLocationManager();
       if (!initialized) return;
-
+      WebApp.LocationManager.openSettings();
       // Step 2: Check location support
       if (!checkLocationSupport()) return;
       // Step 3: Handle access permissions
