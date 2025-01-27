@@ -2,9 +2,12 @@ import './App.css';
 import { useEffect, useState } from 'react';
 import WebApp from '@twa-dev/sdk';
 import OTPDisplay from './components/OTPDisplay';
+import { UserProvider, useUser } from './context/UserContext';
 
-const App = () => {
+const AppContent = () => {
   const [showOTPDisplay, setShowOTPDisplay] = useState(false);
+  const [location, setLocation] = useState(null);
+  const { loading: isUserLoading } = useUser();
 
   useEffect(() => {
     WebApp.ready();
@@ -13,8 +16,16 @@ const App = () => {
 
   const scanQR = () => {
     try {
-      WebApp.showScanQrPopup({ text: 'Scan code' }, (data) => {
-        console.log('Scanned:', data);
+      WebApp.requestLocation((locationResult) => {
+        if (locationResult) {
+          setLocation(locationResult);
+
+          // Then show QR scanner
+          WebApp.showScanQrPopup({ text: 'Scan code' }, (qrData) => {
+            console.log('Scanned:', qrData);
+            console.log('Location:', locationResult);
+          });
+        }
       });
     } catch (error) {
       console.error(error);
@@ -62,6 +73,15 @@ const App = () => {
       )}
     </div>
   );
-}
+};
+
+// Main App component that wraps everything with UserProvider
+const App = () => {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
+  );
+};
 
 export default App;
