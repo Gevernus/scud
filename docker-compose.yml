@@ -1,0 +1,115 @@
+services:
+  # traefik:
+  #   image: traefik:v2.10
+  #   container_name: traefik
+  #   command:
+  #     - "--providers.docker=true"
+  #     - "--entrypoints.web.address=:80"
+  #     - "--entrypoints.websecure.address=:443"
+  #     - "--certificatesresolvers.myresolver.acme.httpchallenge=true" 
+  #     - "--certificatesresolvers.myresolver.acme.email=gevernus@mail.ru"
+  #     - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+  #     - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  #     - "./letsencrypt:/letsencrypt"
+  #   restart: unless-stopped
+  #   networks:
+  #     - web
+
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - "27017:27017" # Expose the MongoDB port
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: GevPass12
+    volumes:
+      - mongodb_data:/data/db # Persistent storage for MongoDB data
+      # - ./init-db.js:/docker-entrypoint-initdb.d/init-db.js # Run initialization script on startup
+    networks:
+      - web
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: loves-react-frontend
+    ports:
+      - "3000:3000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`touch-the-beauty-ai.shop`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api
+      - NODE_ENV=development
+    volumes:
+      - ./frontend:/app
+      - node_modules_volume:/app/node_modules
+    networks:
+      - web
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: loves-react-admin
+    ports:
+      - "4000:4000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`touch-the-beauty-ai.shop/admin`)"
+      - "traefik.http.routers.admin.entrypoints=websecure"
+      - "traefik.http.routers.admin.tls.certresolver=myresolver"
+      - "traefik.http.services.admin.loadbalancer.server.port=4000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000/api/admin
+      - NODE_ENV=development
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+    networks:
+      - web
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: loves-react-backend
+    ports:
+      - "8000:8000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`touch-the-beauty-ai.shop`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://admin:GevPass12@mongo:27017/loves-db?authSource=admin
+      - CLOUDINARY_CLOUD_NAME=dm31xhpot
+      - CLOUDINARY_API_KEY=559895215387326
+      - CLOUDINARY_API_SECRET=IwddD8Bf5Jwdj_ohf_HXNMy9klo
+    networks:
+      - web
+    restart: unless-stopped
+
+networks:
+  web:
+volumes:
+  mongodb_data:
+  node_modules_volume:  
