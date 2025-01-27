@@ -89,12 +89,14 @@ const AppContent = () => {
   const scanQR = async () => {
     if (!WebApp.LocationManager.isInited) {
       if (WebApp.LocationManager.init().isInited) {
-        WebApp.LocationManager.init().openSettings();
         console.log(WebApp.LocationManager);
+        WebApp.LocationManager.openSettings();
+        
       } else {
         setTimeout(() => {
-          WebApp.LocationManager.init().openSettings();
+          console.log('Timeout');
           console.log(WebApp.LocationManager);
+          WebApp.LocationManager.openSettings();
         }, 50)
       }
     }
