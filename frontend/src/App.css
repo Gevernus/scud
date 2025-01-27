@@ -1,7 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .container {
   min-height: 100vh;
-  background-color: var(--tg-theme-bg-color, #ffffff);
-  padding: 20px;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1));
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -69,4 +73,25 @@
     width: 32px;
     height: 32px;
   }
+}
+
+.otp-container {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+}
+
+.back-button {
+  position: absolute;
+  padding: 4px 8px;
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.back-button:hover {
+  opacity: 0.8;
 }
