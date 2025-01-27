@@ -52,6 +52,7 @@ const AppContent = () => {
           'Location access is required for this feature. Open settings?',
           (confirmed) => {
             if (confirmed) {
+              console.log('trying to open settings')
               WebApp.LocationManager.openSettings();
             }
             resolve(false);
@@ -89,19 +90,21 @@ const AppContent = () => {
     try {
       // Step 1: Initialize LocationManager
       const initialized = await initializeLocationManager();
-      console.log(WebApp.LocationManager)
       if (!initialized) return;
 
       // Step 2: Check location support
       if (!checkLocationSupport()) return;
-      console.log(WebApp.LocationManager)
       // Step 3: Handle access permissions
       const accessGranted = await handleLocationAccess();
+      console.log(WebApp.LocationManager)
       if (!accessGranted) return;
 
+      console.log(WebApp.LocationManager)
       // Step 4: Get location data
       const locationData = await getCurrentLocation();
       if (!locationData) return;
+
+      console.log(WebApp.LocationManager)
 
       // Step 5: Store location
       setLocation(locationData);
