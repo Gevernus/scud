@@ -5,8 +5,10 @@ const userSchema = new mongoose.Schema({
     firstName: { type: String },
     lastName: { type: String },
     username: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    deleted: { type: Boolean, default: false }  // Deletion flag
 })
-userSchema.index({ 'referrals.userId': 1 });
+// userSchema.index({ 'referrals.userId': 1 });
 
 userSchema.virtual("id").get(function () {
     return this._id.toString();
