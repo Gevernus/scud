@@ -4,6 +4,7 @@ services:
     container_name: traefik
     command:
       - "--providers.docker=true"
+      - "--log.level=DEBUG"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
@@ -33,6 +34,29 @@ services:
     networks:
       - web
 
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: scud-admin
+    ports:
+      - "4000:4000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`aura-tg.ru`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin.entrypoints=websecure"
+      - "traefik.http.routers.admin.priority=10"
+      - "traefik.http.routers.admin.tls.certresolver=myresolver"
+      - "traefik.http.services.admin.loadbalancer.server.port=4000"
+    environment:
+      - REACT_APP_API_URL=https://aura-tg.ru/api/admin
+      - NODE_ENV=production
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - web
+
   frontend:
     build:
       context: ./frontend
@@ -51,28 +75,6 @@ services:
       - NODE_ENV=production
     volumes:
       - /etc/ssl/certs:/etc/ssl/certs:ro
-    depends_on:
-      - backend
-    restart: unless-stopped
-    networks:
-      - web
-
-  admin:
-    build:
-      context: ./admin
-      dockerfile: Dockerfile
-    container_name: scud-admin
-    ports:
-      - "4000:4000"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.admin.rule=Host(`aura-tg.ru`) && PathPrefix(`/admin`)"
-      - "traefik.http.routers.admin.entrypoints=websecure"
-      - "traefik.http.routers.admin.tls.certresolver=myresolver"
-      - "traefik.http.services.admin.loadbalancer.server.port=4000"
-    environment:
-      - REACT_APP_API_URL=https://aura-tg.ru/api/admin
-      - NODE_ENV=production
     depends_on:
       - backend
     restart: unless-stopped
