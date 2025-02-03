@@ -50,6 +50,8 @@ services:
       - "traefik.http.routers.admin.priority=10"
       - "traefik.http.routers.admin.tls.certresolver=myresolver"
       - "traefik.http.services.admin.loadbalancer.server.port=4000"
+      - "traefik.http.routers.admin.middlewares=strip-admin"
+      - "traefik.http.middlewares.strip-admin.stripPrefix.prefixes=/admin"
     environment:
       - REACT_APP_API_URL=https://aura-tg.ru/api/admin
       - NODE_ENV=production
@@ -70,6 +72,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`aura-tg.ru`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.priority=5"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
