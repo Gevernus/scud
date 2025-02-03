@@ -14,7 +14,7 @@ export const UserProvider = ({ children }) => {
             if (hasInitialized.current) return;
             hasInitialized.current = true;
             try {
-                
+                console.log('Init user')
                 WebApp.ready();
                 const tgUser = WebApp.initDataUnsafe.user || { id: 1, first_name: 'Test', last_name: 'User', username: 'test' };
 
@@ -24,7 +24,7 @@ export const UserProvider = ({ children }) => {
                 }
 
                 const linkHash = WebApp.initDataUnsafe?.start_param;
-
+                console.log('Trying to get user')
                 // Have we created or are we getting a user
                 const userResponse = await fetch(`${apiUrl}/users`, {
                     method: 'POST',
