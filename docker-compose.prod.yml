@@ -51,6 +51,7 @@ services:
       - "traefik.http.routers.admin.tls.certresolver=myresolver"
       - "traefik.http.services.admin.loadbalancer.server.port=4000"
     environment:
+      - PUBLIC_URL=/admin
       - REACT_APP_API_URL=https://aura-tg.ru/api/admin
       - NODE_ENV=production
     depends_on:
