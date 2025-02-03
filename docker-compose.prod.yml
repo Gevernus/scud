@@ -5,6 +5,8 @@ services:
     command:
       - "--providers.docker=true"
       - "--log.level=DEBUG"
+      - "--accesslog=true"
+      - "--accesslog.fields.defaultmode=keep"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
