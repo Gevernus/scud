@@ -16,7 +16,7 @@ export const UserProvider = ({ children }) => {
             try {
                 console.log('Init user')
                 WebApp.ready();
-                const tgUser = WebApp.initDataUnsafe.user || { id: 1, first_name: 'Test', last_name: 'User', username: 'test' };
+                const tgUser = WebApp.initDataUnsafe.user || { id: 55, first_name: 'Test', last_name: 'User', username: 'test' };
 
                 if (!tgUser) {
                     console.warn("Telegram user data not found.");
@@ -26,7 +26,7 @@ export const UserProvider = ({ children }) => {
                 const linkHash = WebApp.initDataUnsafe?.start_param;
                 console.log('Trying to get user')
                 // Have we created or are we getting a user
-                const userResponse = await fetch(`${apiUrl}/users`, {
+                const userResponse = await fetch(`${apiUrl}/front/users`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
                         firstName: tgUser.first_name,
                         lastName: tgUser.last_name,
                         username: tgUser.username,
-                        linkHash: linkHash,
+                        // linkHash: linkHash,
                     }),
                 });
 
@@ -46,13 +46,13 @@ export const UserProvider = ({ children }) => {
                 setUser(userData);
 
                 // After successful creation, the user sends a message
-                await fetch(`${apiUrl}/events`, {
+                await fetch(`${apiUrl}/front/events`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         telegramId: tgUser.id,
                         eventType: 'login_attempt',
-                        description: 'User opened the app',
+                        description: `Пользователь ${tgUser.first_name} с  telegramId ${tgUser.id} вошел в приложение.`,
                     }),
                 });
             } catch (error) {

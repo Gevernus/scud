@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
-app.post("/api/users", async (req, res) => {
+app.post("/api/front/users", async (req, res) => {
     const { telegramId, firstName, lastName, username, linkHash } = req.body;
 
     try {
@@ -56,7 +56,7 @@ app.post("/api/users", async (req, res) => {
 
         res.json(user);
     } catch (error) {
-        console.error("Error in /users:", error);
+        console.error("Error in /api/front/users:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -90,14 +90,14 @@ const registerEvent = async ({ telegramId, userId, eventType, description }) => 
 };
 
 // Эндпоинт для регистрации события
-app.post("/api/events", async (req, res) => {
+app.post("/api/front/events", async (req, res) => {
     const { telegramId, eventType, description } = req.body;
     try {
         // В данном случае функция самостоятельно найдёт пользователя по telegramId
         const event = await registerEvent({ telegramId, eventType, description });
         res.status(201).json({ message: "Event recorded successfully", event });
     } catch (error) {
-        console.error("Error in /api/events:", error);
+        console.error("Error in /api/front/events:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
