@@ -73,9 +73,6 @@ services:
     environment:
       - REACT_APP_API_URL=https://aura-tg.ru/api/admin
       - NODE_ENV=production
-    volumes:
-      - ./admin:/app
-      - /app/node_modules
     depends_on:
       - backend
     restart: unless-stopped
