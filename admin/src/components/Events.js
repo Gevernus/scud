@@ -3,6 +3,7 @@ import {
     DateField,
     List,
     TextField,
+    DeleteButton
 } from 'react-admin';
 
 export const EventList = () => (
@@ -12,6 +13,7 @@ export const EventList = () => (
             <TextField source="eventType" label="Тип события" />
             <TextField source="description" label="Описание" />
             <DateField source="createdAt" label="Дата" showTime />
+            <DeleteButton />
             {/* 
             <ReferenceField
                 label="Username"

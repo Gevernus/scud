@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Event = require('./models/Event');
+const Station = require('./models/Station')
 
 const app = express();
 app.use(cors({
@@ -62,25 +63,13 @@ app.post("/api/front/users", async (req, res) => {
 });
 
 // Универсальная функция для регистрации события
-const registerEvent = async ({ telegramId, userId, eventType, description }) => {
+const registerEvent = async ({ eventType, description }) => {
     try {
-        let resolvedUserId = userId;
-        // Если передан telegramId и userId не указан, попробуем найти пользователя по telegramId
-        if (telegramId && !userId) {
-            const user = await User.findOne({ telegramId });
-            if (!user) {
-                throw new Error("User not found");
-            }
-            resolvedUserId = user._id;
-        }
-        if (!resolvedUserId) {
-            throw new Error("User identifier not provided");
-        }
         const event = new Event({
-            userId: resolvedUserId,
             eventType,
             description,
         });
+
         await event.save();
         return event;
     } catch (err) {
@@ -91,16 +80,72 @@ const registerEvent = async ({ telegramId, userId, eventType, description }) => 
 
 // Эндпоинт для регистрации события
 app.post("/api/front/events", async (req, res) => {
-    const { telegramId, eventType, description } = req.body;
+    const { eventType, description } = req.body;
     try {
         // В данном случае функция самостоятельно найдёт пользователя по telegramId
-        const event = await registerEvent({ telegramId, eventType, description });
+        const event = await registerEvent({ eventType, description });
         res.status(201).json({ message: "Event recorded successfully", event });
     } catch (error) {
         console.error("Error in /api/front/events:", error);
         res.status(500).json({ error: "Internal server error" });
     }
 });
+
+//функции для логирования событий удаления
+const logDeletion = async (Model, item) => {
+    let description = "";
+
+    switch (Model.modelName) {
+        case "User": {
+            const user = await User.findById(item._id);
+            if (user) {
+                description = `Пользователь ${user.firstName || "Неизвестно"} ${user.lastName || ""} (Telegram ID: ${user.telegramId}) был перенесен в корзину.`;
+            } else {
+                description = `Неизвестный пользователь был перенесен в корзину.`;
+            }
+            break;
+        }
+        case "Station": {
+            const station = await Station.findById(item._id);
+            if (station) {
+                description = `Станция ${station.name || "Неизвестно"} (IP: ${station.ip || "Неизвестно"}) была перенесена в корзину.`;
+            } else {
+                description = `Неизвестная станция была перенесена в корзину.`;
+            }
+            break;
+        }
+        default:
+            description = `Неизвестный объект типа ${Model.modelName} был перенесен в корзину.`;
+            break;
+    }
+
+    await registerEvent({
+        eventType: "soft_delete",
+        description
+    });
+};
+
+const logPermanentDeletion = async (Model, item) => {
+    let description = "";
+    switch (Model.modelName) {
+        case "User": {
+            description = `Пользователь ${item.firstName || "Неизвестно"} ${item.lastName || ""} (Telegram ID: ${item.telegramId}) был полностью удален.`;
+            break;
+        }
+        case "Station": {
+            description = `Станция ${item.name || "Неизвестно"} (IP: ${item.ip || "Неизвестно"}) была полностью удалена.`;
+            break;
+        }
+        default:
+            description = `Неизвестный объект типа ${Model.modelName} был полностью удален.`;
+            break;
+    }
+
+    await registerEvent({
+        eventType: "full_delete",
+        description
+    });
+};
 
 // Функция для обработки маршрутов администратора
 const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (req, res) => {
@@ -142,6 +187,8 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
     }
 };
 
+
+
 // Универсальные CRUD-обработчики
 const handleGetOne = (Model) => async (req, res) => {
     try {
@@ -182,17 +229,9 @@ const handleDelete = (Model) => async (req, res) => {
         );
         if (!item) return res.status(404).json({ error: "Not found" });
 
-        // Если модель не Event, регистрируем событие удаления
-        if (Model.modelName !== "Event") {
-            
-            const telegramId = item.telegramId || "неизвестно";
-            await registerEvent({
-                telegramId,
-                eventType: "soft_delete",
-                description: `Пользователь с telegramId ${telegramId} был перенесен в корзину. `
-            });
-        }
-
+        // Вызываем универсальную функцию логирования события мягкого удаления
+        if (Model.modelName !== "Event") {await logDeletion(Model, item)}
+    
         res.json({ message: "Удалено (soft delete)", item });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -218,27 +257,18 @@ const handlePermanentDelete = (Model) => async (req, res) => {
         // Сначала находим объект, чтобы извлечь его данные (telegramId и _id)
         const item = await Model.findById(req.params.id);
         if (!item) return res.status(404).json({ error: "Not found" });       
-        const telegramId = item.telegramId || "неизвестно";
         
         // Удаляем объект окончательно из базы
         await Model.findByIdAndDelete(req.params.id);
+        // Вызываем универсальную функцию логирования события полного удаления
+        if (Model.modelName !== "Event") {await logPermanentDeletion(Model, item)}
         
-        // передаём и telegramId, и userId, чтобы функция registerEvent не искала пользователя по telegramId.
-        if (Model.modelName !== "Event") {
-            await registerEvent({
-                telegramId,
-                userId: item._id,  // передаем явный userId
-                eventType: "full_delete",
-                description: `Пользователь с telegramId ${telegramId} был полностью удалён`
-            });
-        }
         
         res.json({ message: "Полностью удалено" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 // Эндпоинты для админа (неудалённые объекты)
 app.get("/api/admin/users", handleAdminRoute(User, "users"));
@@ -251,17 +281,25 @@ app.get("/api/admin/events", handleAdminRoute(Event, "events"));
 app.get("/api/admin/events/:id", handleGetOne(Event, "events"));
 app.delete("/api/admin/events/:id", handleDelete(Event));  // Мягкое удаление
 
+app.get("/api/admin/stations", handleAdminRoute(Station, "stations"));
+app.get("/api/admin/stations/:id", handleGetOne(Station));
+app.post("/api/admin/stations", handleCreate(Station));
+app.put("/api/admin/stations/:id", handleUpdate(Station));
+app.delete("/api/admin/stations/:id", handleDelete(Station));  // Мягкое удаление
+
 // Эндпоинты для работы с корзиной (только удалённые объекты)
 app.get("/api/admin/UsersTrash", handleAdminRoute(User, "users", { deleted: true }));
 app.get("/api/admin/EventsTrash", handleAdminRoute(Event, "events", { deleted: true }));
+app.get("/api/admin/StationsTrash", handleAdminRoute(Station, "stations", { deleted: true }));
 
 // Эндпоинты для восстановления объектов из корзины
 app.post("/api/admin/trash/users/:id/restore", handleRestore(User));
 app.post("/api/admin/trash/events/:id/restore", handleRestore(Event));
+app.post("/api/admin/trash/stations/:id/restore", handleRestore(Station));
 
 // Эндпоинты для окончательного удаления из корзины
-app.delete("/api/admin/UsersTrash/:id", handlePermanentDelete(User));
-app.delete("/api/admin/EventsTrash/:id", handlePermanentDelete(Event));
-
+app.delete("/api/admin/usersTrash/:id", handlePermanentDelete(User));
+app.delete("/api/admin/eventsTrash/:id", handlePermanentDelete(Event));
+app.delete("/api/admin/stationsTrash/:id", handlePermanentDelete(Station));
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

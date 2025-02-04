@@ -50,7 +50,6 @@ export const UserProvider = ({ children }) => {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        telegramId: tgUser.id,
                         eventType: 'login_attempt',
                         description: `Пользователь ${tgUser.first_name} с  telegramId ${tgUser.id} вошел в приложение.`,
                     }),

@@ -4,7 +4,7 @@ import {
     List,
     TextField,
 } from 'react-admin';
-import RestoreButton from './RestoreButton';
+import RestoreButton from '../RestoreButton';
 
 export const EventsTrash = () => (
     <List >
