@@ -4,14 +4,17 @@ import { Dashboard } from './components/Dashboard';
 import { UserList, UserEdit, UserCreate } from './components/Users';
 import { EventList } from './components/Events';
 import { StationsList, StationsEdit, StationsCreate } from './components/Stations';
+import { CounterpartyList, CounterpartyEdit, CounterpartyCreate } from './components/Counterparts';
 
 import { UsersTrash } from './components/trash/UsersTrash';
 import { EventsTrash } from './components/trash/EventsTrash';
 import { StationsTrash } from './components/trash/StationsTrash';
+import { CounterpartyTrash } from './components/trash/CounterpartyTrash';
 
 import { FaTrashCan, FaUsers } from 'react-icons/fa6';
 import { MdOutlineEventNote } from 'react-icons/md';
 import { FaServer } from 'react-icons/fa';
+import { GiTeamIdea } from "react-icons/gi";
 
 const App = () => (
     <Admin dashboard={Dashboard} dataProvider={dataProvider}>
@@ -38,6 +41,14 @@ const App = () => (
             options={{ label: 'Stations' }}
         />
         <Resource
+            name="counterparts"
+            icon={GiTeamIdea}
+            list={CounterpartyList}
+            edit={CounterpartyEdit}
+            create={CounterpartyCreate}
+            options={{ label: 'Контрагенты' }}
+        />
+        <Resource
             name="usersTrash"
             icon={FaTrashCan}
             list={UsersTrash}
@@ -55,6 +66,13 @@ const App = () => (
             list={StationsTrash}
             options={{ label: 'Корзина Stations' }}
         />
+        <Resource
+            name="counterpartyTrash"
+            icon={FaTrashCan}
+            list={CounterpartyTrash}
+            options={{ label: 'Корзина Контрагенты' }}
+        />
+        
         
     </Admin>
 );

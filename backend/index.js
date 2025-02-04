@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Event = require('./models/Event');
 const Station = require('./models/Station')
+const Counterparty = require('./models/Counterparty')
 
 const app = express();
 app.use(cors({
@@ -114,6 +115,15 @@ const logDeletion = async (Model, item) => {
             }
             break;
         }
+        case "Counterparty": {
+            const сounterparty = await Counterparty.findById(item._id);
+            if (сounterparty) {
+                description = `Контрагент ${сounterparty.fullName || "Неизвестно"} (Id: ${сounterparty.counterpartyId || "Неизвестно"}) был перенесен в корзину.`;
+            } else {
+                description = `Неизвестный контрагент был перенесен в корзину.`;
+            }
+            break;
+        }
         default:
             description = `Неизвестный объект типа ${Model.modelName} был перенесен в корзину.`;
             break;
@@ -134,6 +144,10 @@ const logPermanentDeletion = async (Model, item) => {
         }
         case "Station": {
             description = `Станция ${item.name || "Неизвестно"} (IP: ${item.ip || "Неизвестно"}) была полностью удалена.`;
+            break;
+        }
+        case "Counterparty": {
+            description = `Контрагент ${item.fullName || "Неизвестно"} (Id: ${item.counterpartyId || "Неизвестно"}) был полностью удален.`;
             break;
         }
         default:
@@ -287,19 +301,30 @@ app.post("/api/admin/stations", handleCreate(Station));
 app.put("/api/admin/stations/:id", handleUpdate(Station));
 app.delete("/api/admin/stations/:id", handleDelete(Station));  // Мягкое удаление
 
+app.get("/api/admin/counterparts", handleAdminRoute(Counterparty, "counterparts"));
+app.get("/api/admin/counterparts/:id", handleGetOne(Counterparty));
+app.post("/api/admin/counterparts", handleCreate(Counterparty));
+app.put("/api/admin/counterparts/:id", handleUpdate(Counterparty));
+app.delete("/api/admin/counterparts/:id", handleDelete(Counterparty));  // Мягкое удаление
+
 // Эндпоинты для работы с корзиной (только удалённые объекты)
 app.get("/api/admin/UsersTrash", handleAdminRoute(User, "users", { deleted: true }));
 app.get("/api/admin/EventsTrash", handleAdminRoute(Event, "events", { deleted: true }));
 app.get("/api/admin/StationsTrash", handleAdminRoute(Station, "stations", { deleted: true }));
+app.get("/api/admin/counterpartyTrash", handleAdminRoute(Counterparty, "counterparts", { deleted: true }));
 
 // Эндпоинты для восстановления объектов из корзины
 app.post("/api/admin/trash/users/:id/restore", handleRestore(User));
 app.post("/api/admin/trash/events/:id/restore", handleRestore(Event));
 app.post("/api/admin/trash/stations/:id/restore", handleRestore(Station));
+app.post("/api/admin/trash/counterparts/:id/restore", handleRestore(Counterparty));
 
 // Эндпоинты для окончательного удаления из корзины
 app.delete("/api/admin/usersTrash/:id", handlePermanentDelete(User));
 app.delete("/api/admin/eventsTrash/:id", handlePermanentDelete(Event));
 app.delete("/api/admin/stationsTrash/:id", handlePermanentDelete(Station));
+app.delete("/api/admin/counterpartyTrash/:id", handlePermanentDelete(Counterparty));
+
+
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

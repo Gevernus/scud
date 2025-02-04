@@ -27,7 +27,7 @@ export const UserEdit = () => (
     <Edit>
         <SimpleForm>
             {/* <TextField source="id" />  */}
-            <TextInput source="telegramId" />
+            <TextInput source="telegramId" validate={[required('Поле обязательно для заполнения')]} />
             <TextInput source="firstName" />
             <TextInput source="lastName" />
             <TextInput source="username" />
