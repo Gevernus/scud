@@ -11,68 +11,20 @@ import { EventsTrash } from './components/trash/EventsTrash';
 import { StationsTrash } from './components/trash/StationsTrash';
 import { CounterpartyTrash } from './components/trash/CounterpartyTrash';
 
-import { FaTrashCan, FaUsers } from 'react-icons/fa6';
-import { MdOutlineEventNote } from 'react-icons/md';
-import { FaServer } from 'react-icons/fa';
-import { GiTeamIdea } from "react-icons/gi";
+import MyLayout from './components/UI/MyLayout';
 
 const App = () => (
-    <Admin dashboard={Dashboard} dataProvider={dataProvider}>
-        <Resource
-            name="users"
-            icon={FaUsers}
-            list={UserList}
-            edit={UserEdit}
-            create={UserCreate}
-            options={{ label: 'Пользователи' }}
-        />
-        <Resource
-            name="events"
-            icon={MdOutlineEventNote}
-            list={EventList}
-            options={{ label: 'Журнал событий' }}
-        />
-        <Resource
-            name="stations"
-            icon={FaServer}
-            list={StationsList}
-            edit={StationsEdit}
-            create={StationsCreate}
-            options={{ label: 'Stations' }}
-        />
-        <Resource
-            name="counterparts"
-            icon={GiTeamIdea}
-            list={CounterpartyList}
-            edit={CounterpartyEdit}
-            create={CounterpartyCreate}
-            options={{ label: 'Контрагенты' }}
-        />
-        <Resource
-            name="usersTrash"
-            icon={FaTrashCan}
-            list={UsersTrash}
-            options={{ label: 'Корзина пользователей' }}
-        />
-        <Resource
-            name="eventsTrash"
-            icon={FaTrashCan}
-            list={EventsTrash}
-            options={{ label: 'Корзина событий' }}
-        />
-        <Resource
-            name="stationsTrash"
-            icon={FaTrashCan}
-            list={StationsTrash}
-            options={{ label: 'Корзина Stations' }}
-        />
-        <Resource
-            name="counterpartyTrash"
-            icon={FaTrashCan}
-            list={CounterpartyTrash}
-            options={{ label: 'Корзина Контрагенты' }}
-        />
+    <Admin dashboard={Dashboard} dataProvider={dataProvider} layout={MyLayout} >
         
+        <Resource name="users" list={UserList} edit={UserEdit} create={UserCreate} options={{ label: 'Пользователи' }} />
+        <Resource name="events" list={EventList} options={{ label: 'Журнал событий' }} />
+        <Resource name="stations" list={StationsList} edit={StationsEdit} create={StationsCreate} options={{ label: 'Станции' }} />
+        <Resource name="counterparts" list={CounterpartyList} edit={CounterpartyEdit} create={CounterpartyCreate} options={{ label: 'Контрагенты' }} />
+
+        <Resource name="usersTrash" list={UsersTrash}  options={{ label: 'Корзина пользователей' }}/>
+        <Resource name="eventsTrash" list={EventsTrash} options={{ label: 'Корзина событий' }} />
+        <Resource name="stationsTrash" list={StationsTrash} options={{ label: 'Корзина станций' }} />
+        <Resource name="counterpartyTrash" list={CounterpartyTrash} options={{ label: 'Корзина Контрагенты' }} />
         
     </Admin>
 );

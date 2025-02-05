@@ -3,7 +3,7 @@ import {
     Datagrid,
     TextField,
 } from 'react-admin';
-import RestoreButton from '../RestoreButton';
+import RestoreButton from '../UI/RestoreButton';
 
 export const StationsTrash = () => (
     <List>
