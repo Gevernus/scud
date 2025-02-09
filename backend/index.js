@@ -20,46 +20,97 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
+// app.post("/api/front/users", async (req, res) => {
+//     const { telegramId, firstName, lastName, username, linkHash } = req.body;
+
+//     try {
+//         // Check if user exists
+//         let user = await User.findOne({ telegramId });
+
+//         if (!user) {
+//             // Create new user
+//             user = new User({
+//                 telegramId,
+//                 firstName,
+//                 lastName,
+//                 username,
+//             });
+//             await user.save();
+
+//             // // Update referrer's referrals array if referral exists
+//             // if (linkHash) {
+//             //     const shareLink = await ShareLink.findOne({
+//             //         hash: linkHash,
+//             //     });
+
+//             //     if (shareLink) {
+//             //         await User.findByIdAndUpdate(shareLink.userId, {
+//             //             $push: {
+//             //                 referrals: {
+//             //                     userId: user._id,
+//             //                     createdAt: new Date()
+//             //                 }
+//             //             }
+//             //         });
+//             //     }
+//             // }
+//         }
+
+//         res.json(user);
+//     } catch (error) {
+//         console.error("Error in /api/front/users:", error);
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// });
+
+
 app.post("/api/front/users", async (req, res) => {
-    const { telegramId, firstName, lastName, username, linkHash } = req.body;
+    const { telegramId, firstName, lastName, username } = req.body;
 
     try {
-        // Check if user exists
+        // Проверяем количество пользователей в базе
+        const userCount = await User.countDocuments();
+
+        // Проверяем, существует ли пользователь
         let user = await User.findOne({ telegramId });
 
         if (!user) {
-            // Create new user
+            // Первый пользователь получает админские права
             user = new User({
                 telegramId,
                 firstName,
                 lastName,
                 username,
+                permissions: userCount === 0 ? 98303 : 0, 
             });
+
             await user.save();
-
-            // // Update referrer's referrals array if referral exists
-            // if (linkHash) {
-            //     const shareLink = await ShareLink.findOne({
-            //         hash: linkHash,
-            //     });
-
-            //     if (shareLink) {
-            //         await User.findByIdAndUpdate(shareLink.userId, {
-            //             $push: {
-            //                 referrals: {
-            //                     userId: user._id,
-            //                     createdAt: new Date()
-            //                 }
-            //             }
-            //         });
-            //     }
-            // }
         }
 
         res.json(user);
     } catch (error) {
-        console.error("Error in /api/front/users:", error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Ошибка в /api/front/users:", error);
+        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+    }
+});
+
+
+//Проверка пользователя в админки
+app.post("/api/admin/auth/check", async (req, res) => {
+    const { telegramId } = req.body;
+
+    try {
+        // Проверяем, есть ли пользователь в базе
+        const user = await User.findOne({ telegramId });
+
+        if (!user) {
+            return res.status(404).json({ error: "Пользователь не найден" });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error("Ошибка проверки пользователя:", error);
+        res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
 });
 
@@ -214,12 +265,17 @@ const handleGetOne = (Model) => async (req, res) => {
     }
 };
 
+
 const handleCreate = (Model) => async (req, res) => {
     try {
         const item = new Model(req.body);
         await item.save();
         res.status(201).json(item);
     } catch (error) {
+        if (error.code === 11000) {
+            // Обрабатываем ошибку уникальности (дубликат)
+            return res.status(400).json({ error: "значение являеться уникальным и уже существует." });
+        }
         res.status(400).json({ error: error.message });
     }
 };
@@ -230,6 +286,10 @@ const handleUpdate = (Model) => async (req, res) => {
         if (!item) return res.status(404).json({ error: "Not found" });
         res.json(item);
     } catch (error) {
+        if (error.code === 11000) {
+            // Обрабатываем ошибку уникальности (дубликат)
+            return res.status(400).json({ error: "значение являеться уникальным и уже существует." });
+        }
         res.status(500).json({ error: error.message });
     }
 };
@@ -324,7 +384,5 @@ app.delete("/api/admin/usersTrash/:id", handlePermanentDelete(User));
 app.delete("/api/admin/eventsTrash/:id", handlePermanentDelete(Event));
 app.delete("/api/admin/stationsTrash/:id", handlePermanentDelete(Station));
 app.delete("/api/admin/counterpartyTrash/:id", handlePermanentDelete(Counterparty));
-
-
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

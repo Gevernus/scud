@@ -76,6 +76,7 @@ services:
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     environment:
       - REACT_APP_API_URL=https://aura-tg.ru/api
+      - REACT_APP_ADMIN_URL=https://aura-tg.ru/admin
       - NODE_ENV=production
     volumes:
       - /etc/ssl/certs:/etc/ssl/certs:ro

@@ -7,7 +7,14 @@ import { UserProvider, useUser } from './context/UserContext';
 const AppContent = () => {
   const [showOTPDisplay, setShowOTPDisplay] = useState(false);
   const [location, setLocation] = useState(null);
-  const { loading: isUserLoading } = useUser();
+  const { user, loading: isUserLoading } = useUser();
+
+
+  const PERMISSION_ADMIN = 1;
+  const adminUrl = process.env.REACT_APP_ADMIN_URL || 'http://localhost:4000/'; // URL для админки
+  const goToAdmin = () => {
+    window.location.href = adminUrl;
+  }
 
   useEffect(() => {
     WebApp.ready();
@@ -117,6 +124,14 @@ const AppContent = () => {
             </svg>
             <span>Show OTP</span>
           </button>
+          {user && (user.permissions & PERMISSION_ADMIN) === PERMISSION_ADMIN && (
+              <button className="action-button admin-button" onClick={goToAdmin}>
+                <svg className="icon" viewBox="0 0 24 24">
+                  <path fill="currentColor" d="M3 3h18v18H3V3zm2 2v14h14V5H5zm7 2c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 2c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                </svg>
+                <span>Вход в админку</span>
+              </button>
+            )}
         </div>
       ) : (
         <div className="otp-container">

@@ -1,17 +1,29 @@
-import { fetchUtils } from 'react-admin';
-import simpleRestProvider from 'ra-data-simple-rest';
+import { fetchUtils } from "react-admin";
+import simpleRestProvider from "ra-data-simple-rest";
 
-const apiUrl =
-    process.env.REACT_APP_API_URL || 'http://localhost:8000/api/admin';
+const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:8000/api/admin";
 
-const httpClient = (url, options = {}) => {
-    if (!options.headers) {
-        options.headers = new Headers({ Accept: 'application/json' });
-    }
-    return fetchUtils.fetchJson(url, options);
+// Глобальный кешируемый HTTP-клиент
+const httpClient = (telegramId) => {
+    return (url, options = {}) => {
+        options.headers = new Headers({ Accept: "application/json" });
+
+        if (telegramId) {
+            options.headers.set("X-Telegram-ID", telegramId);
+        }
+
+        return fetchUtils.fetchJson(url, options).catch((error) => {
+            if (error.body?.error) {
+                throw new Error(error.body.error);
+            }
+            throw error;
+        });
+    };
 };
 
+// Создаём dataProvider с httpClient
+const createDataProvider = (telegramId) => {
+    return simpleRestProvider(apiUrl, httpClient(telegramId));
+};
 
-const dataProvider = simpleRestProvider(apiUrl, httpClient);
-
-export default dataProvider;
+export default createDataProvider;

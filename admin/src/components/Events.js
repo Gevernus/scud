@@ -1,28 +1,27 @@
 import {
-    Datagrid,
-    DateField,
-    List,
-    TextField,
-    DeleteButton
+  Datagrid,
+  DateField,
+  List,
+  TextField,
+  DeleteButton,
 } from 'react-admin';
+import { useUser } from '../context/UserContext';
+import { PERMISSIONS_MODULES } from '../permissions';
 
-export const EventList = () => (
-    <List>
-        <Datagrid>
-            {/* <TextField source="id" /> */}
-            <TextField source="eventType" label="Тип события" />
-            <TextField source="description" label="Описание" />
-            <DateField source="createdAt" label="Дата" showTime />
-            <DeleteButton />
-            {/* 
-            <ReferenceField
-                label="Username"
-                source="userId"
-                reference="users"
-                link={false}
-            >
-                <TextField source="username" />
-            </ReferenceField> */}
-        </Datagrid>
+export const EventList = () => {
+  const { checkPermission } = useUser();
+  const canDelete = checkPermission(PERMISSIONS_MODULES['Журнал событий'].delete);
+  
+  return (
+    <List >
+      <Datagrid isRowSelectable={() => canDelete}>
+        <TextField source="eventType" label="Тип события" />
+        <TextField source="description" label="Описание" />
+        <DateField source="createdAt" label="Дата" showTime />
+        {(canDelete) && (
+          <DeleteButton />
+        )}
+      </Datagrid>
     </List>
-);
+  );
+};
