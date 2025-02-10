@@ -9,6 +9,9 @@ import {
   TextInput,
   Toolbar,
   SaveButton,
+  Filter,
+  SelectInput,
+  DateInput,
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
@@ -22,12 +25,52 @@ const CustomToolbar = () => (
   </Toolbar>
 );
 
+
+const UserFilter = (props) => (
+  <Filter {...props}>
+    {/* Selecting a column to search for */}
+    <SelectInput
+      label="Поле для поиска"
+      source="searchField"
+      choices={[
+        { id: null, name: 'Без фильтра' }, 
+        { id: 'telegramId', name: 'ID Пользователя' },
+        { id: 'firstName', name: 'Имя' },
+        { id: 'lastName', name: 'Фамилия' },
+        { id: 'username', name: 'Username' },
+      ]}
+      alwaysOn
+    />
+
+    {/* Full-text search */}
+    <TextInput label="Значение" source="q" resettable={true} alwaysOn />
+
+    {/* Filter by period */}
+    <SelectInput
+      label="Период"
+      source="dateRange"
+      choices={[
+        { id: null, name: 'Без фильтра' }, 
+        { id: 'today', name: 'Сегодня' },
+        { id: 'week', name: 'Эта неделя' },
+        { id: 'month', name: 'Этот месяц' },
+        { id: 'custom', name: 'Произвольный' },
+      ]}
+      alwaysOn
+    />
+
+    {/* Filter by specific dates */}
+    <DateInput label="С даты" source="startDate" />
+    <DateInput label="По дату" source="endDate" />
+  </Filter>
+);
+
 export const UserList = () => {
   const { checkPermission } = useUser();
   const canDelete = checkPermission(PERMISSIONS_MODULES['Пользователи'].delete);
 
   return (
-    <List>
+    <List filters={<UserFilter />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         {/* <TextField source="id" /> */}
         <TextField source="telegramId" label="ID Пользователя" />

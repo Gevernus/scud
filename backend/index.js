@@ -8,6 +8,7 @@ const User = require('./models/User');
 const Event = require('./models/Event');
 const Station = require('./models/Station')
 const Counterparty = require('./models/Counterparty')
+const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 
 const app = express();
 app.use(cors({
@@ -211,32 +212,80 @@ const logPermanentDeletion = async (Model, item) => {
         description
     });
 };
-
-// Функция для обработки маршрутов администратора
+// Универсальная Функция для обработки маршрутов администратора
 const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (req, res) => {
     try {
-        // Разбираем фильтр из запроса
         let filter = req.query.filter ? JSON.parse(req.query.filter) : {};
-        // Применяем дополнительные условия (например, для корзины: { deleted: true })
         filter = { ...filter, ...additionalFilter };
 
-        // Если фильтр не содержит явное условие по deleted, то добавляем deleted: false
-        if (typeof filter.deleted === 'undefined') {
-            filter.deleted = false;
+        const now = new Date();
+
+        // 📌 Получаем смещение от клиента (в минутах) и переводим в миллисекунды
+        const timezoneOffset = req.headers["x-timezone-offset"] ? parseInt(req.headers["x-timezone-offset"]) * 60000 : 0;
+
+        // 📌 Корректируем дату один раз!
+        const toUTC = (date) => new Date(date.getTime() + timezoneOffset); // Сдвигаем время назад в UTC
+
+        // 🔹 Фильтрация по предустановленным диапазонам (сегодня, неделя, месяц)
+        if (filter.dateRange) {
+            let start, end;
+            switch (filter.dateRange) {
+                case 'today':
+                    start = toUTC(startOfDay(now)).toISOString(); // Начало дня в UTC
+                    end = toUTC(endOfDay(now)).toISOString(); // Конец дня в UTC
+                    break;
+                case 'week':
+                    start = toUTC(startOfWeek(now, { weekStartsOn: 1 })).toISOString();
+                    end = toUTC(endOfDay(now)).toISOString();
+                    break;
+                case 'month':
+                    start = toUTC(startOfMonth(now)).toISOString();
+                    end = toUTC(endOfDay(now)).toISOString();
+                    break;
+                default:
+                    break;
+            }
+
+            if (start && end) {
+                filter.createdAt = { $gte: start, $lte: end };
+            }
+
+            delete filter.dateRange;
         }
 
-        // Преобразование id в _id, если присутствует
+        // 🔹 Фильтрация по произвольному диапазону дат
+        if (filter.startDate || filter.endDate) {
+            let startDate = filter.startDate ? toUTC(startOfDay(new Date(filter.startDate))).toISOString() : null;
+            let endDate = filter.endDate ? toUTC(endOfDay(new Date(filter.endDate))).toISOString() : null;
+
+            filter.createdAt = {};
+            if (startDate) filter.createdAt.$gte = startDate;
+            if (endDate) filter.createdAt.$lte = endDate;
+
+            delete filter.startDate;
+            delete filter.endDate;
+        }
+
+        // 🔹 Логируем фильтр, чтобы проверить, что даты верные
+        console.log("Фильтр по датам (UTC):", filter.createdAt);
+
+        // Динамический поиск по выбранному столбцу
+        if (filter.q && filter.searchField) {
+            filter[filter.searchField] = { $regex: filter.q, $options: "i" };
+            delete filter.q;
+            delete filter.searchField;
+        }
+
+        // Преобразование id в _id
         if (filter.id) {
             filter._id = filter.id;
             delete filter.id;
         }
 
-        // Разбираем диапазон записей и сортировку
+        // Разбираем сортировку и диапазон
         const [start, end] = req.query.range ? JSON.parse(req.query.range) : [0, 9];
         let [sortField, sortOrder] = req.query.sort ? JSON.parse(req.query.sort) : ["id", "ASC"];
-        if (sortField === "id") {
-            sortField = "_id";
-        }
+        if (sortField === "id") sortField = "_id";
 
         const total = await Model.countDocuments(filter);
         const items = await Model.find(filter)
@@ -248,11 +297,10 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
         res.set('Access-Control-Expose-Headers', 'Content-Range');
         res.json(items);
     } catch (error) {
+        console.error("Ошибка в фильтрации:", error);
         res.status(500).json({ error: error.message });
     }
 };
-
-
 
 // Универсальные CRUD-обработчики
 const handleGetOne = (Model) => async (req, res) => {

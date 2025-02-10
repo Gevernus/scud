@@ -10,7 +10,10 @@ import {
   TextInput,
   DateField,
   Toolbar,
-  SaveButton
+  SaveButton,
+  Filter,
+  SelectInput,
+  DateInput,
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
@@ -22,12 +25,52 @@ const CustomToolbar = () => (
   </Toolbar>
 );
 
+const CounterpartyFilter = (props) => (
+  <Filter {...props}>
+    {/* Selecting a column to search for */}
+    <SelectInput
+      label="Поле для поиска"
+      source="searchField"
+      choices={[
+        { id: null, name: 'Без фильтра' },
+        { id: 'fullName', name: 'Полное название' },
+        { id: 'shortName', name: 'Краткое название' },
+        { id: 'inn', name: 'ИНН' },
+        { id: 'phone', name: 'Телефон' },
+        { id: 'email', name: 'E-mail' },
+      ]}
+      alwaysOn
+    />
+
+    {/* Full-text search */}
+    <TextInput label="Значение" source="q" resettable={true} alwaysOn />
+
+    {/* Filter by period */}
+    <SelectInput
+      label="Период"
+      source="dateRange"
+      choices={[
+        { id: null, name: 'Без фильтра' },
+        { id: 'today', name: 'Сегодня' },
+        { id: 'week', name: 'Эта неделя' },
+        { id: 'month', name: 'Этот месяц' },
+        { id: 'custom', name: 'Произвольный' },
+      ]}
+      alwaysOn
+    />
+
+    {/* Filter by specific dates */}
+    <DateInput label="С даты" source="startDate" />
+    <DateInput label="По дату" source="endDate" />
+  </Filter>
+);
+
 export const CounterpartyList = () => {
   const { checkPermission } = useUser();
   const canDelete = checkPermission(PERMISSIONS_MODULES['Контрагенты'].delete);
 
   return (
-    <List>
+    <List filters={<CounterpartyFilter />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="id" label="ID Контрагента" />
         <TextField source="fullName" label="Полное название" />

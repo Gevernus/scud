@@ -12,6 +12,13 @@ const httpClient = (telegramId) => {
             options.headers.set("X-Telegram-ID", telegramId);
         }
 
+        // Добавляем смещение часового пояса (в минутах)
+        const timezoneOffset = new Date().getTimezoneOffset(); // 
+        options.headers.set("X-Timezone-Offset", timezoneOffset);
+
+        // 📌 Логируем заголовки перед отправкой запроса
+        // console.log("Отправляем запрос с заголовками:", Object.fromEntries(options.headers.entries()));
+
         return fetchUtils.fetchJson(url, options).catch((error) => {
             if (error.body?.error) {
                 throw new Error(error.body.error);
