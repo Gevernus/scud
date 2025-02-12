@@ -129,7 +129,7 @@ const decodeQRData = (encryptedPayload) => {
             sessionId: payload.SessionId
         };
     } catch (error) {
-        throw new Error('Invalid QR data format');
+        throw new Error(`Invalid QR data format: ${error.message} with qr data ${encryptedPayload}`);
     }
 };
 
