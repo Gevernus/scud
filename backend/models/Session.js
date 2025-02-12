@@ -5,6 +5,7 @@ const sessionSchema = new mongoose.Schema({
     location: { type: String },
     deviceId: { type: String },
     userId: { type: String },
+    status: { type: String },
     createdAt: { type: Date, default: Date.now },
 });
 
