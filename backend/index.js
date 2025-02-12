@@ -115,6 +115,20 @@ app.post("/api/admin/auth/check", async (req, res) => {
     }
 });
 
+app.get('/api/qr', (req, res) => {
+    // Get the deviceId from the query parameters
+    const deviceId = req.query.deviceId;
+
+    // Log the deviceId to the console
+    console.log("Received QR check request for deviceId:", deviceId);
+
+    // Send a JSON response back to the client
+    res.status(200).json({
+        message: 'Request logged successfully',
+        deviceId: deviceId
+    });
+});
+
 // Универсальная функция для регистрации события
 const registerEvent = async ({ eventType, description }) => {
     try {
