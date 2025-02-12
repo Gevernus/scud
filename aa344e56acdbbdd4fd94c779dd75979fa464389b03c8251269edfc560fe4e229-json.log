@@ -1,0 +1,94 @@
+{"log":"Backend running on port 8000\n","stream":"stdout","time":"2025-02-12T19:28:22.902585814Z"}
+{"log":"MongoDB connected\n","stream":"stdout","time":"2025-02-12T19:28:22.936579457Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:31.665445903Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:31.674423601Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:33.80371144Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:33.806983529Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:35.911056396Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:35.9138565Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:38.020141034Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:38.023217032Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:40.135750199Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:40.138816467Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:42.235987188Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:42.239284787Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:44.332534077Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:44.335383012Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:46.46799085Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:46.470587351Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:48.612964624Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:48.615708588Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:50.731081522Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:50.735193372Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:52.817075857Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:52.819310804Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:54.919615421Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:54.921711207Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:57.021048506Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:57.023223333Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:28:59.155542398Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:28:59.157561112Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:01.264821351Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:01.267233471Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:03.369692059Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:03.372384442Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:05.466861089Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:05.469311818Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:07.561810872Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:07.56417421Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:09.654219621Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:09.656693391Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:11.756625242Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:11.758401593Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:13.858101088Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:13.860547507Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:15.956308554Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:15.958708594Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:18.048735169Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:18.050848554Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:20.14353356Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:20.145465963Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:22.251076134Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:22.253014258Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:24.366619713Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:24.368196292Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:26.475684512Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:26.477949338Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:28.575117124Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:28.577138068Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:30.66461209Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:30.666686406Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:32.777276142Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:32.779223846Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:34.885259494Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:34.887686713Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:36.986653541Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:36.988725896Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:39.096597714Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:39.099065563Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:41.198073231Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:41.200118915Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:43.30974846Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:43.311775504Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:45.421326756Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:45.424012999Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:47.518330693Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:47.519993273Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:49.618398257Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:49.620472002Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:51.723960136Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:51.726023711Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:53.818899245Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:53.821069741Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:55.90876819Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:55.910623893Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:29:58.00404113Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:29:58.005268525Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:30:00.100751336Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:30:00.102161893Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:30:02.199001298Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:30:02.20164286Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:30:04.302986177Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:30:04.305176123Z"}
+{"log":"Request: 439e4e3f-18fd-4e8f-adc2-22bfaa2a6ad0:834d74be-bcf9-4faa-9854-532f77e6d0f9\n","stream":"stdout","time":"2025-02-12T19:30:06.408948442Z"}
+{"log":"Session not found\n","stream":"stdout","time":"2025-02-12T19:30:06.410825285Z"}

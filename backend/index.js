@@ -189,10 +189,11 @@ app.post('/api/qr/scan', async (req, res) => {
 
         // Decode base64 QR data
         const { deviceId, sessionId } = decodeQRData(qrData);
-
+        console.log(`Scan: ${deviceId}:${sessionId}:${userId}`);
         const station = await Station.findOne({ deviceId });
 
         if (!station) {
+            console.log(`Station not found`);
             return res.status(200).json({
                 status: 'device_not_found',
                 message: 'Device needs registration'
@@ -208,7 +209,7 @@ app.post('/api/qr/scan', async (req, res) => {
             createdAt: new Date()
         });
         await session.save();
-
+        console.log(`Session created ${sessionId}:${deviceId}`);
         return res.status(200).json({
             status: 'success',
             message: 'Successfully logged in'
