@@ -154,11 +154,16 @@ const AppContent = () => {
   return (
     <div className="container">
       {loginSuccess ? (
-        <div className="message-container">
-          <h2>Login Successful</h2>
-          <button className="back-button" onClick={handleBack}>
-            Back
-          </button>
+        <div className="flex justify-center items-center min-h-screen bg-gray-900 p-2">
+          <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg text-center">
+            <h2 className="text-xl font-semibold mb-4">Login Successful</h2>
+            <button
+              onClick={handleBack}
+              className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition-colors"
+            >
+              Back
+            </button>
+          </div>
         </div>
       ) : showRegistration ? (
         <div className="registration-container">

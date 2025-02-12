@@ -47,32 +47,53 @@ const RegisterDevice = ({ pendingData, apiUrl, onRegistrationSuccess }) => {
     };
 
     return (
-        <div className="register-device">
-            <h2>Register Device</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Username:</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required
-                    />
+        <div className="flex justify-center items-center min-h-screen bg-gray-900 p-2">
+            <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg">
+                <div className="text-center mb-8">
+                    <h2 className="text-xl font-semibold mb-2">Register Device</h2>
+                    <p className="text-gray-400">
+                        Please register your device by providing your credentials.
+                    </p>
                 </div>
-                <div className="form-group">
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </div>
-                {registrationError && <p className="error">{registrationError}</p>}
-                <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Registering...' : 'Register Device'}
-                </button>
-            </form>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                        <label htmlFor="username" className="block text-sm font-medium mb-1">
+                            Username
+                        </label>
+                        <input
+                            id="username"
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            required
+                            className="w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="password" className="block text-sm font-medium mb-1">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="w-full p-2 rounded-md bg-gray-700 text-white border border-gray-600 focus:outline-none focus:border-blue-500"
+                        />
+                    </div>
+                    {registrationError && (
+                        <p className="mb-4 text-red-400 text-sm">{registrationError}</p>
+                    )}
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition-colors"
+                    >
+                        {isSubmitting ? 'Registering...' : 'Register Device'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 };
