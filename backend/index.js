@@ -156,6 +156,7 @@ app.get('/api/qr', async (req, res) => {
         });
 
         if (!session) {
+            console.log(`Session not found`);
             return res.status(200).json({
                 status: 'pending',
                 message: 'No approved session found',
@@ -163,7 +164,7 @@ app.get('/api/qr', async (req, res) => {
                 password: ''
             });
         }
-
+        console.log(`Session found`);
         // Return credentials for approved session
         return res.status(200).json({
             status: 'approved',
