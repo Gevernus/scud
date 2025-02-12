@@ -143,7 +143,7 @@ app.get('/api/qr', async (req, res) => {
             return res.status(404).json({
                 status: 'device_not_found',
                 message: 'Device not registered',
-                user: '',
+                username: '',
                 password: ''
             });
         }
@@ -160,7 +160,7 @@ app.get('/api/qr', async (req, res) => {
             return res.status(200).json({
                 status: 'pending',
                 message: 'No approved session found',
-                user: '',
+                username: '',
                 password: ''
             });
         }
@@ -169,7 +169,7 @@ app.get('/api/qr', async (req, res) => {
         return res.status(200).json({
             status: 'approved',
             message: 'Session approved',
-            user: station.user,
+            username: station.username,
             password: station.password
         });
     } catch (error) {
@@ -177,7 +177,7 @@ app.get('/api/qr', async (req, res) => {
         res.status(500).json({
             status: 'error',
             message: 'Internal server error',
-            user: '',
+            username: '',
             password: ''
         });
     }
