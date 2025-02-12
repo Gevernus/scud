@@ -136,7 +136,7 @@ const decodeQRData = (encryptedPayload) => {
 app.get('/api/qr', async (req, res) => {
     try {
         const { deviceId, sessionId } = req.query;
-
+        console.log(`Request: ${deviceId}:${sessionId}`);
         // Find the device
         const station = await Station.findOne({ deviceId });
         if (!station) {
