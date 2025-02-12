@@ -260,7 +260,7 @@ app.post('/api/qr/add', async (req, res) => {
         console.error('Error in /api/qr/add:', error);
         res.status(500).json({
             status: 'error',
-            message: 'Error registering device'
+            message: error.message || 'Internal Server Error'
         });
     }
 });
