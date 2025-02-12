@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 
 const stationSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    nfs: { type: String },
-    ip: { type: String },
+    nfc: { type: String },
+    location: { type: String },
+    deviceId: { type: String },
+    user: { type: String },
+    password: { type: String },
     createdAt: { type: Date, default: Date.now },
     deleted: { type: Boolean, default: false }  // Флаг мягкого удаления
 });

@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Event = require('./models/Event');
 const Station = require('./models/Station')
+const Session = require('./models/Session')
 const Counterparty = require('./models/Counterparty')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 
@@ -115,18 +116,153 @@ app.post("/api/admin/auth/check", async (req, res) => {
     }
 });
 
-app.get('/api/qr', (req, res) => {
-    // Get the deviceId from the query parameters
-    const deviceId = req.query.deviceId;
+const decodeQRData = (encryptedPayload) => {
+    try {
+        // Decode base64 to UTF-8 string
+        const jsonString = Buffer.from(encryptedPayload, 'base64').toString('utf-8');
 
-    // Log the deviceId to the console
-    console.log("Received QR check request for deviceId:", deviceId);
+        // Parse the JSON string
+        const payload = JSON.parse(jsonString);
 
-    // Send a JSON response back to the client
-    res.status(200).json({
-        message: 'Request logged successfully',
-        deviceId: deviceId
-    });
+        return {
+            deviceId: payload.DeviceId,
+            sessionId: payload.SessionId
+        };
+    } catch (error) {
+        throw new Error('Invalid QR data format');
+    }
+};
+
+app.get('/api/qr', async (req, res) => {
+    try {
+        const { deviceId, sessionId } = req.query;
+
+        // Find the device
+        const station = await Station.findOne({ deviceId });
+        if (!station) {
+            return res.status(404).json({
+                status: 'device_not_found',
+                message: 'Device not registered',
+                user: '',
+                password: ''
+            });
+        }
+
+        // Check for approved session
+        const session = await Session.findOne({
+            sessionId,
+            deviceId,
+            status: 'approved'
+        });
+
+        if (!session) {
+            return res.status(200).json({
+                status: 'pending',
+                message: 'No approved session found',
+                user: '',
+                password: ''
+            });
+        }
+
+        // Return credentials for approved session
+        return res.status(200).json({
+            status: 'approved',
+            message: 'Session approved',
+            user: station.user,
+            password: station.password
+        });
+    } catch (error) {
+        console.error('Error in /api/qr:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error',
+            user: '',
+            password: ''
+        });
+    }
+});
+
+app.post('/api/qr/scan', async (req, res) => {
+    try {
+        const { qrData, location, userId } = req.body;
+
+        // Decode base64 QR data
+        const { deviceId, sessionId } = decodeQRData(qrData);
+
+        const station = await Station.findOne({ deviceId });
+
+        if (!station) {
+            return res.status(200).json({
+                status: 'device_not_found',
+                message: 'Device needs registration'
+            });
+        }
+
+        const session = new Session({
+            deviceId,
+            sessionId,
+            userId,
+            location,
+            status: 'approved',
+            createdAt: new Date()
+        });
+        await session.save();
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Successfully logged in'
+        });
+    } catch (error) {
+        console.error('Error in /api/qr/scan:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error processing QR scan'
+        });
+    }
+});
+
+app.post('/api/qr/add', async (req, res) => {
+    try {
+        const { qrData, user, password } = req.body;
+
+        // Decode base64 QR data
+        const { deviceId, sessionId } = decodeQRData(qrData);
+
+        const existingStation = await Station.findOne({ deviceId });
+        if (existingStation) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'Device already registered'
+            });
+        }
+
+        const station = new Station({
+            deviceId,
+            user,
+            password,
+            createdAt: new Date()
+        });
+        await station.save();
+
+        const session = new Session({
+            deviceId,
+            sessionId,
+            status: 'approved',
+            createdAt: new Date()
+        });
+        await session.save();
+
+        return res.status(200).json({
+            status: 'success',
+            message: 'Device registered successfully'
+        });
+    } catch (error) {
+        console.error('Error in /api/qr/add:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Error registering device'
+        });
+    }
 });
 
 // Универсальная функция для регистрации события

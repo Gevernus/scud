@@ -11,7 +11,9 @@ const AppContent = () => {
 
 
   const PERMISSION_ADMIN = 1;
-  const adminUrl = process.env.REACT_APP_ADMIN_URL || 'http://localhost:4000/'; // URL для админки
+  const adminUrl = process.env.REACT_APP_ADMIN_URL;
+  const apiUrl = process.env.REACT_APP_URL;
+
   const goToAdmin = () => {
     window.location.href = adminUrl;
   }
@@ -34,66 +36,89 @@ const AppContent = () => {
           resolve(null);
           return;
         }
-
-        resolve({
-          latitude: locationData.latitude,
-          longitude: locationData.longitude,
-          altitude: locationData.altitude || null,
-          accuracy: locationData.horizontal_accuracy || null,
-          timestamp: Date.now()
-        });
+        const locationString = `${locationData.latitude},${locationData.longitude}`;
+        resolve(locationString);
       });
     });
   };
 
   const scanQR = async () => {
     try {
+      // Initialize location manager if needed
       if (!WebApp.LocationManager.isInited) {
-        WebApp.LocationManager.init(async () => {
-          if (!WebApp.LocationManager.isInited) {
-            console.error("Can't get locationg");
-          }
-          const locationData = await getCurrentLocation();
-          if (!locationData) return;
-          setLocation(locationData);
-          WebApp.showScanQrPopup(
-            { text: 'Scan code' },
-            (qrData) => {
-              if (!qrData) {
-                WebApp.showAlert('Failed to scan QR code');
-                return;
-              }
-              WebApp.showAlert(`Successfully scaned: ${qrData}`);
-              console.log('Scan successful:', {
-                qrData,
-                location: locationData,
-                timestamp: new Date().toISOString()
-              });
+        await new Promise((resolve) => {
+          WebApp.LocationManager.init(() => {
+            if (!WebApp.LocationManager.isInited) {
+              WebApp.showAlert("Can't get location");
+              resolve(false);
+              return;
             }
-          );
+            resolve(true);
+          });
         });
-      } else {
-        const locationData = await getCurrentLocation();
-        if (!locationData) return;
-        setLocation(locationData);
-        WebApp.showScanQrPopup(
-          { text: 'Scan code' },
-          (qrData) => {
+      }
+
+      // Get location data
+      const locationData = await getCurrentLocation();
+      if (!locationData) {
+        WebApp.showAlert('Unable to get location');
+        return;
+      }
+      setLocation(locationData);
+
+      // Show QR scanner
+      WebApp.showScanQrPopup(
+        { text: 'Scan code' },
+        async (qrData) => {
+          try {
+            // Close QR scanner popup
+            WebApp.closeScanQrPopup();
+
             if (!qrData) {
               WebApp.showAlert('Failed to scan QR code');
               return;
             }
 
-            console.log('Scan successful:', {
+            // Log scan data
+            const scanData = {
               qrData,
               location: locationData,
-              timestamp: new Date().toISOString()
+              userId: user._id
+            };
+            console.log('Scan successful:', scanData);
+
+            // Send data to server
+            const response = await fetch(`${apiUrl}/qr/scan`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(scanData)
             });
+
+            if (!response.ok) {
+              throw new Error(`Server responded with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            WebApp.showAlert('QR code successfully processed');
+
+            // Return the server response if needed
+            return result;
+
+          } catch (error) {
+            console.error('Error processing QR code:', error);
+            WebApp.showAlert('Error processing QR code');
+            // Close scanner on error if still open
+            WebApp.closeScanQrPopup();
           }
-        );
-      }
+        }
+      );
     } catch (error) {
-      console.error(error);
+      console.error('Error in scanQR:', error);
+      WebApp.showAlert('An error occurred while scanning');
+      // Ensure scanner is closed on error
+      WebApp.closeScanQrPopup();
     }
   };
 
