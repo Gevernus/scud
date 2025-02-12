@@ -109,7 +109,6 @@ const AppContent = () => {
             // Check the response from your endpoint.
             if (result.status === 'success') {
               setLoginSuccess(true);
-              WebApp.showAlert('Login successful');
             } else if (result.status === 'device_not_found') {
               // Save the scanned data for later use in registration.
               setQrData(qrData);
@@ -138,9 +137,8 @@ const AppContent = () => {
 
   // Callback from RegisterDevice when registration is successful.
   const handleRegistrationSuccess = () => {
-    setShowRegistration(false);
+    setShowRegistration(false);s
     setLoginSuccess(true);
-    WebApp.showAlert('Device registered and login successful');
   };
 
   // A general “back” handler to return to the main view.
