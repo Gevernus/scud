@@ -12,7 +12,7 @@ const AppContent = () => {
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   // We store the scanned data in case the device needs registration.
-  const [pendingRegistrationData, setPendingRegistrationData] = useState(null);
+  const [qrData, setQrData] = useState(null);
   const { user } = useUser();
 
   const PERMISSION_ADMIN = 1;
@@ -112,7 +112,7 @@ const AppContent = () => {
               WebApp.showAlert('Login successful');
             } else if (result.status === 'device_not_found') {
               // Save the scanned data for later use in registration.
-              setPendingRegistrationData(qrData);
+              setQrData(qrData);
               setShowRegistration(true);
               WebApp.showAlert('Device not registered. Please register your device.');
             } else {
@@ -148,7 +148,7 @@ const AppContent = () => {
     setLoginSuccess(false);
     setShowRegistration(false);
     setShowOTPDisplay(false);
-    setPendingRegistrationData(null);
+    setQrData(null);
   };
 
   return (
@@ -171,7 +171,7 @@ const AppContent = () => {
             Back
           </button>
           <RegisterDevice
-            pendingData={pendingRegistrationData}
+            qrData={qrData}
             apiUrl={apiUrl}
             onRegistrationSuccess={handleRegistrationSuccess}
           />
