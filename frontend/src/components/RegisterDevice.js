@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const RegisterDevice = ({ pendingData, apiUrl, onRegistrationSuccess }) => {
+const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [registrationError, setRegistrationError] = useState('');
@@ -13,13 +13,13 @@ const RegisterDevice = ({ pendingData, apiUrl, onRegistrationSuccess }) => {
 
         // Build payload combining the scan data with the registration credentials.
         const payload = {
-            ...pendingData,
+            qrData,
             username,
             password,
         };
 
         try {
-            const response = await fetch(`${apiUrl}/device/register`, {
+            const response = await fetch(`${apiUrl}/qr/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

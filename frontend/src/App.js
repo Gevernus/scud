@@ -112,7 +112,7 @@ const AppContent = () => {
               WebApp.showAlert('Login successful');
             } else if (result.status === 'device_not_found') {
               // Save the scanned data for later use in registration.
-              setPendingRegistrationData(scanData);
+              setPendingRegistrationData(qrData);
               setShowRegistration(true);
               WebApp.showAlert('Device not registered. Please register your device.');
             } else {

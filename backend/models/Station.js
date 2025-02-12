@@ -5,7 +5,7 @@ const stationSchema = new mongoose.Schema({
     nfc: { type: String },
     location: { type: String },
     deviceId: { type: String },
-    user: { type: String },
+    username: { type: String },
     password: { type: String },
     createdAt: { type: Date, default: Date.now },
     deleted: { type: Boolean, default: false }  // Флаг мягкого удаления

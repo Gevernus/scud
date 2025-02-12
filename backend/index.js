@@ -223,7 +223,7 @@ app.post('/api/qr/scan', async (req, res) => {
 
 app.post('/api/qr/add', async (req, res) => {
     try {
-        const { qrData, user, password } = req.body;
+        const { qrData, username, password } = req.body;
 
         // Decode base64 QR data
         const { deviceId, sessionId } = decodeQRData(qrData);
@@ -238,7 +238,7 @@ app.post('/api/qr/add', async (req, res) => {
 
         const station = new Station({
             deviceId,
-            user,
+            username,
             password,
             createdAt: new Date()
         });
