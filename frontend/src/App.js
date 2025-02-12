@@ -17,7 +17,7 @@ const AppContent = () => {
 
   const PERMISSION_ADMIN = 1;
   const adminUrl = process.env.REACT_APP_ADMIN_URL;
-  const apiUrl = process.env.REACT_APP_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const goToAdmin = () => {
     window.location.href = adminUrl;
