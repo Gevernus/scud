@@ -1,14 +1,19 @@
 import './App.css';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import WebApp from '@twa-dev/sdk';
 import OTPDisplay from './components/OTPDisplay';
+import RegisterDevice from './components/RegisterDevice';
 import { UserProvider, useUser } from './context/UserContext';
 
 const AppContent = () => {
+  // State for different UI screens
   const [showOTPDisplay, setShowOTPDisplay] = useState(false);
   const [location, setLocation] = useState(null);
-  const { user, loading: isUserLoading } = useUser();
-
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(false);
+  // We store the scanned data in case the device needs registration.
+  const [pendingRegistrationData, setPendingRegistrationData] = useState(null);
+  const { user } = useUser();
 
   const PERMISSION_ADMIN = 1;
   const adminUrl = process.env.REACT_APP_ADMIN_URL;
@@ -16,7 +21,7 @@ const AppContent = () => {
 
   const goToAdmin = () => {
     window.location.href = adminUrl;
-  }
+  };
 
   useEffect(() => {
     WebApp.ready();
@@ -44,7 +49,7 @@ const AppContent = () => {
 
   const scanQR = async () => {
     try {
-      // Initialize location manager if needed
+      // Initialize the location manager if not already inited.
       if (!WebApp.LocationManager.isInited) {
         await new Promise((resolve) => {
           WebApp.LocationManager.init(() => {
@@ -58,20 +63,19 @@ const AppContent = () => {
         });
       }
 
-      // Get location data
+      // Get location data.
       const locationData = await getCurrentLocation();
       if (!locationData) {
         WebApp.showAlert('Unable to get location');
         return;
       }
       setLocation(locationData);
-
-      // Show QR scanner
+      // Show QR scanner popup.
       WebApp.showScanQrPopup(
         { text: 'Scan code' },
         async (qrData) => {
           try {
-            // Close QR scanner popup
+            // Close the QR scanner popup.
             WebApp.closeScanQrPopup();
 
             if (!qrData) {
@@ -79,21 +83,21 @@ const AppContent = () => {
               return;
             }
 
-            // Log scan data
+            // Prepare the scan data.
             const scanData = {
               qrData,
               location: locationData,
-              userId: user._id
+              userId: user._id,
             };
             console.log('Scan successful:', scanData);
 
-            // Send data to server
+            // Send the data to your server.
             const response = await fetch(`${apiUrl}/qr/scan`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify(scanData)
+              body: JSON.stringify(scanData),
             });
 
             if (!response.ok) {
@@ -101,15 +105,22 @@ const AppContent = () => {
             }
 
             const result = await response.json();
-            WebApp.showAlert('QR code successfully processed');
 
-            // Return the server response if needed
-            return result;
-
+            // Check the response from your endpoint.
+            if (result.status === 'success') {
+              setLoginSuccess(true);
+              WebApp.showAlert('Login successful');
+            } else if (result.status === 'device_not_found') {
+              // Save the scanned data for later use in registration.
+              setPendingRegistrationData(scanData);
+              setShowRegistration(true);
+              WebApp.showAlert('Device not registered. Please register your device.');
+            } else {
+              WebApp.showAlert('Unexpected response from server');
+            }
           } catch (error) {
             console.error('Error processing QR code:', error);
             WebApp.showAlert('Error processing QR code');
-            // Close scanner on error if still open
             WebApp.closeScanQrPopup();
           }
         }
@@ -117,7 +128,6 @@ const AppContent = () => {
     } catch (error) {
       console.error('Error in scanQR:', error);
       WebApp.showAlert('An error occurred while scanning');
-      // Ensure scanner is closed on error
       WebApp.closeScanQrPopup();
     }
   };
@@ -126,47 +136,80 @@ const AppContent = () => {
     setShowOTPDisplay(true);
   };
 
+  // Callback from RegisterDevice when registration is successful.
+  const handleRegistrationSuccess = () => {
+    setShowRegistration(false);
+    setLoginSuccess(true);
+    WebApp.showAlert('Device registered and login successful');
+  };
+
+  // A general “back” handler to return to the main view.
+  const handleBack = () => {
+    setLoginSuccess(false);
+    setShowRegistration(false);
+    setShowOTPDisplay(false);
+    setPendingRegistrationData(null);
+  };
+
   return (
     <div className="container">
-      {!showOTPDisplay ? (
+      {loginSuccess ? (
+        <div className="message-container">
+          <h2>Login Successful</h2>
+          <button className="back-button" onClick={handleBack}>
+            Back
+          </button>
+        </div>
+      ) : showRegistration ? (
+        <div className="registration-container">
+          <button className="back-button" onClick={handleBack}>
+            Back
+          </button>
+          <RegisterDevice
+            pendingData={pendingRegistrationData}
+            apiUrl={apiUrl}
+            onRegistrationSuccess={handleRegistrationSuccess}
+          />
+        </div>
+      ) : showOTPDisplay ? (
+        <div className="otp-container">
+          <button className="back-button" onClick={() => setShowOTPDisplay(false)}>
+            ◄ Back
+          </button>
+          <OTPDisplay />
+        </div>
+      ) : (
         <div className="button-container">
-          <button
-            className="action-button qr-button"
-            onClick={scanQR}
-          >
+          <button className="action-button qr-button" onClick={scanQR}>
             <svg className="icon" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M2 2h8v8H2V2zm2 2v4h4V4H4zm-2 12h8v8H2v-8zm2 2v4h4v-4H4zm12-14h8v8h-8V2zm2 2v4h4V4h-4zm-2 12h8v8h-8v-8zm2 2v4h4v-4h-4z" />
+              <path
+                fill="currentColor"
+                d="M2 2h8v8H2V2zm2 2v4h4V4H4zm-2 12h8v8H2v-8zm2 2v4h4v-4H4zm12-14h8v8h-8V2zm2 2v4h4V4h-4zm-2 12h8v8h-8v-8zm2 2v4h4v-4h-4z"
+              />
             </svg>
             <span>Scan QR</span>
           </button>
 
-          <button
-            className="action-button otp-button"
-            onClick={showOTP}
-          >
+          <button className="action-button otp-button" onClick={showOTP}>
             <svg className="icon" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+              <path
+                fill="currentColor"
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
+              />
             </svg>
             <span>Show OTP</span>
           </button>
           {user && (user.permissions & PERMISSION_ADMIN) === PERMISSION_ADMIN && (
-              <button className="action-button admin-button" onClick={goToAdmin}>
-                <svg className="icon" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M3 3h18v18H3V3zm2 2v14h14V5H5zm7 2c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 2c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                </svg>
-                <span>Вход в админку</span>
-              </button>
-            )}
-        </div>
-      ) : (
-        <div className="otp-container">
-          <button
-            className="back-button"
-            onClick={() => setShowOTPDisplay(false)}
-          >
-            ◄ Back
-          </button>
-          <OTPDisplay />
+            <button className="action-button admin-button" onClick={goToAdmin}>
+              <svg className="icon" viewBox="0 0 24 24">
+                <path
+                  fill="currentColor"
+                  d="M3 3h18v18H3V3zm2 2v14h14V5H5zm7 2c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 2c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
+                />
+              </svg>
+              <span>Вход в админку</span>
+            </button>
+          )}
         </div>
       )}
     </div>
