@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const stationSchema = new mongoose.Schema({
-    name: { type: String, required: true },
     nfc: { type: String },
     location: { type: String },
-    deviceId: { type: String },
+    deviceId: { type: String, required: true },
     username: { type: String },
     password: { type: String },
     createdAt: { type: Date, default: Date.now },
