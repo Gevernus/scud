@@ -63,7 +63,7 @@ const AppContent = () => {
                 WebApp.showAlert('Failed to scan QR code');
                 return;
               }
-
+              WebApp.showAlert(`Successfully scaned: ${qrData}`);
               console.log('Scan successful:', {
                 qrData,
                 location: locationData,
