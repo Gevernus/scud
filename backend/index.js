@@ -230,10 +230,10 @@ app.post('/api/qr/scan', async (req, res) => {
         if (distance > maxAllowedDistance) {
             console.log(`Location mismatch: ${distance.toFixed(3)} km`);
 
-            // Создаем событие "Несовпадение локации"
+            // Создаем событие "Несовпадение локации incident"
             await registerEvent({
-                eventType: "location_mismatch",
-                description: `Location does not match for device ${deviceId}. Distance: ${distance.toFixed(3)} km`
+                eventType: "incident",
+                description: `Местоположение устройства не совпадает ${deviceId}. Расстояние: ${distance.toFixed(3)} km`
             });
 
             return res.status(200).json({
@@ -251,12 +251,24 @@ app.post('/api/qr/scan', async (req, res) => {
             createdAt: new Date()
         });
         await session.save();
+
+        // Создаем событие "authorization"
+        await registerEvent({
+            eventType: "authorization",
+            description: `Авторизация на устройстве ${deviceId}.`
+        });
+
         console.log(`Session created ${sessionId}:${deviceId}`);
         return res.status(200).json({
             status: 'success',
             message: 'Successfully logged in'
         });
     } catch (error) {
+        // Создаем событие "error"
+        await registerEvent({
+            eventType: "error",
+            description: `Попытка авторизации ${deviceId}.`
+        });
         console.error('Error in /api/qr/scan:', error);
         res.status(500).json({
             status: 'error',
@@ -287,6 +299,11 @@ app.post('/api/qr/add', async (req, res) => {
             createdAt: new Date()
         });
         await station.save();
+        // Создаем событие "registration"
+        await registerEvent({
+            eventType: "registration",
+            description: `Рабочая станция добавлена ${deviceId}.`
+        });
 
         const session = new Session({
             deviceId,
@@ -295,12 +312,22 @@ app.post('/api/qr/add', async (req, res) => {
             createdAt: new Date()
         });
         await session.save();
+        // Создаем событие "authorization"
+        await registerEvent({
+            eventType: "authorization",
+            description: `Авторизация на устройстве ${deviceId}.`
+        });
 
         return res.status(200).json({
             status: 'success',
             message: 'Device registered successfully'
         });
     } catch (error) {
+        // Создаем событие "error"
+        await registerEvent({
+            eventType: "error",
+            description: `Ошибка регестрации станции ${deviceId}.`
+        });
         console.error('Error in /api/qr/add:', error);
         res.status(500).json({
             status: 'error',

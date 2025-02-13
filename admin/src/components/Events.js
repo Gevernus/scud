@@ -23,7 +23,10 @@ const EventFilter = (props) => (
         { id: 'login_attempt', name: 'Вход в приложение' },
         { id: 'soft_delete', name: 'Перенесли в корзину' },
         { id: 'full_delete', name: 'Полное удаление' },
-        // { id: 'incident', name: 'Инцидент' },
+        { id: 'incident', name: 'Инцидент' },
+        { id: 'error', name: 'Ошибки' },
+        { id: 'registration', name: 'Регистрация' },
+        { id: 'authorization', name: 'Авторизация' },
       ]}
       alwaysOn
     />
