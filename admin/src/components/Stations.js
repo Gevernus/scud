@@ -31,6 +31,7 @@ export const StationsList = () => {
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="name" label="Название" />
         <TextField source="nfs" label="NFS" />
+        <TextField source="location" label="location" />
         <TextField source="ip" label="IP" />
         {canDelete && <DeleteButton />}
       </Datagrid>
@@ -43,6 +44,7 @@ export const StationsEdit = () => (
     <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput source="name" label="Название" />
       <TextInput source="nfs" label="NFS" />
+      <TextInput source="location" label="location" />
       <TextInput source="ip" label="IP" />
     </SimpleForm>
   </Edit>
@@ -57,6 +59,7 @@ export const StationsCreate = () => (
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput source="nfs" label="NFS" />
+      <TextInput source="location" label="location" />
       <TextInput source="ip" label="IP" />
     </SimpleForm>
   </Create>

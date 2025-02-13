@@ -116,6 +116,24 @@ app.post("/api/admin/auth/check", async (req, res) => {
     }
 });
 
+
+const haversine = (lat1, lon1, lat2, lon2) => {
+    const toRad = (value) => (value * Math.PI) / 180;
+    const R = 6371; // Радиус Земли в км
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Расстояние в километрах
+};
+
 const decodeQRData = (encryptedPayload) => {
     try {
         // Decode base64 to UTF-8 string
@@ -197,6 +215,28 @@ app.post('/api/qr/scan', async (req, res) => {
             return res.status(200).json({
                 status: 'device_not_found',
                 message: 'Device needs registration'
+            });
+        }
+
+        // Проверяем совпадение локации
+        const { latitude: stationLat, longitude: stationLon } = station.location;
+        const { latitude, longitude } = location;
+
+        const distance = haversine(stationLat, stationLon, latitude, longitude);
+        const maxAllowedDistance = 0.05; // 50 метров
+
+        if (distance > maxAllowedDistance) {
+            console.log(`Location mismatch: ${distance.toFixed(3)} km`);
+
+            // Создаем событие "Несовпадение локации"
+            await registerEvent({
+                eventType: "location_mismatch",
+                description: `Location does not match for device ${deviceId}. Distance: ${distance.toFixed(3)} km`
+            });
+
+            return res.status(200).json({
+                status: 'location_mismatch',
+                message: `Location does not match. Distance: ${distance.toFixed(3)} km`
             });
         }
 
