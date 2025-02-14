@@ -210,13 +210,42 @@ app.post('/api/qr/scan', async (req, res) => {
         // Decode base64 QR data
         const { deviceId, sessionId } = decodeQRData(qrData);
         console.log(`Scan: ${deviceId}:${sessionId}:${userId}`);
-        const station = await Station.findOne({ deviceId });
+        const station = await Station.findOne({ deviceId }).populate('users');
 
         if (!station) {
             console.log(`Station not found`);
             return res.status(200).json({
                 status: 'device_not_found',
                 message: 'Device needs registration'
+            });
+        }      
+        
+        // Проверяем, существует ли пользователь
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            console.log(`User not found`);
+            return res.status(403).json({
+                status: 'user_not_found',
+                message: 'User not found'
+            });
+        }
+
+        // Проверяем, есть ли этот пользователь в списке users станции
+        const isUserAllowed = station.users.some(stationUser => stationUser._id.equals(user._id));
+
+        if (!isUserAllowed) {
+            console.log(`User ${userId} is not allowed to access station ${deviceId}`);
+
+            // Создаем событие "incident"
+            await registerEvent({
+                eventType: "incident",
+                description: `Попытка авторизации пользователя ${userId} на станции ${deviceId} - доступ запрещен.`
+            });
+
+            return res.status(403).json({
+                status: 'access_denied',
+                message: 'User does not have access to this station'
             });
         }
 
@@ -255,7 +284,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Авторизация на станции ${deviceId}.`
+            description: `Авторизация пользователя ${userId} на станции ${deviceId}.`
         });
 
         console.log(`Session created ${sessionId}:${deviceId}`);
@@ -267,7 +296,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "incident"
         await registerEvent({
             eventType: "incident",
-            description: `Попытка авторизации ${deviceId}.`
+            description: `Авторизации пользователя ${userId} на станции ${deviceId} не удалась.`
         });
         console.error('Error in /api/qr/scan:', error);
         res.status(500).json({
@@ -543,7 +572,7 @@ const handleCreate = (Model) => async (req, res) => {
         // Hashing password
         let data = req.body;
         if (data.password) {
-            data.password = bcrypt.hash(data.password, 10)
+            data.password = await bcrypt.hash(data.password, 10)
         }
 
         const item = new Model(req.body);

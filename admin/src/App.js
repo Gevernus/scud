@@ -2,7 +2,7 @@ import React, { useMemo, useCallback } from "react";
 import { Admin, Resource } from "react-admin";
 import createDataProvider from "./dataProvider";
 import { Dashboard } from "./components/Dashboard";
-import { UserList, UserEdit, UserCreate } from "./components/Users";
+import { UserList, UserEdit, UserCreate, UserShow } from "./components/Users";
 import { EventList } from "./components/Events";
 import {StationsList, StationsEdit, StationsCreate } from "./components/Stations";
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate } from "./components/Counterparts";
@@ -54,6 +54,7 @@ const AdminWrapper = () => {
           list={UserList}
           edit={checkPermission(PERMISSIONS_MODULES["Пользователи"].edit) ? UserEdit : null}
           create={checkPermission(PERMISSIONS_MODULES["Пользователи"].create) ? UserCreate : null}
+          show={UserShow}
           options={{ label: "Пользователи" }}
         />
       )}

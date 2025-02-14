@@ -12,6 +12,8 @@ import {
   Filter,
   SelectInput,
   DateInput,
+  Show, 
+  SimpleShowLayout,
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
@@ -93,7 +95,7 @@ export const UserEdit = () => (
       />
       <TextInput source="firstName" />
       <TextInput source="lastName" />
-      <TextInput source="username" />
+      <TextInput source="username" validate={[required('Поле обязательно для заполнения')]}/>
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Edit>
@@ -109,8 +111,20 @@ export const UserCreate = () => (
       />
       <TextInput source="firstName" label="Имя" />
       <TextInput source="lastName" label="Фамилия" />
-      <TextInput source="username" label="username" />
+      <TextInput source="username" label="username" validate={[required('Поле обязательно для заполнения')]}/>
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Create>
+);
+
+export const UserShow = (props) => (
+  <Show {...props}>
+      <SimpleShowLayout>
+          <TextField source="id" label="ID"/>
+          <TextField source="telegramId" label="ID Пользователя"/>
+          <TextField source="firstName" label="Имя" />
+          <TextField source="lastName" label="Фамилия" />
+          <TextField source="username" label="username" />
+      </SimpleShowLayout>
+  </Show>
 );

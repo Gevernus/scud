@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const stationSchema = new mongoose.Schema({
     nfc: { type: String },
     location: { type: String },
-    deviceId: { type: String, required: true },
+    deviceId: { type: String, required: true, unique: true },
     username: { type: String },
     password: { type: String },
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
     deleted: { type: Boolean, default: false }  // Флаг мягкого удаления
 });
