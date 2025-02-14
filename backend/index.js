@@ -11,7 +11,7 @@ const Session = require('./models/Session')
 const Counterparty = require('./models/Counterparty')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
-
+const bcrypt = require('bcryptjs')
 
 const app = express();
 app.use(cors({
@@ -233,7 +233,7 @@ app.post('/api/qr/scan', async (req, res) => {
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение устройства не совпадает ${deviceId}. Расстояние: ${distance.toFixed(3)} km`
+                description: `Местоположение станции  ${deviceId} не совпадает. Расстояние: ${distance.toFixed(3)} km`
             });
 
             return res.status(200).json({
@@ -255,7 +255,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Авторизация на устройстве ${deviceId}.`
+            description: `Авторизация на станции ${deviceId}.`
         });
 
         console.log(`Session created ${sessionId}:${deviceId}`);
@@ -264,9 +264,9 @@ app.post('/api/qr/scan', async (req, res) => {
             message: 'Successfully logged in'
         });
     } catch (error) {
-        // Создаем событие "error"
+        // Создаем событие "incident"
         await registerEvent({
-            eventType: "error",
+            eventType: "incident",
             description: `Попытка авторизации ${deviceId}.`
         });
         console.error('Error in /api/qr/scan:', error);
@@ -292,17 +292,20 @@ app.post('/api/qr/add', async (req, res) => {
             });
         }
 
+        //Additional check: is the password encrypted
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const station = new Station({
             deviceId,
             username,
-            password,
+            password: hashedPassword,
             createdAt: new Date()
         });
         await station.save();
-        // Создаем событие "registration"
+        // event "registration"
         await registerEvent({
             eventType: "registration",
-            description: `Рабочая станция добавлена ${deviceId}.`
+            description: `Рабочая станция ${deviceId} добавлена.`
         });
 
         const session = new Session({
@@ -312,10 +315,10 @@ app.post('/api/qr/add', async (req, res) => {
             createdAt: new Date()
         });
         await session.save();
-        // Создаем событие "authorization"
+        // event "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Авторизация на устройстве ${deviceId}.`
+            description: `Авторизация на станции ${deviceId}.`
         });
 
         return res.status(200).json({
@@ -323,10 +326,10 @@ app.post('/api/qr/add', async (req, res) => {
             message: 'Device registered successfully'
         });
     } catch (error) {
-        // Создаем событие "error"
+        // event "error"
         await registerEvent({
-            eventType: "error",
-            description: `Ошибка регестрации станции ${deviceId}.`
+            eventType: "incident",
+            description: `Попытка регестрации станции ${deviceId}.`
         });
         console.error('Error in /api/qr/add:', error);
         res.status(500).json({
@@ -488,7 +491,7 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
         }
 
         // 🔹 Логируем фильтр, чтобы проверить, что даты верные
-        console.log("Фильтр по датам (UTC):", filter.createdAt);
+        // console.log("Фильтр по датам (UTC):", filter.createdAt);
 
         // Динамический поиск по выбранному столбцу
         if (filter.q && filter.searchField) {
@@ -537,6 +540,12 @@ const handleGetOne = (Model) => async (req, res) => {
 
 const handleCreate = (Model) => async (req, res) => {
     try {
+        // Hashing password
+        let data = req.body;
+        if (data.password) {
+            data.password = bcrypt.hash(data.password, 10)
+        }
+
         const item = new Model(req.body);
         await item.save();
         res.status(201).json(item);
@@ -551,6 +560,12 @@ const handleCreate = (Model) => async (req, res) => {
 
 const handleUpdate = (Model) => async (req, res) => {
     try {
+        // Hashing password
+        let data = req.body;
+        if(data.password) {
+            data.password = await bcrypt.hash(data.password, 10);
+        }
+
         const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!item) return res.status(404).json({ error: "Not found" });
         res.json(item);
@@ -614,44 +629,100 @@ const handlePermanentDelete = (Model) => async (req, res) => {
 };
 
 // Эндпоинты для админа (неудалённые объекты)
-app.get("/api/admin/users", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), handleAdminRoute(User, "users"));
-app.get("/api/admin/users/:id", handleGetOne(User, "users"));
-app.post("/api/admin/users", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].create), handleCreate(User));
-app.put("/api/admin/users/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].edit), handleUpdate(User));
-app.delete("/api/admin/users/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), handleDelete(User));  // Мягкое удаление
+app.get("/api/admin/users", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
+    handleAdminRoute(User, "users"));
+app.get("/api/admin/users/:id", 
+    handleGetOne(User, "users"));
+app.post("/api/admin/users", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].create), 
+    handleCreate(User));
+app.put("/api/admin/users/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].edit), 
+    handleUpdate(User));
+app.delete("/api/admin/users/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
+    handleDelete(User));  // Мягкое удаление
 
-app.get("/api/admin/events", checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view), handleAdminRoute(Event, "events"));
-app.get("/api/admin/events/:id", handleGetOne(Event, "events"));
-app.delete("/api/admin/events/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), handleDelete(Event));  // Мягкое удаление
+app.get("/api/admin/events", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view), 
+    handleAdminRoute(Event, "events"));
+app.get("/api/admin/events/:id", 
+    handleGetOne(Event, "events"));
+app.delete("/api/admin/events/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
+    handleDelete(Event));  // Мягкое удаление
 
-app.get("/api/admin/stations", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), handleAdminRoute(Station, "stations"));
-app.get("/api/admin/stations/:id", handleGetOne(Station));
-app.post("/api/admin/stations", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].create), handleCreate(Station));
-app.put("/api/admin/stations/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].edit), handleUpdate(Station));
-app.delete("/api/admin/stations/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), handleDelete(Station));  // Мягкое удаление
+app.get("/api/admin/stations", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
+    handleAdminRoute(Station, "stations"));
+app.get("/api/admin/stations/:id", 
+    handleGetOne(Station));
+app.post("/api/admin/stations", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].create), 
+    handleCreate(Station));
+app.put("/api/admin/stations/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].edit), 
+    handleUpdate(Station));
+app.delete("/api/admin/stations/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
+    handleDelete(Station));  // Мягкое удаление
 
-app.get("/api/admin/counterparts", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), handleAdminRoute(Counterparty, "counterparts"));
-app.get("/api/admin/counterparts/:id", handleGetOne(Counterparty));
-app.post("/api/admin/counterparts", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].create), handleCreate(Counterparty));
-app.put("/api/admin/counterparts/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].edit), handleUpdate(Counterparty));
-app.delete("/api/admin/counterparts/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), handleDelete(Counterparty));  // Мягкое удаление
+app.get("/api/admin/counterparts", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
+    handleAdminRoute(Counterparty, "counterparts"));
+app.get("/api/admin/counterparts/:id", 
+    handleGetOne(Counterparty));
+app.post("/api/admin/counterparts", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].create), 
+    handleCreate(Counterparty));
+app.put("/api/admin/counterparts/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].edit), 
+    handleUpdate(Counterparty));
+app.delete("/api/admin/counterparts/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
+    handleDelete(Counterparty));  // Мягкое удаление
 
 // Эндпоинты для работы с корзиной (только удалённые объекты)
-app.get("/api/admin/UsersTrash", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), handleAdminRoute(User, "users", { deleted: true }));
-app.get("/api/admin/EventsTrash", checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view),  handleAdminRoute(Event, "events", { deleted: true }));
-app.get("/api/admin/StationsTrash", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), handleAdminRoute(Station, "stations", { deleted: true }));
-app.get("/api/admin/counterpartyTrash", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), handleAdminRoute(Counterparty, "counterparts", { deleted: true }));
+app.get("/api/admin/UsersTrash", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
+    handleAdminRoute(User, "users", { deleted: true }));
+app.get("/api/admin/EventsTrash", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view),  
+    handleAdminRoute(Event, "events", { deleted: true }));
+app.get("/api/admin/StationsTrash", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
+    handleAdminRoute(Station, "stations", { deleted: true }));
+app.get("/api/admin/counterpartyTrash", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
+    handleAdminRoute(Counterparty, "counterparts", { deleted: true }));
 
 // Эндпоинты для восстановления объектов из корзины
-app.post("/api/admin/trash/users/:id/restore", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), handleRestore(User));
-app.post("/api/admin/trash/events/:id/restore", checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), handleRestore(Event));
-app.post("/api/admin/trash/stations/:id/restore", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), handleRestore(Station));
-app.post("/api/admin/trash/counterparts/:id/restore", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), handleRestore(Counterparty));
+app.post("/api/admin/trash/users/:id/restore", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
+    handleRestore(User));
+app.post("/api/admin/trash/events/:id/restore", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
+    handleRestore(Event));
+app.post("/api/admin/trash/stations/:id/restore", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
+    handleRestore(Station));
+app.post("/api/admin/trash/counterparts/:id/restore", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
+    handleRestore(Counterparty));
 
 // Эндпоинты для окончательного удаления из корзины
-app.delete("/api/admin/usersTrash/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), handlePermanentDelete(User));
-app.delete("/api/admin/eventsTrash/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), handlePermanentDelete(Event));
-app.delete("/api/admin/stationsTrash/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), handlePermanentDelete(Station));
-app.delete("/api/admin/counterpartyTrash/:id", checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), handlePermanentDelete(Counterparty));
+app.delete("/api/admin/usersTrash/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
+    handlePermanentDelete(User));
+app.delete("/api/admin/eventsTrash/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
+    handlePermanentDelete(Event));
+app.delete("/api/admin/stationsTrash/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
+    handlePermanentDelete(Station));
+app.delete("/api/admin/counterpartyTrash/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
+    handlePermanentDelete(Counterparty));
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

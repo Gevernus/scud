@@ -137,7 +137,7 @@ const AppContent = () => {
 
   // Callback from RegisterDevice when registration is successful.
   const handleRegistrationSuccess = () => {
-    setShowRegistration(false);s
+    setShowRegistration(false);
     setLoginSuccess(true);
   };
 

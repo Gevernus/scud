@@ -8,19 +8,18 @@ import {
   TextInput,
   Edit,
   Toolbar,
-  SaveButton
+  SaveButton,
+  DateField,
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
-
 
 const CustomToolbar = () => (
   <Toolbar>
     <SaveButton />
   </Toolbar>
 );
-
 
 export const StationsList = () => {
   const { checkPermission } = useUser();
@@ -29,10 +28,11 @@ export const StationsList = () => {
   return (
     <List rowClick="edit">
       <Datagrid isRowSelectable={() => canDelete}>
-        <TextField source="name" label="Название" />
-        <TextField source="nfs" label="NFS" />
+        <TextField source="deviceId" label="ID станции" />
+        <TextField source="username" label="Название" />
         <TextField source="location" label="location" />
-        <TextField source="ip" label="IP" />
+        <TextField source="nfs" label="NFS" />
+        <DateField source="createdAt" label="дата" />
         {canDelete && <DeleteButton />}
       </Datagrid>
     </List>
@@ -40,12 +40,20 @@ export const StationsList = () => {
 };
 
 export const StationsEdit = () => (
-  <Edit >
+  <Edit>
     <SimpleForm toolbar={<CustomToolbar />}>
-      <TextInput source="name" label="Название" />
-      <TextInput source="nfs" label="NFS" />
-      <TextInput source="location" label="location" />
-      <TextInput source="ip" label="IP" />
+      <TextInput
+        source="username"
+        label="Название"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput
+        source="password"
+        label="Пароль"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput source="location" label="NFS" />
+      <TextInput source="nfs" label="location" />
     </SimpleForm>
   </Edit>
 );
@@ -54,13 +62,17 @@ export const StationsCreate = () => (
   <Create>
     <SimpleForm>
       <TextInput
-        source="name"
+        source="username"
         label="Название"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput source="nfs" label="NFS" />
+      <TextInput
+        source="password"
+        label="Пароль"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
       <TextInput source="location" label="location" />
-      <TextInput source="ip" label="IP" />
+      <TextInput source="nfs" label="NFS" />
     </SimpleForm>
   </Create>
 );
