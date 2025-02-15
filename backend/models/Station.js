@@ -5,10 +5,29 @@ const stationSchema = new mongoose.Schema({
     location: { type: String },
     deviceId: { type: String, required: true, unique: true },
     username: { type: String },
+    companyPoints: { type: String },
+    typePoints: { type: String },
+    statusPoints: { type: String },
+    resultHashFun: { type: String },
     password: { type: String },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
     deleted: { type: Boolean, default: false }  // Флаг мягкого удаления
+});
+
+// Update `updatedAt' only if something has changed
+stationSchema.pre("save", function (next) {
+    if (this.isModified()) {
+        this.updatedAt = Date.now();
+    }
+    next();
+});
+
+// Auto-updating of `updatedAt` at `findOneAndUpdate`
+stationSchema.pre("findOneAndUpdate", function (next) {
+    this.set({ updatedAt: Date.now() });
+    next();
 });
 
 // Виртуальный идентификатор

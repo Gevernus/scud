@@ -74,13 +74,18 @@ export const StationsList = () => {
 
   return (
     <List filters={<StationFilter />}>
-      <Datagrid rowClick="edit"  isRowSelectable={() => canDelete}>
+      <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="deviceId" label="ID станции" />
-        <TextField source="username" label="Название" />
-        <TextField source="location" label="location" />
-        <TextField source="nfs" label="NFS" />
+        <TextField source="username" label="Название Точки геопозиции" />
+        <TextField source="companyPoints" label="Компания Точки геопозиции" />
+        <TextField source="typePoints" label="Тип (APM или Точка геопозиции)" />
+        <TextField
+          source="statusPoints"
+          label="Статус (Обслуживается, Не обслуживается, в архиве)"
+        />
+        <TextField source="location" label="Геопозиция Точки" />
         <ReferenceArrayField
-          label="Пользователи"
+          label="Разрешенные пользователи"
           source="users"
           reference="users"
         >
@@ -88,7 +93,10 @@ export const StationsList = () => {
             <ChipField source="username" />
           </SingleFieldList>
         </ReferenceArrayField>
-        <DateField source="createdAt" label="дата" />
+        <DateField source="createdAt" label="Дата создания" showTime />
+        <DateField source="updatedAt" label="Дата обновления" showTime />
+        <TextField source="nfs" label="ID Метки NFS" />
+        <TextField source="resultHashFun" label="Результат хэш-функции" />
         {canDelete && <DeleteButton />}
       </Datagrid>
     </List>
@@ -105,7 +113,7 @@ export const StationsEdit = () => (
       />
       <TextInput
         source="username"
-        label="Название"
+        label="Название Точки геопозиции"
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput
@@ -113,11 +121,18 @@ export const StationsEdit = () => (
         label="Пароль"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput source="location" label="NFS" />
-      <TextInput source="nfs" label="location" />
+      <TextInput source="companyPoints" label="Компания Точки геопозиции" />
+      <TextInput source="typePoints" label="Тип (APM или Точка геопозиции)" />
+      <TextInput
+        source="statusPoints"
+        label="Статус (Обслуживается, Не обслуживается, в архиве)"
+      />
+      <TextInput source="location" label="Геопозиция Точки" />
       <ReferenceArrayInput label="Users" source="users" reference="users">
         <AutocompleteArrayInput optionText="username" />
       </ReferenceArrayInput>
+      <TextInput source="nfs" label="ID Метки NFS" />
+      <TextInput source="resultHashFun" label="Результат хэш-функции" />
     </SimpleForm>
   </Edit>
 );
@@ -132,7 +147,7 @@ export const StationsCreate = () => (
       />
       <TextInput
         source="username"
-        label="Название"
+        label="Название Точки геопозиции"
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput
@@ -140,11 +155,18 @@ export const StationsCreate = () => (
         label="Пароль"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput source="location" label="location" />
-      <TextInput source="nfs" label="NFS" />
+      <TextInput source="companyPoints" label="Компания Точки геопозиции" />
+      <TextInput source="typePoints" label="Тип (APM или Точка геопозиции)" />
+      <TextInput
+        source="statusPoints"
+        label="Статус (Обслуживается, Не обслуживается, в архиве)"
+      />
+      <TextInput source="location" label="Геопозиция Точки" />
       <ReferenceArrayInput label="Users" source="users" reference="users">
         <AutocompleteArrayInput optionText="username" />
       </ReferenceArrayInput>
+      <TextInput source="nfs" label="ID Метки NFS" />
+      <TextInput source="resultHashFun" label="Результат хэш-функции" />
     </SimpleForm>
   </Create>
 );
