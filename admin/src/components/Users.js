@@ -7,12 +7,13 @@ import {
   TextField,
   SimpleForm,
   TextInput,
+  EmailField,
   Toolbar,
   SaveButton,
   Filter,
   SelectInput,
   DateInput,
-  Show, 
+  Show,
   SimpleShowLayout,
 } from 'react-admin';
 import { required } from 'react-admin';
@@ -27,7 +28,6 @@ const CustomToolbar = () => (
   </Toolbar>
 );
 
-
 const UserFilter = (props) => (
   <Filter {...props}>
     {/* Selecting a column to search for */}
@@ -35,7 +35,7 @@ const UserFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        { id: null, name: 'Без фильтра' }, 
+        { id: null, name: 'Без фильтра' },
         { id: 'telegramId', name: 'ID Пользователя' },
         { id: 'firstName', name: 'Имя' },
         { id: 'lastName', name: 'Фамилия' },
@@ -52,7 +52,7 @@ const UserFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        { id: null, name: 'Без фильтра' }, 
+        { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
@@ -74,12 +74,21 @@ export const UserList = () => {
   return (
     <List filters={<UserFilter />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
-        {/* <TextField source="id" /> */}
-        <TextField source="telegramId" label="ID Пользователя" />
+        <TextField source="id" label="ID Пользователя" />
+        <TextField source="telegramId" label="Telegram ID" />
         <TextField source="firstName" label="Имя" />
         <TextField source="lastName" label="Фамилия" />
+        <TextField source="middleName" label="Очество" />
         <TextField source="username" label="username" />
-        <DateField source="createdAt" label="дата" />
+        <TextField source="phone" label="Телефон" />
+        <EmailField source="email" label="E-mail" />
+        <TextField source="сompany" label="Компания" />
+        <TextField source="division" label="Подразделение" />
+        <TextField source="position" label="Должность" />
+        <TextField source="mobileId" label="ID Мобильного приложения" />
+        <TextField source="nfcId" label="ID NFC метки" />
+        <DateField source="createdAt" label="Дата создания" showTime />
+        <DateField source="updatedAt" label="Дата обновления" showTime />
         <PermissionsField source="permissions" label="Разрешения" />
       </Datagrid>
     </List>
@@ -91,11 +100,23 @@ export const UserEdit = () => (
     <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput
         source="telegramId"
+        label="Telegram ID"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput source="firstName" />
-      <TextInput source="lastName" />
-      <TextInput source="username" validate={[required('Поле обязательно для заполнения')]}/>
+      <TextInput source="firstName" label="Имя" />
+      <TextInput source="lastName" label="Фамилия" />
+      <TextInput source="middleName" label="Очество" />
+      <TextInput
+        source="username"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextField source="phone" label="Телефон" />
+      <TextInput source="email" label="E-mail" />
+      <TextInput source="сompany" label="Компания" />
+      <TextInput source="division" label="Подразделение" />
+      <TextInput source="position" label="Должность" />
+      <TextInput source="mobileId" label="ID Мобильного приложения" />
+      <TextInput source="nfcId" label="ID NFC метки" />
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Edit>
@@ -106,25 +127,42 @@ export const UserCreate = () => (
     <SimpleForm>
       <TextInput
         source="telegramId"
-        label="ID Пользователя"
+        label="Telegram ID"
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput source="firstName" label="Имя" />
       <TextInput source="lastName" label="Фамилия" />
-      <TextInput source="username" label="username" validate={[required('Поле обязательно для заполнения')]}/>
+      <TextInput source="middleName" label="Очество" />
+      <TextInput
+        source="username"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextField source="phone" label="Телефон" />
+      <TextInput source="email" label="E-mail" />
+      <TextInput source="сompany" label="Компания" />
+      <TextInput source="division" label="Подразделение" />
+      <TextInput source="position" label="Должность" />
+      <TextInput source="mobileId" label="ID Мобильного приложения" />
+      <TextInput source="nfcId" label="ID NFC метки" />
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Create>
 );
 
-export const UserShow = (props) => (
-  <Show {...props}>
-      <SimpleShowLayout>
-          <TextField source="id" label="ID"/>
-          <TextField source="telegramId" label="ID Пользователя"/>
-          <TextField source="firstName" label="Имя" />
-          <TextField source="lastName" label="Фамилия" />
-          <TextField source="username" label="username" />
-      </SimpleShowLayout>
+export const UserShow = () => (
+  <Show>
+    <SimpleShowLayout>
+      <TextField source="id" label="ID Пользователя" />
+      <TextField source="telegramId" label="Telegram ID" />
+      <TextField source="firstName" label="Имя" />
+      <TextField source="lastName" label="Фамилия" />
+      <TextField source="middleName" label="Очество" />
+      <TextField source="username" label="username" />
+      <TextField source="phone" label="Телефон" />
+      <EmailField source="email" label="E-mail" />
+      <TextField source="сompany" label="Компания" />
+      <TextField source="division" label="Подразделение" />
+      <TextField source="position" label="Должность" />
+    </SimpleShowLayout>
   </Show>
 );
