@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
+const helmet = require('helmet');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User');
@@ -14,10 +15,25 @@ const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissio
 const bcrypt = require('bcryptjs')
 
 const app = express();
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"], // Запрещаем загрузку внешних ресурсов
+            scriptSrc: ["'self'", "https://telegram.org"], // Разрешаем Telegram Login
+            imgSrc: ["'self'", "data:", "https://telegram.org"], // Разрешаем картинки из Telegram
+            frameAncestors: ["'none'"], // Защита от Clickjacking
+        },
+    },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" }, // Безопасная политика рефереров скрывает реферер, если запрос идёт на другой домен.
+    frameguard: { action: "deny" }, // Блокируем встраивание в iframe
+}));
 app.use(cors({
     exposedHeaders: ['Content-Range']
 }));
 app.use(express.json());
+
+
+
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
