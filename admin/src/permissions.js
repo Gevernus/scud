@@ -4,6 +4,7 @@ export const PERMISSIONS_MODULES = {
   "Контрагенты": { view: 32, create: 64, edit: 128, delete:  256},
   "Станции": { view: 512, create: 1024, edit: 2048, delete:  4096},
   "Журнал событий": { view: 8192, delete: 16384},
+  "Регистрация": { view: 32768, edit: 65536 },
 };
 
 // The rights verification function

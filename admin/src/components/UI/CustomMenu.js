@@ -8,7 +8,7 @@ import {
     Box,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { FaTrashCan, FaUsers } from 'react-icons/fa6';
+import { FaTrashCan, FaUsers, FaUserPlus } from 'react-icons/fa6';
 import { MdOutlineEventNote, MdExpandLess, MdExpandMore } from 'react-icons/md';
 import { FaServer, FaHome } from 'react-icons/fa';
 import { GiTeamIdea } from 'react-icons/gi'; 
@@ -49,6 +49,13 @@ const CustomMenu = ({ open }) => {
                     <GiTeamIdea />
                 </ListItemIcon>
                 <ListItemText primary="Контрагенты" />
+            </ListItemButton>
+
+            <ListItemButton component={Link} to="/registration">
+                <ListItemIcon>
+                    <FaUserPlus />
+                </ListItemIcon>
+                <ListItemText primary="Регистрация" />
             </ListItemButton>
 
             {/* Trash - Nested menu */}

@@ -10,6 +10,7 @@ const Event = require('./models/Event');
 const Station = require('./models/Station')
 const Session = require('./models/Session')
 const Counterparty = require('./models/Counterparty')
+const Registration = require('./models/Registration')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
 const bcrypt = require('bcryptjs')
@@ -85,34 +86,65 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 app.post("/api/front/users", async (req, res) => {
-    const { telegramId, firstName, lastName, username } = req.body;
+    const { telegramId, firstName, lastName, username, password } = req.body;
 
     try {
         // Проверяем количество пользователей в базе
         const userCount = await User.countDocuments();
-
-        // Проверяем, существует ли пользователь
         let user = await User.findOne({ telegramId });
+        const registration = await Registration.findOne();
 
-        if (!user) {
-            // Первый пользователь получает админские права
+        // Если пользователь уже есть, возвращаем его
+        if (user) {
+            return res.status(200).json({ exists: true, user });
+        }
+
+        // Если пользователей нет — создаем первого с правами админа
+        if (userCount === 0) {
             user = new User({
                 telegramId,
                 firstName,
                 lastName,
                 username,
-                permissions: userCount === 0 ? 98303 : 0, 
+                permissions: 98303, // Полные права администратора
             });
-
             await user.save();
+            return res.status(201).json({ exists: true, user });
         }
 
-        res.json(user);
+        // Если регистрация запрещена
+        if (!registration || !registration.status) {
+            return res.status(200).json({ exists: false, registrationAllowed: false });
+        }
+
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(409).json({ error: `Username пользователя "${username}" уже занято` });
+        }
+
+        // Если регистрация разрешена, но пароль не передан — просим его
+        if (!password) {
+            return res.status(200).json({ exists: false, registrationAllowed: true });
+        }
+
+        // Проверяем, совпадает ли введенный пароль
+        const isPasswordValid = password === registration.pass;
+        if (!isPasswordValid) {
+            return res.status(400).json({ error: "Неверный пароль" });
+        }
+
+        // Создаем нового пользователя
+        user = new User({ telegramId, firstName, lastName, username });
+        await user.save();
+
+        return res.status(201).json({ exists: true, user });
+
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);
         res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
 });
+
 
 
 //Проверка пользователя в админки
@@ -551,6 +583,21 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
             delete filter.id;
         }
 
+        if (Model.modelName === "Registration") {
+            let existingRecords = await Model.find();
+
+            if (existingRecords.length === 0) {
+                const newRecord = new Model(); 
+                await newRecord.save();
+                existingRecords = [newRecord];
+            }
+
+            // 🔹 Убираем пагинацию, так как запись всегда одна
+            res.set("Content-Range", `registration 0-1/1`);
+            res.set("Access-Control-Expose-Headers", "Content-Range");
+            return res.json(existingRecords);
+        }
+
         // Разбираем сортировку и диапазон
         const [start, end] = req.query.range ? JSON.parse(req.query.range) : [0, 9];
         let [sortField, sortOrder] = req.query.sort ? JSON.parse(req.query.sort) : ["id", "ASC"];
@@ -727,6 +774,15 @@ app.put("/api/admin/counterparts/:id",
 app.delete("/api/admin/counterparts/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
     handleDelete(Counterparty));  // Мягкое удаление
+
+app.get("/api/admin/registration", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].view), 
+    handleAdminRoute(Registration, "registration"));
+app.get("/api/admin/registration/:id", 
+    handleGetOne(Registration));
+app.put("/api/admin/registration/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].edit), 
+    handleUpdate(Registration));
 
 // Эндпоинты для работы с корзиной (только удалённые объекты)
 app.get("/api/admin/UsersTrash", 

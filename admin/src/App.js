@@ -6,6 +6,7 @@ import { UserList, UserEdit, UserCreate, UserShow } from "./components/Users";
 import { EventList } from "./components/Events";
 import {StationsList, StationsEdit, StationsCreate } from "./components/Stations";
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate } from "./components/Counterparts";
+import { RegistrationList, RegistrationEdit } from "./components/Registration";
 
 import { UsersTrash } from "./components/trash/UsersTrash";
 import { EventsTrash } from "./components/trash/EventsTrash";
@@ -45,6 +46,7 @@ const AdminWrapper = () => {
   const canViewStations = checkPermission(PERMISSIONS_MODULES["Станции"].view);
   const canViewCounterparty = checkPermission(PERMISSIONS_MODULES["Контрагенты"].view);
   const canViewEvents = checkPermission(PERMISSIONS_MODULES["Журнал событий"].view);
+  const canViewRegistration = checkPermission(PERMISSIONS_MODULES["Регистрация"].view);
 
   return (
     <Admin dashboard={Dashboard} dataProvider={dataProvider} layout={MyLayout}>
@@ -74,6 +76,14 @@ const AdminWrapper = () => {
           edit={checkPermission(PERMISSIONS_MODULES["Контрагенты"].edit) ? CounterpartyEdit : null}
           create={checkPermission(PERMISSIONS_MODULES["Контрагенты"].create) ? CounterpartyCreate : null}
           options={{ label: "Контрагенты" }}
+        />
+      )}
+      {canViewCounterparty && (
+        <Resource
+          name="registration"
+          list={RegistrationList}
+          edit={checkPermission(PERMISSIONS_MODULES["Регистрация"].edit) ? RegistrationEdit : null}
+          options={{ label: "Регистрация" }}
         />
       )}
       {canViewEvents && (

@@ -4,6 +4,7 @@ import WebApp from '@twa-dev/sdk';
 import OTPDisplay from './components/OTPDisplay';
 import RegisterDevice from './components/RegisterDevice';
 import { UserProvider, useUser } from './context/UserContext';
+import RegisterForm from './components/RegisterForm';
 
 const AppContent = () => {
   // State for different UI screens
@@ -13,7 +14,7 @@ const AppContent = () => {
   const [showRegistration, setShowRegistration] = useState(false);
   // We store the scanned data in case the device needs registration.
   const [qrData, setQrData] = useState(null);
-  const { user } = useUser();
+  const { user, loading, accessDenied, registrationAllowed } = useUser();
 
   const PERMISSION_ADMIN = 1;
   const adminUrl = process.env.REACT_APP_ADMIN_URL;
@@ -27,6 +28,23 @@ const AppContent = () => {
     WebApp.ready();
     WebApp.expand();
   }, []);
+  
+
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen bg-blue-950 text-white">Загрузка...</div>;
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-red-700 text-white p-4 rounded-lg">
+        <h2 className="text-2xl font-semibold">Доступ запрещен</h2>
+      </div>
+    );
+  }
+
+  if (registrationAllowed) {
+    return <RegisterForm apiUrl={apiUrl} onSuccess={() => window.location.reload()} />;
+  }
 
   const handleLocationError = (error) => {
     console.error(error);
