@@ -85,7 +85,7 @@ export const UserList = () => {
         <TextField source="сompany" label="Компания" />
         <TextField source="division" label="Подразделение" />
         <TextField source="position" label="Должность" />
-        <TextField source="mobileId" label="ID Мобильного приложения" />
+        <TextField source="deviceId" label="ID Мобильного приложения" />
         <TextField source="nfcId" label="ID NFC метки" />
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
@@ -115,7 +115,7 @@ export const UserEdit = () => (
       <TextInput source="сompany" label="Компания" />
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
-      <TextInput source="mobileId" label="ID Мобильного приложения" />
+      <TextInput source="deviceId" label="ID Мобильного приложения" />
       <TextInput source="nfcId" label="ID NFC метки" />
       <PermissionsInput source="permissions" />
     </SimpleForm>
@@ -142,7 +142,7 @@ export const UserCreate = () => (
       <TextInput source="сompany" label="Компания" />
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
-      <TextInput source="mobileId" label="ID Мобильного приложения" />
+      <TextInput source="deviceId" label="ID Мобильного приложения" />
       <TextInput source="nfcId" label="ID NFC метки" />
       <PermissionsInput source="permissions" />
     </SimpleForm>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useUser } from '../context/UserContext';
 
 const RegisterForm = ({ apiUrl, onSuccess }) => {
-    const { registrationAllowed, tempUser } = useUser();
+    const { registrationAllowed, tempUser, deviceId } = useUser();
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [wrongAttempts, setWrongAttempts] = useState(0); //  Tracking invalid attempts
@@ -31,6 +31,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                     lastName: tempUser.last_name,
                     username: tempUser.username,
                     password,
+                    deviceId: deviceId
                 }),
             });
 

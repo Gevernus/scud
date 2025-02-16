@@ -14,6 +14,8 @@ const Registration = require('./models/Registration')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
 const bcrypt = require('bcryptjs')
+const { v4: uuidv4 } = require('uuid'); // ✅ Генерация UUID
+
 
 const app = express();
 app.use(helmet({
@@ -41,52 +43,9 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
-// app.post("/api/front/users", async (req, res) => {
-//     const { telegramId, firstName, lastName, username, linkHash } = req.body;
-
-//     try {
-//         // Check if user exists
-//         let user = await User.findOne({ telegramId });
-
-//         if (!user) {
-//             // Create new user
-//             user = new User({
-//                 telegramId,
-//                 firstName,
-//                 lastName,
-//                 username,
-//             });
-//             await user.save();
-
-//             // // Update referrer's referrals array if referral exists
-//             // if (linkHash) {
-//             //     const shareLink = await ShareLink.findOne({
-//             //         hash: linkHash,
-//             //     });
-
-//             //     if (shareLink) {
-//             //         await User.findByIdAndUpdate(shareLink.userId, {
-//             //             $push: {
-//             //                 referrals: {
-//             //                     userId: user._id,
-//             //                     createdAt: new Date()
-//             //                 }
-//             //             }
-//             //         });
-//             //     }
-//             // }
-//         }
-
-//         res.json(user);
-//     } catch (error) {
-//         console.error("Error in /api/front/users:", error);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// });
-
 
 app.post("/api/front/users", async (req, res) => {
-    const { telegramId, firstName, lastName, username, password } = req.body;
+    const { telegramId, firstName, lastName, username, password, deviceId } = req.body;
 
     try {
         // Проверяем количество пользователей в базе
@@ -96,6 +55,15 @@ app.post("/api/front/users", async (req, res) => {
 
         // Если пользователь уже есть, возвращаем его
         if (user) {
+            if (!user.deviceId || user.deviceId !== deviceId) {
+                user.deviceId = deviceId;
+                await user.save();
+
+                await registerEvent({
+                    eventType: "incident",
+                    description: `Id устройства пользователя ${user.username} c Id ${user._id} было изменено.`
+                });
+            }
             return res.status(200).json({ exists: true, user });
         }
 
@@ -107,6 +75,7 @@ app.post("/api/front/users", async (req, res) => {
                 lastName,
                 username,
                 permissions: 98303, // Полные права администратора
+                deviceId,
             });
             await user.save();
             return res.status(201).json({ exists: true, user });
@@ -134,7 +103,7 @@ app.post("/api/front/users", async (req, res) => {
         }
 
         // Создаем нового пользователя
-        user = new User({ telegramId, firstName, lastName, username });
+        user = new User({ telegramId, firstName, lastName, username, deviceId });
         await user.save();
 
         return res.status(201).json({ exists: true, user });
