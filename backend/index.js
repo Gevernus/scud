@@ -329,11 +329,16 @@ app.post('/api/qr/add', async (req, res) => {
     // Decode base64 QR data
     const { deviceId, sessionId } = decodeQRData(qrData);
     try {
-        const existingStation = await Station.findOne({ deviceId, deleted: false });
+        const existingStation = await Station.findOne({ deviceId });
         if (existingStation) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Device already registered'
+            existingStation.username = username;
+            existingStation.password = password;
+            existingStation.createdAt = new Date();
+            await existingStation.save();
+            
+            return res.status(200).json({
+                status: 'success',
+                message: 'Device registered successfully'
             });
         }
 
@@ -343,7 +348,7 @@ app.post('/api/qr/add', async (req, res) => {
         const station = new Station({
             deviceId,
             username,
-            password: hashedPassword,
+            password: password,
             createdAt: new Date()
         });
         await station.save();
