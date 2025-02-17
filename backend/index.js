@@ -175,7 +175,7 @@ app.get('/api/qr', async (req, res) => {
         const { deviceId, sessionId } = req.query;
         console.log(`Request: ${deviceId}:${sessionId}`);
         // Find the device
-        const station = await Station.findOne({ deviceId });
+        const station = await Station.findOne({ deviceId, deleted: false });
         if (!station) {
             return res.status(404).json({
                 status: 'device_not_found',
@@ -227,7 +227,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Decode base64 QR data
         const { deviceId, sessionId } = decodeQRData(qrData);
         console.log(`Scan: ${deviceId}:${sessionId}:${userId}`);
-        const station = await Station.findOne({ deviceId }).populate('users');
+        const station = await Station.findOne({ deviceId, deleted: false }).populate('users');
 
         if (!station) {
             console.log(`Station not found`);
@@ -330,7 +330,7 @@ app.post('/api/qr/add', async (req, res) => {
         // Decode base64 QR data
         const { deviceId, sessionId } = decodeQRData(qrData);
 
-        const existingStation = await Station.findOne({ deviceId });
+        const existingStation = await Station.findOne({ deviceId, deleted: false });
         if (existingStation) {
             return res.status(400).json({
                 status: 'error',
@@ -551,6 +551,8 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
             filter._id = filter.id;
             delete filter.id;
         }
+
+        filter.deleted = false;
 
         if (Model.modelName === "Registration") {
             let existingRecords = await Model.find();
