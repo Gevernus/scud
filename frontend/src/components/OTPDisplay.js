@@ -56,7 +56,7 @@ const OTPDisplay = () => {
             <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold mb-2">OTP GUARD</h2>
-                    <p className="text-gray-400">Enter this code to confirm your sign in</p>
+                    <p className="text-gray-400">Введите код для подтверждения логина</p>
                 </div>
 
                 <div className="relative mx-auto w-48 h-48 mb-6">
@@ -85,7 +85,7 @@ const OTPDisplay = () => {
                     onClick={() => navigator.clipboard.writeText(otp)}
                     className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors"
                 >
-                    Copy Code
+                    Скопировать
                 </button>
             </div>
         </div>

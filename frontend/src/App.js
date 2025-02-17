@@ -55,7 +55,7 @@ const AppContent = () => {
     return new Promise((resolve) => {
       WebApp.LocationManager.getLocation((locationData) => {
         if (!locationData) {
-          handleLocationError('Could not retrieve location');
+          handleLocationError('Невозможно получить локацию');
           resolve(null);
           return;
         }
@@ -72,7 +72,7 @@ const AppContent = () => {
         await new Promise((resolve) => {
           WebApp.LocationManager.init(() => {
             if (!WebApp.LocationManager.isInited) {
-              WebApp.showAlert("Can't get location");
+              WebApp.showAlert("Невозможно получить локацию");
               resolve(false);
               return;
             }
@@ -84,7 +84,7 @@ const AppContent = () => {
       // Get location data.
       const locationData = await getCurrentLocation();
       if (!locationData) {
-        WebApp.showAlert('Unable to get location');
+        WebApp.showAlert('Невозможно получить локацию');
         return;
       }
       setLocation(locationData);
@@ -97,7 +97,7 @@ const AppContent = () => {
             WebApp.closeScanQrPopup();
 
             if (!qrData) {
-              WebApp.showAlert('Failed to scan QR code');
+              WebApp.showAlert('Ошибка сканирования');
               return;
             }
 
@@ -119,7 +119,7 @@ const AppContent = () => {
             });
 
             if (!response.ok) {
-              throw new Error(`Server responded with status: ${response.status}`);
+              throw new Error(`Ошибка: ${response.message}`);
             }
 
             const result = await response.json();
@@ -131,20 +131,20 @@ const AppContent = () => {
               // Save the scanned data for later use in registration.
               setQrData(qrData);
               setShowRegistration(true);
-              WebApp.showAlert('Device not registered. Please register your device.');
+              WebApp.showAlert('Рабочая станция не зарегистрирована');
             } else {
-              WebApp.showAlert('Unexpected response from server');
+              WebApp.showAlert('Неожиданный ответ от сервера');
             }
           } catch (error) {
             console.error('Error processing QR code:', error);
-            WebApp.showAlert('Error processing QR code');
+            WebApp.showAlert(error.message);
             WebApp.closeScanQrPopup();
           }
         }
       );
     } catch (error) {
       console.error('Error in scanQR:', error);
-      WebApp.showAlert('An error occurred while scanning');
+      WebApp.showAlert('Ошибка сканирования');
       WebApp.closeScanQrPopup();
     }
   };
@@ -177,14 +177,14 @@ const AppContent = () => {
               onClick={handleBack}
               className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition-colors"
             >
-              Back
+              ◄ Назад
             </button>
           </div>
         </div>
       ) : showRegistration ? (
         <div className="registration-container">
           <button className="back-button" onClick={handleBack}>
-            Back
+            ◄ Назад
           </button>
           <RegisterDevice
             qrData={qrData}
@@ -195,7 +195,7 @@ const AppContent = () => {
       ) : showOTPDisplay ? (
         <div className="otp-container">
           <button className="back-button" onClick={() => setShowOTPDisplay(false)}>
-            ◄ Back
+            ◄ Назад
           </button>
           <OTPDisplay />
         </div>
@@ -208,7 +208,7 @@ const AppContent = () => {
                 d="M2 2h8v8H2V2zm2 2v4h4V4H4zm-2 12h8v8H2v-8zm2 2v4h4v-4H4zm12-14h8v8h-8V2zm2 2v4h4V4h-4zm-2 12h8v8h-8v-8zm2 2v4h4v-4h-4z"
               />
             </svg>
-            <span>Scan QR</span>
+            <span>Сканирование QR</span>
           </button>
 
           <button className="action-button otp-button" onClick={showOTP}>
@@ -218,7 +218,7 @@ const AppContent = () => {
                 d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"
               />
             </svg>
-            <span>Show OTP</span>
+            <span>Показать OTP</span>
           </button>
           {user && (user.permissions & PERMISSION_ADMIN) === PERMISSION_ADMIN && (
             <button className="action-button admin-button" onClick={goToAdmin}>

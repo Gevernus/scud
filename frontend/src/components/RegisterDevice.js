@@ -28,7 +28,7 @@ const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
             });
 
             if (!response.ok) {
-                throw new Error(`Server responded with status: ${response.status}`);
+                throw new Error(`Ошибка: ${response.message}`);
             }
 
             const result = await response.json();
@@ -40,7 +40,7 @@ const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
             }
         } catch (error) {
             console.error('Error during registration:', error);
-            setRegistrationError('Error during registration');
+            setRegistrationError('Ошибка регистрации');
         } finally {
             setIsSubmitting(false);
         }
@@ -50,15 +50,15 @@ const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
         <div className="flex justify-center items-center min-h-screen bg-gray-900 p-2">
             <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg">
                 <div className="text-center mb-8">
-                    <h2 className="text-xl font-semibold mb-2">Register Device</h2>
+                    <h2 className="text-xl font-semibold mb-2">Зарегистрировать Рабочую Станцию</h2>
                     <p className="text-gray-400">
-                        Please register your device by providing your credentials.
+                        Введите логин и пароль для регистрации
                     </p>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label htmlFor="username" className="block text-sm font-medium mb-1">
-                            Username
+                            Логин
                         </label>
                         <input
                             id="username"
@@ -71,7 +71,7 @@ const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
                     </div>
                     <div className="mb-4">
                         <label htmlFor="password" className="block text-sm font-medium mb-1">
-                            Password
+                            Пароль
                         </label>
                         <input
                             id="password"
@@ -90,7 +90,7 @@ const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
                         disabled={isSubmitting}
                         className="w-full bg-blue-500 py-2 rounded-md hover:bg-blue-600 transition-colors"
                     >
-                        {isSubmitting ? 'Registering...' : 'Register Device'}
+                        {isSubmitting ? 'Регистрация...' : 'Регистрация'}
                     </button>
                 </form>
             </div>
