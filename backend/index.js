@@ -221,12 +221,12 @@ app.get('/api/qr', async (req, res) => {
 });
 
 app.post('/api/qr/scan', async (req, res) => {
-    try {
-        const { qrData, location, userId } = req.body;
+    const { qrData, location, userId } = req.body;
 
-        // Decode base64 QR data
-        const { deviceId, sessionId } = decodeQRData(qrData);
-        console.log(`Scan: ${deviceId}:${sessionId}:${userId}`);
+    // Decode base64 QR data
+    const { deviceId, sessionId } = decodeQRData(qrData);
+    console.log(`Scan: ${deviceId}:${sessionId}:${userId}`);
+    try {        
         const station = await Station.findOne({ deviceId, deleted: false }).populate('users');
 
         if (!station) {
@@ -324,12 +324,11 @@ app.post('/api/qr/scan', async (req, res) => {
 });
 
 app.post('/api/qr/add', async (req, res) => {
+    const { qrData, username, password } = req.body;
+
+    // Decode base64 QR data
+    const { deviceId, sessionId } = decodeQRData(qrData);
     try {
-        const { qrData, username, password } = req.body;
-
-        // Decode base64 QR data
-        const { deviceId, sessionId } = decodeQRData(qrData);
-
         const existingStation = await Station.findOne({ deviceId, deleted: false });
         if (existingStation) {
             return res.status(400).json({
@@ -375,7 +374,7 @@ app.post('/api/qr/add', async (req, res) => {
         // event "error"
         await registerEvent({
             eventType: "incident",
-            description: `Попытка регестрации станции ${deviceId}.`
+            description: `Попытка регистрации станции ${deviceId}.`
         });
         console.error('Error in /api/qr/add:', error);
         res.status(500).json({
