@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 .container {
+  max-width: 100%;
   position: relative;
   min-height: 100vh;
   background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1));
@@ -84,10 +85,11 @@
 
 .back-button {
   position: absolute;
-  padding: 4px 8px;
-  background-color: transparent;
+  padding: 8px 20px;
+  background-color: var(--tg-theme-button-color, #2481cc);
   border: none;
-  color: #fff;
+  border-radius: 10px;
+  color: var(--tg-theme-button-text-color, #ffffff);
   font-size: 16px;
   cursor: pointer;
   z-index: 10;
