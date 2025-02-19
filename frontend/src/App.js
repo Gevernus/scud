@@ -28,7 +28,7 @@ const AppContent = () => {
     WebApp.ready();
     WebApp.expand();
   }, []);
-  
+
 
   if (loading) {
     return <div className="flex justify-center items-center min-h-screen bg-blue-950 text-white">Загрузка...</div>;
@@ -118,11 +118,10 @@ const AppContent = () => {
               body: JSON.stringify(scanData),
             });
 
-            if (!response.ok) {
-              throw new Error(`Ошибка: ${response.message}`);
-            }
-
             const result = await response.json();
+            if (!response.ok) {
+              throw new Error(`Ошибка: ${result.message || "не определена"}`);
+            }
 
             // Check the response from your endpoint.
             if (result.status === 'success') {

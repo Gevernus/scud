@@ -35,9 +35,6 @@ app.use(cors({
 }));
 app.use(express.json());
 
-
-
-
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
@@ -114,8 +111,6 @@ app.post("/api/front/users", async (req, res) => {
     }
 });
 
-
-
 //Проверка пользователя в админки
 app.post("/api/admin/auth/check", async (req, res) => {
     const { telegramId } = req.body;
@@ -179,7 +174,7 @@ app.get('/api/qr', async (req, res) => {
         if (!station) {
             return res.status(404).json({
                 status: 'device_not_found',
-                message: 'Device not registered',
+                message: 'Рабочая станция не зарегистрирована',
                 username: '',
                 password: ''
             });
@@ -196,7 +191,7 @@ app.get('/api/qr', async (req, res) => {
             console.log(`Session not found`);
             return res.status(200).json({
                 status: 'pending',
-                message: 'No approved session found',
+                message: 'Не найдено активной сессии',
                 username: '',
                 password: ''
             });
@@ -233,7 +228,7 @@ app.post('/api/qr/scan', async (req, res) => {
             console.log(`Station not found`);
             return res.status(200).json({
                 status: 'device_not_found',
-                message: 'Device needs registration'
+                message: 'Нужно зарегистрировать рабочую станцию'
             });
         }      
         
@@ -244,7 +239,7 @@ app.post('/api/qr/scan', async (req, res) => {
             console.log(`User not found`);
             return res.status(403).json({
                 status: 'user_not_found',
-                message: 'User not found'
+                message: 'Пользователь не найден'
             });
         }
 
@@ -262,7 +257,7 @@ app.post('/api/qr/scan', async (req, res) => {
 
             return res.status(403).json({
                 status: 'access_denied',
-                message: 'User does not have access to this station'
+                message: 'У пользователя нет прав для доступа к рабочей станции'
             });
         }
 
@@ -284,7 +279,7 @@ app.post('/api/qr/scan', async (req, res) => {
 
             return res.status(200).json({
                 status: 'location_mismatch',
-                message: `Location does not match. Distance: ${distance.toFixed(3)} km`
+                message: `Локация не совпадает. Расстояние: ${distance.toFixed(3)} км`
             });
         }
 
@@ -307,7 +302,7 @@ app.post('/api/qr/scan', async (req, res) => {
         console.log(`Session created ${sessionId}:${deviceId}`);
         return res.status(200).json({
             status: 'success',
-            message: 'Successfully logged in'
+            message: 'Успешно авторизован'
         });
     } catch (error) {
         // Создаем событие "incident"
@@ -318,7 +313,7 @@ app.post('/api/qr/scan', async (req, res) => {
         console.error('Error in /api/qr/scan:', error);
         res.status(500).json({
             status: 'error',
-            message: 'Error processing QR scan'
+            message: 'Ошибка сканирования QR'
         });
     }
 });
@@ -339,7 +334,7 @@ app.post('/api/qr/add', async (req, res) => {
 
             return res.status(200).json({
                 status: 'success',
-                message: 'Device registered successfully'
+                message: 'Устройство успешно зарегистрировано'
             });
         }
 
@@ -374,7 +369,7 @@ app.post('/api/qr/add', async (req, res) => {
 
         return res.status(200).json({
             status: 'success',
-            message: 'Device registered successfully'
+            message: 'Рабочая станция успешно добавлена'
         });
     } catch (error) {
         // event "error"
