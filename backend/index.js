@@ -355,19 +355,6 @@ app.post('/api/qr/add', async (req, res) => {
             description: `Рабочая станция ${deviceId} добавлена.`
         });
 
-        const session = new Session({
-            deviceId,
-            sessionId,
-            status: 'approved',
-            createdAt: new Date()
-        });
-        await session.save();
-        // event "authorization"
-        await registerEvent({
-            eventType: "authorization",
-            description: `Авторизация на станции ${deviceId}.`
-        });
-
         return res.status(200).json({
             status: 'success',
             message: 'Рабочая станция успешно добавлена'
