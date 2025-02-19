@@ -480,25 +480,25 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
 
         // Получаем смещение от клиента (в минутах) и переводим в миллисекунды
         const timezoneOffset = req.headers["x-timezone-offset"] ? parseInt(req.headers["x-timezone-offset"]) * 60000 : 0;
-
-        // Корректируем дату
-        const toUTC = (date) => new Date(date.getTime() + timezoneOffset); // Сдвигаем время назад в UTC
+        
+        // Приводим `now` к локальному времени пользователя перед `startOfDay()`
+        const userNow = new Date(now.getTime() - timezoneOffset);
 
         // 🔹 Фильтрация по предустановленным диапазонам (сегодня, неделя, месяц)
         if (filter.dateRange) {
             let start, end;
             switch (filter.dateRange) {
                 case 'today':
-                    start = toUTC(startOfDay(now)).toISOString(); // Начало дня в UTC
-                    end = toUTC(endOfDay(now)).toISOString(); // Конец дня в UTC
+                    start = new Date(startOfDay(userNow).getTime() + timezoneOffset).toISOString();
+                    end = new Date(endOfDay(userNow).getTime() + timezoneOffset).toISOString();
                     break;
                 case 'week':
-                    start = toUTC(startOfWeek(now, { weekStartsOn: 1 })).toISOString();
-                    end = toUTC(endOfDay(now)).toISOString();
+                    start = new Date(startOfWeek(userNow, { weekStartsOn: 1 }).getTime() + timezoneOffset).toISOString();
+                    end = new Date(endOfDay(userNow).getTime() + timezoneOffset).toISOString();
                     break;
                 case 'month':
-                    start = toUTC(startOfMonth(now)).toISOString();
-                    end = toUTC(endOfDay(now)).toISOString();
+                    start = new Date(startOfMonth(userNow).getTime() + timezoneOffset).toISOString();
+                    end = new Date(endOfDay(userNow).getTime() + timezoneOffset).toISOString();
                     break;
                 default:
                     break;
@@ -513,8 +513,8 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
 
         // 🔹 Фильтрация по произвольному диапазону дат
         if (filter.startDate || filter.endDate) {
-            let startDate = filter.startDate ? toUTC(startOfDay(new Date(filter.startDate))).toISOString() : null;
-            let endDate = filter.endDate ? toUTC(endOfDay(new Date(filter.endDate))).toISOString() : null;
+            let startDate = filter.startDate ? new Date(startOfDay(new Date(filter.startDate)).getTime() + timezoneOffset).toISOString() : null;
+            let endDate = filter.endDate ? new Date(endOfDay(new Date(filter.endDate)).getTime() + timezoneOffset).toISOString() : null;
 
             filter.createdAt = {};
             if (startDate) filter.createdAt.$gte = startDate;
