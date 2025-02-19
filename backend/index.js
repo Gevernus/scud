@@ -495,10 +495,10 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
 
         const now = new Date();
 
-        // 📌 Получаем смещение от клиента (в минутах) и переводим в миллисекунды
+        // Получаем смещение от клиента (в минутах) и переводим в миллисекунды
         const timezoneOffset = req.headers["x-timezone-offset"] ? parseInt(req.headers["x-timezone-offset"]) * 60000 : 0;
 
-        // 📌 Корректируем дату один раз!
+        // Корректируем дату
         const toUTC = (date) => new Date(date.getTime() + timezoneOffset); // Сдвигаем время назад в UTC
 
         // 🔹 Фильтрация по предустановленным диапазонам (сегодня, неделя, месяц)
@@ -544,18 +544,30 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
         // 🔹 Логируем фильтр, чтобы проверить, что даты верные
         // console.log("Фильтр по датам (UTC):", filter.createdAt);
 
-        // Динамический поиск по выбранному столбцу
-        if (filter.q && filter.searchField) {
-            filter[filter.searchField] = { $regex: filter.q, $options: "i" };
-            delete filter.q;
-            delete filter.searchField;
-        }
-
-        // Преобразование id в _id
+        // Преобразование id в _id для отображения разрешенных пользователей в станциях
         if (filter.id) {
             filter._id = filter.id;
             delete filter.id;
         }
+
+        // Динамический поиск по выбранному столбцу       
+        if (filter.q && filter.searchField) {
+            if (filter.searchField === "id" || filter.searchField === "_id") {
+                if (mongoose.Types.ObjectId.isValid(filter.q) && filter.q.length === 24) {
+                    // Точный поиск по ObjectId
+                    filter._id = new mongoose.Types.ObjectId(filter.q);
+                } else {
+                    // Динамический поиск по ObjectId как строке
+                    filter.$expr = { $regexMatch: { input: { $toString: "$_id" }, regex: filter.q, options: "i" } };
+                }
+            } else {
+                // Динамический поиск по текстовым полям (username, email и т.д.)
+                filter[filter.searchField] = { $regex: filter.q, $options: "i" };
+            }
+        
+            delete filter.q;
+            delete filter.searchField;
+        }  
 
         if (filter.deleted === undefined) {
             filter.deleted = false; 

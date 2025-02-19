@@ -42,8 +42,8 @@ const StationFilter = (props) => (
         { id: 'companyPoints', name: 'Компания Точки' },
         { id: 'typePoints', name: 'Тип' },
         { id: 'statusPoints', name: 'Статус' },
-        { id: 'location', name: 'location' },
-        { id: 'nfs', name: 'NFS' },
+        { id: 'location', name: 'Геопозиция Точки' },
+        { id: 'nfc', name: 'NFC' },
       ]}
       alwaysOn
     />

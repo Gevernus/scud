@@ -38,6 +38,7 @@ const CounterpartyFilter = (props) => (
         { id: 'inn', name: 'ИНН' },
         { id: 'phone', name: 'Телефон' },
         { id: 'email', name: 'E-mail' },
+        { id: 'createdBy', name: 'Создатель записи' },
       ]}
       alwaysOn
     />
