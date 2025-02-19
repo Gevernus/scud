@@ -32,7 +32,7 @@ const CounterpartyFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        { id: null, name: 'Без фильтра' },
+        // { id: null, name: 'Без фильтра' },
         { id: 'fullName', name: 'Полное название' },
         { id: 'shortName', name: 'Краткое название' },
         { id: 'inn', name: 'ИНН' },
@@ -50,7 +50,7 @@ const CounterpartyFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        { id: null, name: 'Без фильтра' },
+        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },

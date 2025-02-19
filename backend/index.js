@@ -557,7 +557,9 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
             delete filter.id;
         }
 
-        filter.deleted = false;
+        if (filter.deleted === undefined) {
+            filter.deleted = false; 
+        }
 
         if (Model.modelName === "Registration") {
             let existingRecords = await Model.find();
@@ -698,108 +700,108 @@ const handlePermanentDelete = (Model) => async (req, res) => {
 
 // Эндпоинты для админа (неудалённые объекты)
 app.get("/api/admin/users", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
     handleAdminRoute(User, "users"));
 app.get("/api/admin/users/:id", 
     handleGetOne(User, "users"));
 app.post("/api/admin/users", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].create), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].create), 
     handleCreate(User));
 app.put("/api/admin/users/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].edit), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].edit), 
     handleUpdate(User));
 app.delete("/api/admin/users/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
     handleDelete(User));  // Мягкое удаление
 
 app.get("/api/admin/events", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view), 
     handleAdminRoute(Event, "events"));
 app.get("/api/admin/events/:id", 
     handleGetOne(Event, "events"));
 app.delete("/api/admin/events/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
     handleDelete(Event));  // Мягкое удаление
 
 app.get("/api/admin/stations", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
     handleAdminRoute(Station, "stations"));
 app.get("/api/admin/stations/:id", 
     handleGetOne(Station));
 app.post("/api/admin/stations", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].create), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].create), 
     handleCreate(Station));
 app.put("/api/admin/stations/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].edit), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].edit), 
     handleUpdate(Station));
 app.delete("/api/admin/stations/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
     handleDelete(Station));  // Мягкое удаление
 
 app.get("/api/admin/counterparts", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
     handleAdminRoute(Counterparty, "counterparts"));
 app.get("/api/admin/counterparts/:id", 
     handleGetOne(Counterparty));
 app.post("/api/admin/counterparts", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].create), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].create), 
     handleCreate(Counterparty));
 app.put("/api/admin/counterparts/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].edit), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].edit), 
     handleUpdate(Counterparty));
 app.delete("/api/admin/counterparts/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
     handleDelete(Counterparty));  // Мягкое удаление
 
 app.get("/api/admin/registration", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].view), 
     handleAdminRoute(Registration, "registration"));
 app.get("/api/admin/registration/:id", 
     handleGetOne(Registration));
 app.put("/api/admin/registration/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].edit), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].edit), 
     handleUpdate(Registration));
 
 // Эндпоинты для работы с корзиной (только удалённые объекты)
 app.get("/api/admin/UsersTrash", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
     handleAdminRoute(User, "users", { deleted: true }));
 app.get("/api/admin/EventsTrash", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view),  
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view),  
     handleAdminRoute(Event, "events", { deleted: true }));
 app.get("/api/admin/StationsTrash", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
     handleAdminRoute(Station, "stations", { deleted: true }));
 app.get("/api/admin/counterpartyTrash", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
     handleAdminRoute(Counterparty, "counterparts", { deleted: true }));
 
 // Эндпоинты для восстановления объектов из корзины
 app.post("/api/admin/trash/users/:id/restore", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
     handleRestore(User));
 app.post("/api/admin/trash/events/:id/restore", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
     handleRestore(Event));
 app.post("/api/admin/trash/stations/:id/restore", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
     handleRestore(Station));
 app.post("/api/admin/trash/counterparts/:id/restore", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
     handleRestore(Counterparty));
 
 // Эндпоинты для окончательного удаления из корзины
 app.delete("/api/admin/usersTrash/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
     handlePermanentDelete(User));
 app.delete("/api/admin/eventsTrash/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
     handlePermanentDelete(Event));
 app.delete("/api/admin/stationsTrash/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
     handlePermanentDelete(Station));
 app.delete("/api/admin/counterpartyTrash/:id", 
-    checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
+    // checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
     handlePermanentDelete(Counterparty));
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

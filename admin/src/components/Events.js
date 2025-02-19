@@ -19,7 +19,7 @@ const EventFilter = (props) => (
       label="Тип события"
       source="eventType"
       choices={[
-        { id: '', name: 'Без фильтра' },
+        // { id: '', name: 'Без фильтра' },
         { id: 'login_attempt', name: 'Вход в приложение' },
         { id: 'soft_delete', name: 'Перенесли в корзину' },
         { id: 'full_delete', name: 'Полное удаление' },
@@ -35,7 +35,7 @@ const EventFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        { id: '', name: 'Без фильтра' },
+        // { id: '', name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },

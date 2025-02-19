@@ -35,11 +35,19 @@ const UserFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        { id: null, name: 'Без фильтра' },
-        { id: 'telegramId', name: 'ID Пользователя' },
+        // { id: null, name: 'Без фильтра' },
+        { id: 'id', name: 'ID Пользователя' },
+        { id: 'telegramId', name: 'Telegram ID' },
         { id: 'firstName', name: 'Имя' },
         { id: 'lastName', name: 'Фамилия' },
         { id: 'username', name: 'Username' },
+        { id: 'phone', name: 'Телефон' },
+        { id: 'email', name: 'E-mail' },
+        { id: 'company', name: 'Компания' },
+        { id: 'division', name: 'Подразделение' },
+        { id: 'position', name: 'Должность' },
+        { id: 'deviceId', name: 'ID приложения' },
+        { id: 'nfcId', name: 'ID NFC' },
       ]}
       alwaysOn
     />
@@ -52,7 +60,7 @@ const UserFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        { id: null, name: 'Без фильтра' },
+        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
@@ -82,7 +90,7 @@ export const UserList = () => {
         <TextField source="username" label="username" />
         <TextField source="phone" label="Телефон" />
         <EmailField source="email" label="E-mail" />
-        <TextField source="сompany" label="Компания" />
+        <TextField source="company" label="Компания" />
         <TextField source="division" label="Подразделение" />
         <TextField source="position" label="Должность" />
         <TextField source="deviceId" label="ID Мобильного приложения" />
@@ -110,9 +118,9 @@ export const UserEdit = () => (
         source="username"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextField source="phone" label="Телефон" />
+      <TextInput source="phone" label="Телефон" />
       <TextInput source="email" label="E-mail" />
-      <TextInput source="сompany" label="Компания" />
+      <TextInput source="company" label="Компания" />
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
       <TextInput source="deviceId" label="ID Мобильного приложения" />
@@ -137,9 +145,9 @@ export const UserCreate = () => (
         source="username"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextField source="phone" label="Телефон" />
+      <TextInput source="phone" label="Телефон" />
       <TextInput source="email" label="E-mail" />
-      <TextInput source="сompany" label="Компания" />
+      <TextInput source="company" label="Компания" />
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
       <TextInput source="deviceId" label="ID Мобильного приложения" />
@@ -160,7 +168,7 @@ export const UserShow = () => (
       <TextField source="username" label="username" />
       <TextField source="phone" label="Телефон" />
       <EmailField source="email" label="E-mail" />
-      <TextField source="сompany" label="Компания" />
+      <TextField source="company" label="Компания" />
       <TextField source="division" label="Подразделение" />
       <TextField source="position" label="Должность" />
     </SimpleShowLayout>

@@ -36,9 +36,12 @@ const StationFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        { id: null, name: 'Без фильтра' },
+        // { id: null, name: 'Без фильтра' },
         { id: 'deviceId', name: 'ID станции' },
         { id: 'username', name: 'Название' },
+        { id: 'companyPoints', name: 'Компания Точки' },
+        { id: 'typePoints', name: 'Тип' },
+        { id: 'statusPoints', name: 'Статус' },
         { id: 'location', name: 'location' },
         { id: 'nfs', name: 'NFS' },
       ]}
@@ -53,7 +56,7 @@ const StationFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        { id: null, name: 'Без фильтра' },
+        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
@@ -95,7 +98,7 @@ export const StationsList = () => {
         </ReferenceArrayField>
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
-        <TextField source="nfs" label="ID Метки NFS" />
+        <TextField source="nfc" label="ID Метки NFC" />
         <TextField source="resultHashFun" label="Результат хэш-функции" />
         {canDelete && <DeleteButton />}
       </Datagrid>
@@ -131,7 +134,7 @@ export const StationsEdit = () => (
       <ReferenceArrayInput label="Users" source="users" reference="users">
         <AutocompleteArrayInput optionText="username" />
       </ReferenceArrayInput>
-      <TextInput source="nfs" label="ID Метки NFS" />
+      <TextInput source="nfc" label="ID Метки NFC" />
       <TextInput source="resultHashFun" label="Результат хэш-функции" />
     </SimpleForm>
   </Edit>
@@ -165,7 +168,7 @@ export const StationsCreate = () => (
       <ReferenceArrayInput label="Users" source="users" reference="users">
         <AutocompleteArrayInput optionText="username" />
       </ReferenceArrayInput>
-      <TextInput source="nfs" label="ID Метки NFS" />
+      <TextInput source="nfc" label="ID Метки NFC" />
       <TextInput source="resultHashFun" label="Результат хэш-функции" />
     </SimpleForm>
   </Create>

@@ -10,10 +10,12 @@ export const UsersTrash = () => {
   return (
     <List>
       <Datagrid isRowSelectable={() => canDelete}>
-        <TextField source="telegramId" label="ID Пользователя" />
+      <TextField source="id" label="ID Пользователя" />
+        <TextField source="telegramId" label="Telegram ID" />
         <TextField source="firstName" label="Имя" />
         <TextField source="lastName" label="Фамилия" />
         <TextField source="username" label="username" />
+        <TextField source="company" label="Компания" />
         <DateField source="createdAt" label="Дата" />
         <TextField source="id" />
         {canDelete && <RestoreButton resource="users" />}
