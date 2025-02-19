@@ -187,6 +187,7 @@ const AppContent = () => {
           </button>
           <RegisterDevice
             qrData={qrData}
+            location={location}
             apiUrl={apiUrl}
             onRegistrationSuccess={handleRegistrationSuccess}
           />

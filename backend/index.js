@@ -220,7 +220,6 @@ app.post('/api/qr/scan', async (req, res) => {
 
     // Decode base64 QR data
     const { deviceId, sessionId } = decodeQRData(qrData);
-    console.log(`Scan: ${deviceId}:${sessionId}:${userId}`);
     try {        
         const station = await Station.findOne({ deviceId, deleted: false }).populate('users');
 
@@ -262,8 +261,8 @@ app.post('/api/qr/scan', async (req, res) => {
         }
 
         // Проверяем совпадение локации
-        const { latitude: stationLat, longitude: stationLon } = station.location;
-        const { latitude, longitude } = location;
+        const [stationLat, stationLon] = station.location.split(',').map(parseFloat);
+        const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
         const maxAllowedDistance = 0.05; // 50 метров
@@ -319,7 +318,7 @@ app.post('/api/qr/scan', async (req, res) => {
 });
 
 app.post('/api/qr/add', async (req, res) => {
-    const { qrData, username, password } = req.body;
+    const { qrData, location, username, password } = req.body;
 
     // Decode base64 QR data
     const { deviceId, sessionId } = decodeQRData(qrData);
@@ -329,6 +328,7 @@ app.post('/api/qr/add', async (req, res) => {
             existingStation.username = username;
             existingStation.password = password;
             existingStation.deleted = false;
+            existingStation.location = location;
             existingStation.createdAt = new Date();
             await existingStation.save();
 
@@ -343,6 +343,7 @@ app.post('/api/qr/add', async (req, res) => {
 
         const station = new Station({
             deviceId,
+            location,
             username,
             password: password,
             createdAt: new Date()

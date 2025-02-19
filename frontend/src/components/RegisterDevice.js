@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
+const RegisterDevice = ({ qrData, location, apiUrl, onRegistrationSuccess }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [registrationError, setRegistrationError] = useState('');
@@ -14,6 +14,7 @@ const RegisterDevice = ({ qrData, apiUrl, onRegistrationSuccess }) => {
         // Build payload combining the scan data with the registration credentials.
         const payload = {
             qrData,
+            location,
             username,
             password,
         };
