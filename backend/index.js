@@ -3,8 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
 const helmet = require('helmet');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Event = require('./models/Event');
 const Station = require('./models/Station')
@@ -15,7 +13,6 @@ const LockUsers = require('./models/LockUsers')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
 const bcrypt = require('bcryptjs')
-const { v4: uuidv4 } = require('uuid'); // ✅ Генерация UUID
 
 
 const app = express();
@@ -373,6 +370,8 @@ app.post('/api/qr/add', async (req, res) => {
         if (existingStation) {
             existingStation.username = username;
             existingStation.password = password;
+            existingStation.name = name;
+            existingStation.company = companyName;
             existingStation.deleted = false;
             existingStation.updatedAt = new Date();
             await existingStation.save();
@@ -389,6 +388,8 @@ app.post('/api/qr/add', async (req, res) => {
         const station = new Station({
             deviceId,
             username,
+            name,
+            company: companyName,
             password: password,
             createdAt: new Date()
         });

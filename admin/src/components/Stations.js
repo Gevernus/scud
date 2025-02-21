@@ -38,11 +38,9 @@ const StationFilter = (props) => (
       choices={[
         // { id: null, name: 'Без фильтра' },
         { id: 'deviceId', name: 'ID станции' },
-        { id: 'username', name: 'Название' },
-        { id: 'companyPoints', name: 'Компания Точки' },
-        { id: 'typePoints', name: 'Тип' },
-        { id: 'statusPoints', name: 'Статус' },
-        { id: 'location', name: 'Геопозиция Точки' },
+        { id: 'name', name: 'Название' },
+        { id: 'company', name: 'Компания' },
+        { id: 'location', name: 'Геопозиция' },
         { id: 'nfc', name: 'NFC' },
       ]}
       alwaysOn
@@ -79,14 +77,9 @@ export const StationsList = () => {
     <List filters={<StationFilter />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="deviceId" label="ID станции" />
-        <TextField source="username" label="Название Точки геопозиции" />
-        <TextField source="companyPoints" label="Компания Точки геопозиции" />
-        <TextField source="typePoints" label="Тип (APM или Точка геопозиции)" />
-        <TextField
-          source="statusPoints"
-          label="Статус (Обслуживается, Не обслуживается, в архиве)"
-        />
-        <TextField source="location" label="Геопозиция Точки" />
+        <TextField source="name" label="Название" />
+        <TextField source="company" label="Компания" />
+        <TextField source="location" label="Геопозиция" />
         <ReferenceArrayField
           label="Разрешенные пользователи"
           source="users"
@@ -99,7 +92,6 @@ export const StationsList = () => {
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
         <TextField source="nfc" label="ID Метки NFC" />
-        <TextField source="resultHashFun" label="Результат хэш-функции" />
         {canDelete && <DeleteButton />}
       </Datagrid>
     </List>
@@ -115,8 +107,13 @@ export const StationsEdit = () => (
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput
+        source="name"
+        label="Имя станции"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput
         source="username"
-        label="Название Точки геопозиции"
+        label="Имя пользователя"
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput
@@ -124,18 +121,12 @@ export const StationsEdit = () => (
         label="Пароль"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput source="companyPoints" label="Компания Точки геопозиции" />
-      <TextInput source="typePoints" label="Тип (APM или Точка геопозиции)" />
-      <TextInput
-        source="statusPoints"
-        label="Статус (Обслуживается, Не обслуживается, в архиве)"
-      />
-      <TextInput source="location" label="Геопозиция Точки" />
+      <TextInput source="company" label="Компания" />
+      <TextInput source="location" label="Геопозиция" />
       <ReferenceArrayInput label="Users" source="users" reference="users">
         <AutocompleteArrayInput optionText="username" />
       </ReferenceArrayInput>
       <TextInput source="nfc" label="ID Метки NFC" />
-      <TextInput source="resultHashFun" label="Результат хэш-функции" />
     </SimpleForm>
   </Edit>
 );
@@ -149,8 +140,13 @@ export const StationsCreate = () => (
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput
+        source="name"
+        label="Имя станции"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput
         source="username"
-        label="Название Точки геопозиции"
+        label="Имя пользователя"
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput
@@ -158,18 +154,11 @@ export const StationsCreate = () => (
         label="Пароль"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput source="companyPoints" label="Компания Точки геопозиции" />
-      <TextInput source="typePoints" label="Тип (APM или Точка геопозиции)" />
-      <TextInput
-        source="statusPoints"
-        label="Статус (Обслуживается, Не обслуживается, в архиве)"
-      />
-      <TextInput source="location" label="Геопозиция Точки" />
+      <TextInput source="location" label="Геопозиция" />
       <ReferenceArrayInput label="Users" source="users" reference="users">
         <AutocompleteArrayInput optionText="username" />
       </ReferenceArrayInput>
       <TextInput source="nfc" label="ID Метки NFC" />
-      <TextInput source="resultHashFun" label="Результат хэш-функции" />
     </SimpleForm>
   </Create>
 );
