@@ -373,7 +373,7 @@ app.post('/api/qr/add', async (req, res) => {
             existingStation.username = username;
             existingStation.password = password;
             existingStation.deleted = false;
-            existingStation.createdAt = new Date();
+            existingStation.updatedAt = new Date();
             await existingStation.save();
 
             return res.status(200).json({
