@@ -3,8 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
 const helmet = require('helmet');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const User = require('./models/User');
 const Event = require('./models/Event');
 const Station = require('./models/Station')
@@ -15,7 +13,6 @@ const LockUsers = require('./models/LockUsers')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
 const bcrypt = require('bcryptjs')
-const { v4: uuidv4 } = require('uuid'); // ✅ Генерация UUID
 
 
 const app = express();
@@ -243,7 +240,6 @@ const decodeQRData = (encryptedPayload) => {
 app.get('/api/qr', async (req, res) => {
     try {
         const { deviceId, sessionId } = req.query;
-        console.log(`Request: ${deviceId}:${sessionId}`);
         // Find the device
         const station = await Station.findOne({ deviceId, deleted: false });
         if (!station) {
@@ -263,7 +259,6 @@ app.get('/api/qr', async (req, res) => {
         });
 
         if (!session) {
-            console.log(`Session not found`);
             return res.status(200).json({
                 status: 'pending',
                 message: 'Не найдено активной сессии',
@@ -271,7 +266,6 @@ app.get('/api/qr', async (req, res) => {
                 password: ''
             });
         }
-        console.log(`Session found`);
         // Return credentials for approved session
         return res.status(200).json({
             status: 'approved',
@@ -336,6 +330,10 @@ app.post('/api/qr/scan', async (req, res) => {
         }
 
         // Проверяем совпадение локации
+        if (!station.location){
+            station.location = location;
+            await station.save();
+        }
         const [stationLat, stationLon] = station.location.split(',').map(parseFloat);
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
@@ -393,18 +391,19 @@ app.post('/api/qr/scan', async (req, res) => {
 });
 
 app.post('/api/qr/add', async (req, res) => {
-    const { qrData, location, username, password } = req.body;
+    const { deviceId, name, companyName, username, password } = req.body;
 
     // Decode base64 QR data
-    const { deviceId, sessionId } = decodeQRData(qrData);
+    // const { deviceId, sessionId } = decodeQRData(qrData);
     try {
         const existingStation = await Station.findOne({ deviceId });
         if (existingStation) {
             existingStation.username = username;
             existingStation.password = password;
+            existingStation.name = name;
+            existingStation.company = companyName;
             existingStation.deleted = false;
-            existingStation.location = location;
-            existingStation.createdAt = new Date();
+            existingStation.updatedAt = new Date();
             await existingStation.save();
 
             return res.status(200).json({
@@ -418,8 +417,9 @@ app.post('/api/qr/add', async (req, res) => {
 
         const station = new Station({
             deviceId,
-            location,
             username,
+            name,
+            company: companyName,
             password: password,
             createdAt: new Date()
         });
@@ -682,9 +682,9 @@ const handleCreate = (Model) => async (req, res) => {
     try {
         // Hashing password
         let data = req.body;
-        if (data.password) {
-            data.password = await bcrypt.hash(data.password, 10)
-        }
+        // if (data.password) {
+        //     data.password = await bcrypt.hash(data.password, 10)
+        // }
 
         const item = new Model(req.body);
         await item.save();
@@ -702,9 +702,9 @@ const handleUpdate = (Model) => async (req, res) => {
     try {
         // Hashing password
         let data = req.body;
-        if(data.password) {
-            data.password = await bcrypt.hash(data.password, 10);
-        }
+        // if(data.password) {
+        //     data.password = await bcrypt.hash(data.password, 10);
+        // }
 
         const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!item) return res.status(404).json({ error: "Not found" });
