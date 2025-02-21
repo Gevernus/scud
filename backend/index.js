@@ -363,17 +363,16 @@ app.post('/api/qr/scan', async (req, res) => {
 });
 
 app.post('/api/qr/add', async (req, res) => {
-    const { qrData, location, username, password } = req.body;
+    const { deviceId, name, companyName, username, password } = req.body;
 
     // Decode base64 QR data
-    const { deviceId, sessionId } = decodeQRData(qrData);
+    // const { deviceId, sessionId } = decodeQRData(qrData);
     try {
         const existingStation = await Station.findOne({ deviceId });
         if (existingStation) {
             existingStation.username = username;
             existingStation.password = password;
             existingStation.deleted = false;
-            existingStation.location = location;
             existingStation.createdAt = new Date();
             await existingStation.save();
 
@@ -388,7 +387,6 @@ app.post('/api/qr/add', async (req, res) => {
 
         const station = new Station({
             deviceId,
-            location,
             username,
             password: password,
             createdAt: new Date()
