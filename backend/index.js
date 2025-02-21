@@ -651,9 +651,9 @@ const handleCreate = (Model) => async (req, res) => {
     try {
         // Hashing password
         let data = req.body;
-        if (data.password) {
-            data.password = await bcrypt.hash(data.password, 10)
-        }
+        // if (data.password) {
+        //     data.password = await bcrypt.hash(data.password, 10)
+        // }
 
         const item = new Model(req.body);
         await item.save();
@@ -671,9 +671,9 @@ const handleUpdate = (Model) => async (req, res) => {
     try {
         // Hashing password
         let data = req.body;
-        if(data.password) {
-            data.password = await bcrypt.hash(data.password, 10);
-        }
+        // if(data.password) {
+        //     data.password = await bcrypt.hash(data.password, 10);
+        // }
 
         const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!item) return res.status(404).json({ error: "Not found" });
