@@ -213,7 +213,6 @@ const decodeQRData = (encryptedPayload) => {
 app.get('/api/qr', async (req, res) => {
     try {
         const { deviceId, sessionId } = req.query;
-        console.log(`Request: ${deviceId}:${sessionId}`);
         // Find the device
         const station = await Station.findOne({ deviceId, deleted: false });
         if (!station) {
@@ -233,7 +232,6 @@ app.get('/api/qr', async (req, res) => {
         });
 
         if (!session) {
-            console.log(`Session not found`);
             return res.status(200).json({
                 status: 'pending',
                 message: 'Не найдено активной сессии',
@@ -241,7 +239,6 @@ app.get('/api/qr', async (req, res) => {
                 password: ''
             });
         }
-        console.log(`Session found`);
         // Return credentials for approved session
         return res.status(200).json({
             status: 'approved',
@@ -306,6 +303,10 @@ app.post('/api/qr/scan', async (req, res) => {
         }
 
         // Проверяем совпадение локации
+        if (!station.location){
+            station.location = location;
+            await station.save();
+        }
         const [stationLat, stationLon] = station.location.split(',').map(parseFloat);
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
