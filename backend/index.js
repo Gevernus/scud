@@ -96,7 +96,6 @@ app.post("/api/front/users", async (req, res) => {
             if (!user.deviceId || user.deviceId !== deviceId) {
                 user.deviceId = deviceId;
                 await user.save();
-
                 await registerEvent({
                     eventType: "incident",
                     description: `Id устройства пользователя ${user.username} c Id ${user._id} было изменено.`
@@ -134,8 +133,8 @@ app.post("/api/front/users", async (req, res) => {
             return res.status(200).json({ exists: false, registrationAllowed: true });
         }
 
-        // Проверяем, совпадает ли введенный пароль
         const isPasswordValid = password === registration.pass;
+
         if (!isPasswordValid) {
             await registerEvent({
                 eventType: "incident",
@@ -143,11 +142,40 @@ app.post("/api/front/users", async (req, res) => {
             });
             return res.status(400).json({ error: "Неверный пароль" });
         }
+        
+        return res.status(200).json({ exists: true });
+        
+    } catch (error) {
+        console.error("Ошибка в /api/front/users:", error);
+        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+    }
+});
 
-        // Создаем нового пользователя
-        user = new User({ telegramId, firstName, lastName, username, deviceId });
+app.post("/api/front/users/new", async (req, res) => {
+    const { telegramId, firstName, lastName, username,deviceId, middleName, phone, email, company, division, position} = req.body;
+
+    try {
+        let user = await User.findOne({ telegramId });
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(409).json({ error: `Username пользователя "${username}" уже занято` });
+        }
+
+        user = new User({ 
+            telegramId,
+            firstName,
+            lastName,
+            middleName,
+            username,
+            phone,
+            email,
+            company,
+            division,
+            position,
+            deviceId, 
+        });
+
         await user.save();
-
         return res.status(201).json({ exists: true, user });
 
     } catch (error) {
@@ -155,6 +183,8 @@ app.post("/api/front/users", async (req, res) => {
         res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
 });
+
+
 
 //Проверка пользователя в админки
 app.post("/api/admin/auth/check", async (req, res) => {
