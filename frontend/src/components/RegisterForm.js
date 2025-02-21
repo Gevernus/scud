@@ -17,7 +17,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
 
     const handleRegister = async () => {
         if (isBlocked) {
-            setError("Слишком много попыток. Подождите 30 секунд.");
+            setError("Слишком много попыток вы заблокированы.");
             return;
         }
 
@@ -46,52 +46,43 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         } catch (error) {
             setError(error.message);
             setWrongAttempts((prev) => prev + 1); 
-            if (wrongAttempts + 1 == 3) {
-                logHackAttempts(tempUser);
-            }
 
-            if (wrongAttempts + 1 >= 5) {
-                logFailedAttempts(tempUser); 
+            if (wrongAttempts + 1 >= 3) {
+                // logFailedAttempts(tempUser); 
+                lockUsers(tempUser); 
                 setIsBlocked(true); 
-
-                setTimeout(() => {
-                    setIsBlocked(false);
-                    setWrongAttempts(0);
-                    setError(null);
-                }, 30000);
+                setWrongAttempts(0);
+                setError(null);
             }
         }
-    };
-
-    // Invalid attempt logging function
-    const logFailedAttempts = async (user) => {
-        try {
-            await fetch(`${apiUrl}/front/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    eventType: "incident",
-                    description: `Пользователь ${user.first_name} (${user.username}) с телеграмм ID ${user.id} был заблокирован.`,
-                }),
-            });
-            console.log("✅ Логирование успешно отправлено.");
-        } catch (error) {
-            console.error("❌ Ошибка логирования:", error);
+        finally {
+            setPassword("");
         }
     };
-    const logHackAttempts = async (user) => {
+
+    // User blocking
+    const lockUsers = async (user) => {
         try {
-            await fetch(`${apiUrl}/front/events`, {
+            const response = await fetch(`${apiUrl}/front/users/lock`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    eventType: "incident",
-                    description: `Пользователь ${user.first_name} (${user.username}) с телеграмм ID ${user.id} пытался взломать.`,
+                    telegramId: user.id,
+                    firstName: user.first_name,
+                    lastName: user.last_name,
+                    username: user.username,
                 }),
             });
-            console.log("✅ Логирование успешно отправлено.");
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.error || "Ошибка логирования попытки.");
+            }
+    
+            console.log("✅ Логирование неудачной попытки отправлено на сервер.");
         } catch (error) {
-            console.error("❌ Ошибка логирования:", error);
+            console.error("❌ Ошибка логирования неудачной попытки:", error);
         }
     };
 
@@ -102,16 +93,17 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isBlocked} // ✅ Блокировка ввода после 5 ошибок
+                disabled={isBlocked} // Input blocking after 5 errors
                 className="mt-4 p-2 border border-gray-600 rounded-md text-black"
             />
-            {error && <p className="text-red-500 mt-2">{error}</p>}
+            {error && password === "" && <p className="text-red-500 mt-2">{error}</p>}
+            {isBlocked && <p className="text-red-500 mt-2">Превышенно количество попыток ввода!</p>}
             <button
                 onClick={handleRegister}
-                disabled={isBlocked} // ✅ Блокировка кнопки
+                disabled={isBlocked} 
                 className={`mt-4 px-4 py-2 rounded-md ${isBlocked ? "bg-gray-600" : "bg-blue-500"}`}
             >
-                {isBlocked ? "Заблокировано (30 сек.)" : "Зарегистрироваться"}
+                {isBlocked ? "Заблокировано" : "Зарегистрироваться"}
             </button>
         </div>
     );

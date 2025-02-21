@@ -37,7 +37,7 @@ const AppContent = () => {
   if (accessDenied) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-red-700 text-white p-4 rounded-lg">
-        <h2 className="text-2xl font-semibold">Доступ запрещен</h2>
+        <h2 className="text-2xl font-semibold">Отказано в доступе</h2>
       </div>
     );
   }

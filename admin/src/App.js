@@ -7,6 +7,7 @@ import { EventList } from "./components/Events";
 import {StationsList, StationsEdit, StationsCreate } from "./components/Stations";
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate } from "./components/Counterparts";
 import { RegistrationList, RegistrationEdit } from "./components/Registration";
+import { LockUsersList } from "./components/LockUsers";
 
 import { UsersTrash } from "./components/trash/UsersTrash";
 import { EventsTrash } from "./components/trash/EventsTrash";
@@ -78,12 +79,19 @@ const AdminWrapper = () => {
           options={{ label: "Контрагенты" }}
         />
       )}
-      {canViewCounterparty && (
+      {canViewRegistration && (
         <Resource
           name="registration"
           list={RegistrationList}
           edit={checkPermission(PERMISSIONS_MODULES["Регистрация"].edit) ? RegistrationEdit : null}
           options={{ label: "Регистрация" }}
+        />
+      )}
+      {canViewRegistration && (
+        <Resource
+          name="lockUsers"
+          list={LockUsersList}
+          options={{ label: "Заблокированные пользователи" }}
         />
       )}
       {canViewEvents && (

@@ -11,7 +11,7 @@ import {
 import { Link } from 'react-router-dom';
 import { FaTrashCan, FaUsers, FaUserPlus } from 'react-icons/fa6';
 import { MdOutlineEventNote, MdExpandLess, MdExpandMore } from 'react-icons/md';
-import { FaServer, FaHome } from 'react-icons/fa';
+import { FaServer, FaHome, FaUsersSlash } from 'react-icons/fa';
 import { GiTeamIdea } from 'react-icons/gi';
 
 const CustomMenu = ({ open }) => {
@@ -70,6 +70,15 @@ const CustomMenu = ({ open }) => {
             <FaUserPlus />
           </ListItemIcon>
           <ListItemText primary="Регистрация" />
+        </ListItemButton>
+      </Tooltip>
+      
+      <Tooltip title="Заблокированные пользователи" placement="right" disableHoverListener={open}>
+        <ListItemButton component={Link} to="/lockUsers">
+          <ListItemIcon>
+            <FaUsersSlash />
+          </ListItemIcon>
+          <ListItemText primary="Заблокированные пользователи" />
         </ListItemButton>
       </Tooltip>
 

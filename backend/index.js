@@ -11,6 +11,7 @@ const Station = require('./models/Station')
 const Session = require('./models/Session')
 const Counterparty = require('./models/Counterparty')
 const Registration = require('./models/Registration')
+const LockUsers = require('./models/LockUsers')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
 const bcrypt = require('bcryptjs')
@@ -40,6 +41,41 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
+app.post("/api/front/users/lock", async (req, res) => {
+    const { telegramId, firstName, lastName, username } = req.body;
+
+    try {
+        // Проверяем, уже ли пользователь заблокирован
+        const existingUser = await LockUsers.findOne({ telegramId });
+        console.log(existingUser)
+        if (existingUser) {
+            return res.status(403).json({ error: "Пользователь уже заблокирован." });
+        }
+
+        // Создаем нового заблокированного пользователя
+        const blockedUser = new LockUsers({
+            telegramId,
+            firstName,
+            lastName,
+            username,
+        });
+
+        await blockedUser.save();
+        // Логируем 
+        await registerEvent({
+            eventType: "incident",
+            description: `Пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
+        });
+
+        console.log(`🚨 Пользователь ${username} (${telegramId}) был заблокирован.`);
+
+        return res.status(200).json({ message: "Вы заблокированы после 3 неудачных попыток." });
+
+    } catch (error) {
+        console.error("❌ Ошибка при блокировке пользователя:", error);
+        return res.status(500).json({ error: "Ошибка сервера при обработке блокировки." });
+    }
+});
 
 app.post("/api/front/users", async (req, res) => {
     const { telegramId, firstName, lastName, username, password, deviceId } = req.body;
@@ -49,6 +85,11 @@ app.post("/api/front/users", async (req, res) => {
         const userCount = await User.countDocuments();
         let user = await User.findOne({ telegramId });
         const registration = await Registration.findOne();
+        const lockedUser = await LockUsers.findOne({ telegramId });
+        
+        if (lockedUser) {
+            return res.status(200).json({ isBlocked: true });
+        }
 
         // Если пользователь уже есть, возвращаем его
         if (user) {
@@ -96,6 +137,10 @@ app.post("/api/front/users", async (req, res) => {
         // Проверяем, совпадает ли введенный пароль
         const isPasswordValid = password === registration.pass;
         if (!isPasswordValid) {
+            await registerEvent({
+                eventType: "incident",
+                description: `Неудачная попытка входа: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId})`
+            });
             return res.status(400).json({ error: "Неверный пароль" });
         }
 
@@ -757,6 +802,10 @@ app.put("/api/admin/registration/:id",
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].edit), 
     handleUpdate(Registration));
 
+app.get("/api/admin/lockUsers", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].view), 
+    handleAdminRoute(LockUsers, "lockUsers"));
+
 // Эндпоинты для работы с корзиной (только удалённые объекты)
 app.get("/api/admin/UsersTrash", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
@@ -798,5 +847,8 @@ app.delete("/api/admin/stationsTrash/:id",
 app.delete("/api/admin/counterpartyTrash/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
     handlePermanentDelete(Counterparty));
+app.delete("/api/admin/lockUsers/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].edit), 
+    handlePermanentDelete(LockUsers));
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

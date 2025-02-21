@@ -71,6 +71,11 @@ export const UserProvider = ({ children }) => {
 
                 const userData = await userResponse.json();
 
+                if (userData.isBlocked) {
+                    setAccessDenied(true);
+                    return;
+                }
+
                 if (userData.exists) {
                     setUser(userData.user);
                 } else if (userData.registrationAllowed) {
