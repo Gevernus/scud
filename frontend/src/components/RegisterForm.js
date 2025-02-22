@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useUser } from '../context/UserContext';
 
 const RegisterForm = ({ apiUrl, onSuccess }) => {
-    const { registrationAllowed, tempUser, deviceId } = useUser();
+    const { registrationAllowed, verification, tempUser, deviceId } = useUser();
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [wrongAttempts, setWrongAttempts] = useState(0); //  Tracking invalid attempts
@@ -30,6 +30,8 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         return <div className="text-white">Ошибка: данные Telegram не найдены.</div>;
     }
 
+    
+
     const handlePasswordCheck = async () => {
         if (isBlocked) {
             setError("Слишком много попыток вы заблокированы.");
@@ -42,6 +44,9 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     telegramId: tempUser.id,
+                    firstName: tempUser.first_name,
+                    lastName: tempUser.last_name,
+                    username: tempUser.username,
                     password,                
                 }),
             });
@@ -50,6 +55,10 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
 
             if (!response.ok) {
                 throw new Error(data.error || "Неверный пароль");
+            }
+
+            if(verification) {
+                verificationUser(tempUser);
             }
 
             setIsPasswordCorrect(true); // If the password is correct, show the form
@@ -95,6 +104,30 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
             console.error("❌ Ошибка логирования неудачной попытки:", error);
         }
     };
+    // User verification
+    const verificationUser = async (user) => {
+        try {
+            const response = await fetch(`${apiUrl}/front/users/verification`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    telegramId: user.id,
+                    deviceId: deviceId,
+                }),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.error || "Ошибка верификации.");
+            }
+
+            onSuccess();
+    
+        } catch (error) {
+            console.error("❌ Ошибка верификации:", error);
+        }
+    };
 
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -125,6 +158,32 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
             setError(error.message);
         }
     };
+
+    if (verification) {
+        return <>
+        <div className="flex flex-col items-center justify-center min-h-screen  gap-4 bg-gray-900 text-white p-4">
+        
+            <h2 className="text-xl text-center font-semibold">введите PIN для верификации и перезаписи ID устройства</h2>           
+            <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isBlocked} // Input blocking after 3 errors
+                className="mt-4 p-2 border border-gray-600 rounded-md text-black"
+            />
+            
+            {error && password === "" && !isPasswordCorrect && <p className="text-red-500 mt-2">{error}</p>}
+            {isBlocked && <p className="text-red-500 mt-2">Превышенно количество попыток ввода!</p>}
+            <button
+                onClick={handlePasswordCheck}
+                disabled={isBlocked} 
+                className={`mt-4 px-4 py-2 rounded-md ${isBlocked ? "bg-gray-600" :(isPasswordCorrect ? "bg-green-500" : "bg-blue-500")}`}
+            >
+                {isBlocked ? "Заблокировано" :(isPasswordCorrect ? "PIN верный" : "Проверить PIN")}
+            </button>
+        </div>
+        </>
+    }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen  gap-4 bg-gray-900 text-white p-4">

@@ -21,6 +21,7 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [accessDenied, setAccessDenied] = useState(false);
     const [registrationAllowed, setRegistrationAllowed] = useState(false);
+    const [verification, setVerification] = useState(false);
     const [tempUser, setTempUser] = useState(null); // Temporary user
     const [error, setError] = useState(null);
     const [deviceId, setDeviceId] = useState(null);
@@ -76,11 +77,15 @@ export const UserProvider = ({ children }) => {
                     return;
                 }
 
-                if (userData.exists) {
+                if (userData.exists) {//We go to the application
                     setUser(userData.user);
-                } else if (userData.registrationAllowed) {
+                } else if (userData.registrationAllowed) {//We go into register
                     setTempUser(tgUser); // Saving temporary data
                     setRegistrationAllowed(true);
+                } else if (userData.verification) {//We go into verification
+                    setVerification(true);
+                    setRegistrationAllowed(true);
+                    setTempUser(tgUser); // Saving temporary data
                 } else {
                     console.warn(" Пользователь не найден в базе. Доступ запрещен.");
                     setAccessDenied(true);
@@ -107,7 +112,7 @@ export const UserProvider = ({ children }) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, loading, accessDenied, registrationAllowed, tempUser, deviceId }}>
+        <UserContext.Provider value={{ user, setUser, loading, accessDenied, registrationAllowed, verification, tempUser, deviceId }}>
             {children}
         </UserContext.Provider>
     );

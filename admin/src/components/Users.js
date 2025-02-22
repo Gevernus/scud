@@ -15,6 +15,8 @@ import {
   DateInput,
   Show,
   SimpleShowLayout,
+  BooleanField,
+  BooleanInput,
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
@@ -95,9 +97,10 @@ export const UserList = () => {
         <TextField source="position" label="Должность" />
         <TextField source="deviceId" label="ID Мобильного приложения" />
         <TextField source="nfcId" label="ID NFC метки" />
+        <BooleanField source="unsafe" label="Подозрительный" />
+        <PermissionsField source="permissions" label="Разрешения" />
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
-        <PermissionsField source="permissions" label="Разрешения" />
       </Datagrid>
     </List>
   );
@@ -125,6 +128,7 @@ export const UserEdit = () => (
       <TextInput source="position" label="Должность" />
       <TextInput source="deviceId" label="ID Мобильного приложения" />
       <TextInput source="nfcId" label="ID NFC метки" />
+      {/* <BooleanInput source="unsafe" label="Подозрительный" /> */}
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Edit>

@@ -131,6 +131,9 @@ const AppContent = () => {
               setQrData(qrData);
               setShowRegistration(true);
               WebApp.showAlert('Рабочая станция не зарегистрирована');
+            } else if (result.status === 'location_mismatch') {
+              WebApp.showAlert('Локация не совпадает.');
+              WebApp.closeScanQrPopup();
             } else {
               WebApp.showAlert('Неожиданный ответ от сервера');
             }

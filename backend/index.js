@@ -38,42 +38,6 @@ mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error(err));
 
-app.post("/api/front/users/lock", async (req, res) => {
-    const { telegramId, firstName, lastName, username } = req.body;
-
-    try {
-        // Проверяем, уже ли пользователь заблокирован
-        const existingUser = await LockUsers.findOne({ telegramId });
-        console.log(existingUser)
-        if (existingUser) {
-            return res.status(403).json({ error: "Пользователь уже заблокирован." });
-        }
-
-        // Создаем нового заблокированного пользователя
-        const blockedUser = new LockUsers({
-            telegramId,
-            firstName,
-            lastName,
-            username,
-        });
-
-        await blockedUser.save();
-        // Логируем 
-        await registerEvent({
-            eventType: "incident",
-            description: `Пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
-        });
-
-        console.log(`🚨 Пользователь ${username} (${telegramId}) был заблокирован.`);
-
-        return res.status(200).json({ message: "Вы заблокированы после 3 неудачных попыток." });
-
-    } catch (error) {
-        console.error("❌ Ошибка при блокировке пользователя:", error);
-        return res.status(500).json({ error: "Ошибка сервера при обработке блокировки." });
-    }
-});
-
 app.post("/api/front/users", async (req, res) => {
     const { telegramId, firstName, lastName, username, password, deviceId } = req.body;
 
@@ -91,13 +55,32 @@ app.post("/api/front/users", async (req, res) => {
         // Если пользователь уже есть, возвращаем его
         if (user) {
             if (!user.deviceId || user.deviceId !== deviceId) {
-                user.deviceId = deviceId;
+                user.unsafe = true;               
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Id устройства пользователя ${user.username} c Id ${user._id} было изменено.`
+                    description: `Id устройства пользователя ${user.username} c Id ${user._id} не совпадает.`
                 });
             }
+             // Если пользователь подозрительный
+            if ( user.unsafe && !registration.status ) {
+                return res.status(200).json({ isBlocked: true });
+            }
+            // Если регистрация разрешена запрашиваем пароль
+            if (user.unsafe && !password) {
+                return res.status(200).json({exists: false, user, verification: true });
+            }
+            
+            const isPasswordValid = password === registration.pass;
+
+            if (password && !isPasswordValid) {
+                await registerEvent({
+                    eventType: "incident",
+                    description: `Неудачная попытка входа: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId})`
+                });
+                return res.status(400).json({ error: "Неверный PIN" });
+            }
+
             return res.status(200).json({ exists: true, user });
         }
 
@@ -146,6 +129,42 @@ app.post("/api/front/users", async (req, res) => {
         console.error("Ошибка в /api/front/users:", error);
         res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
+});    
+
+app.post("/api/front/users/lock", async (req, res) => {
+    const { telegramId, firstName, lastName, username } = req.body;
+
+    try {
+        // Проверяем, уже ли пользователь заблокирован
+        const existingUser = await LockUsers.findOne({ telegramId });
+        console.log(existingUser)
+        if (existingUser) {
+            return res.status(403).json({ error: "Пользователь уже заблокирован." });
+        }
+
+        // Создаем нового заблокированного пользователя
+        const blockedUser = new LockUsers({
+            telegramId,
+            firstName,
+            lastName,
+            username,
+        });
+
+        await blockedUser.save();
+        // Логируем 
+        await registerEvent({
+            eventType: "incident",
+            description: `Пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
+        });
+
+        console.log(`🚨 Пользователь ${username} (${telegramId}) был заблокирован.`);
+
+        return res.status(200).json({ message: "Вы заблокированы после 3 неудачных попыток." });
+
+    } catch (error) {
+        console.error("❌ Ошибка при блокировке пользователя:", error);
+        return res.status(500).json({ error: "Ошибка сервера при обработке блокировки." });
+    }
 });
 
 app.post("/api/front/users/new", async (req, res) => {
@@ -181,7 +200,31 @@ app.post("/api/front/users/new", async (req, res) => {
     }
 });
 
+app.post("/api/front/users/verification", async (req, res) => {
+    const { telegramId, deviceId} = req.body;
 
+    try {
+        let user = await User.findOne({ telegramId });
+        
+        // Если пользователь уже есть, возвращаем его
+        if (user) {          
+                user.deviceId = deviceId;
+                user.unsafe = false;               
+                await user.save();
+                await registerEvent({
+                    eventType: "incident",
+                    description: `Id устройства пользователя ${user.username} c Id ${user._id} было изменено.`
+                });
+            return res.status(200).json({ exists: true, user });
+        }
+    
+        return res.status(201).json({ exists: true, user });
+
+    } catch (error) {
+        console.error("Ошибка в /api/front/users:", error);
+        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+    }
+});
 
 //Проверка пользователя в админки
 app.post("/api/admin/auth/check", async (req, res) => {
@@ -331,7 +374,7 @@ app.post('/api/qr/scan', async (req, res) => {
 
         // Проверяем совпадение локации
         if (!station.location){
-            station.location = location;
+            station.location = location;//Наверо это должно быть только в Add
             await station.save();
         }
         const [stationLat, stationLon] = station.location.split(',').map(parseFloat);
@@ -405,6 +448,11 @@ app.post('/api/qr/add', async (req, res) => {
             existingStation.deleted = false;
             existingStation.updatedAt = new Date();
             await existingStation.save();
+
+            await registerEvent({
+                eventType: "registration",
+                description: `Успешно зарегистрирована станция ${deviceId}.`
+            });
 
             return res.status(200).json({
                 status: 'success',
@@ -524,24 +572,33 @@ const logPermanentDeletion = async (Model, item) => {
     let description = "";
     switch (Model.modelName) {
         case "User": {
+            eventType = "full_delete",
             description = `Пользователь ${item.firstName || "Неизвестно"} ${item.lastName || ""} (Telegram ID: ${item.telegramId}) был полностью удален.`;
             break;
         }
         case "Station": {
+            eventType = "full_delete",
             description = `Станция ${item.name || "Неизвестно"} (IP: ${item.ip || "Неизвестно"}) была полностью удалена.`;
             break;
         }
         case "Counterparty": {
+            eventType = "full_delete",
             description = `Контрагент ${item.fullName || "Неизвестно"} (Id: ${item.counterpartyId || "Неизвестно"}) был полностью удален.`;
             break;
         }
+        case "LockUsers": {
+            eventType = "incident",
+            description = `Пользователь ${item.username || "Неизвестно"} (Id: ${item.telegramId || "Неизвестно"}) был разблокирован.`;
+            break;
+        }
         default:
+            eventType = "full_delete",
             description = `Неизвестный объект типа ${Model.modelName} был полностью удален.`;
             break;
     }
 
     await registerEvent({
-        eventType: "full_delete",
+        eventType,
         description
     });
 };

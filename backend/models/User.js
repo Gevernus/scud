@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
     permissions: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
+    unsafe: { type: Boolean, default: false },  // unsafe flag
     deleted: { type: Boolean, default: false }  // Deletion flag
 })
 
