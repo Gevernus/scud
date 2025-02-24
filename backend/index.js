@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require("cors");
-const helmet = require('helmet');
 const User = require('./models/User');
 const Event = require('./models/Event');
 const Station = require('./models/Station')
@@ -12,7 +11,6 @@ const Registration = require('./models/Registration')
 const LockUsers = require('./models/LockUsers')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
-const bcrypt = require('bcryptjs')
 
 
 const app = express();
@@ -461,7 +459,7 @@ app.post('/api/qr/add', async (req, res) => {
         }
 
         //Additional check: is the password encrypted
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // const hashedPassword = await bcrypt.hash(password, 10);
 
         const station = new Station({
             deviceId,
