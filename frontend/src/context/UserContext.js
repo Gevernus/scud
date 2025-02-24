@@ -45,6 +45,10 @@ export const UserProvider = ({ children }) => {
                 const storedDeviceId = getDeviceId();
                 setDeviceId(storedDeviceId);
 
+                if (!tgUser.username){
+                    tgUser.username = tgUser.id;
+                }
+
                 console.log('Trying to get user');
                 const userResponse = await fetch(`${apiUrl}/front/users`, {
                     method: 'POST',
