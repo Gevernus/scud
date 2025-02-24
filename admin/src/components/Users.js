@@ -15,12 +15,14 @@ import {
   DateInput,
   Show,
   SimpleShowLayout,
-  BooleanField,
-  BooleanInput,
+  BooleanField, 
+  ArrayInput,
+  SimpleFormIterator,
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
 import PermissionsField from './UI/PermissionsField';
+import DeviceIdField from './UI/DeviceIdField';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
 
@@ -48,7 +50,6 @@ const UserFilter = (props) => (
         { id: 'company', name: 'Компания' },
         { id: 'division', name: 'Подразделение' },
         { id: 'position', name: 'Должность' },
-        { id: 'deviceId', name: 'ID приложения' },
         { id: 'nfcId', name: 'ID NFC' },
       ]}
       alwaysOn
@@ -95,7 +96,7 @@ export const UserList = () => {
         <TextField source="company" label="Компания" />
         <TextField source="division" label="Подразделение" />
         <TextField source="position" label="Должность" />
-        <TextField source="deviceId" label="ID Мобильного приложения" />
+        <DeviceIdField source="deviceId" label="ID устройств" />     
         <TextField source="nfcId" label="ID NFC метки" />
         <BooleanField source="unsafe" label="Подозрительный" />
         <PermissionsField source="permissions" label="Разрешения" />
@@ -126,8 +127,12 @@ export const UserEdit = () => (
       <TextInput source="company" label="Компания" />
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
-      <TextInput source="deviceId" label="ID Мобильного приложения" />
       <TextInput source="nfcId" label="ID NFC метки" />
+      <ArrayInput source="deviceId" label="ID устройств">
+        <SimpleFormIterator>
+          <TextInput source="" label="Устройство" />
+        </SimpleFormIterator>
+      </ArrayInput>
       {/* <BooleanInput source="unsafe" label="Подозрительный" /> */}
       <PermissionsInput source="permissions" />
     </SimpleForm>
@@ -154,7 +159,6 @@ export const UserCreate = () => (
       <TextInput source="company" label="Компания" />
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
-      <TextInput source="deviceId" label="ID Мобильного приложения" />
       <TextInput source="nfcId" label="ID NFC метки" />
       <PermissionsInput source="permissions" />
     </SimpleForm>

@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
     company: { type: String },
     division: { type: String },
     position: { type: String },
-    deviceId: { type: String },
+    deviceId: [{ type: String }],
     nfcId: { type: String },
     permissions: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },

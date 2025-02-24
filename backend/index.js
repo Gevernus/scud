@@ -52,8 +52,8 @@ app.post("/api/front/users", async (req, res) => {
 
         // Если пользователь уже есть, возвращаем его
         if (user) {
-            if (!user.deviceId || user.deviceId !== deviceId) {
-                user.unsafe = true;               
+            if (!user.deviceId.includes(deviceId)) {                
+                user.unsafe = true;
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
@@ -206,12 +206,12 @@ app.post("/api/front/users/verification", async (req, res) => {
         
         // Если пользователь уже есть, возвращаем его
         if (user) {          
-                user.deviceId = deviceId;
+                user.deviceId.push(deviceId);
                 user.unsafe = false;               
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Id устройства пользователя ${user.username} c Id ${user._id} было изменено.`
+                    description: `Добавлено новое устройство для пользователя ${user.username} c (ID: ${user._id}).`
                 });
             return res.status(200).json({ exists: true, user });
         }
