@@ -18,6 +18,11 @@ import {
   BooleanField, 
   ArrayInput,
   SimpleFormIterator,
+  ReferenceArrayInput,
+  AutocompleteArrayInput,
+  ReferenceArrayField,
+  SingleFieldList,
+  ChipField
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
@@ -47,7 +52,6 @@ const UserFilter = (props) => (
         { id: 'username', name: 'Username' },
         { id: 'phone', name: 'Телефон' },
         { id: 'email', name: 'E-mail' },
-        { id: 'company', name: 'Компания' },
         { id: 'division', name: 'Подразделение' },
         { id: 'position', name: 'Должность' },
         { id: 'nfcId', name: 'ID NFC' },
@@ -93,7 +97,15 @@ export const UserList = () => {
         <TextField source="username" label="username" />
         <TextField source="phone" label="Телефон" />
         <EmailField source="email" label="E-mail" />
-        <TextField source="company" label="Компания" />
+        <ReferenceArrayField
+          label="Компания"
+          source="company"
+          reference="counterparts"
+        >
+          <SingleFieldList linkType="show">
+            <ChipField source="fullName" />
+          </SingleFieldList>
+        </ReferenceArrayField>
         <TextField source="division" label="Подразделение" />
         <TextField source="position" label="Должность" />
         <DeviceIdField source="deviceId" label="ID устройств" />     
@@ -124,7 +136,9 @@ export const UserEdit = () => (
       />
       <TextInput source="phone" label="Телефон" />
       <TextInput source="email" label="E-mail" />
-      <TextInput source="company" label="Компания" />
+      <ReferenceArrayInput label="Компания" source="company" reference="counterparts">
+        <AutocompleteArrayInput optionText="fullName" />
+      </ReferenceArrayInput>
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
       <TextInput source="nfcId" label="ID NFC метки" />
@@ -156,7 +170,9 @@ export const UserCreate = () => (
       />
       <TextInput source="phone" label="Телефон" />
       <TextInput source="email" label="E-mail" />
-      <TextInput source="company" label="Компания" />
+      <ReferenceArrayInput label="Компания" source="company" reference="counterparts">
+        <AutocompleteArrayInput optionText="fullName" />
+      </ReferenceArrayInput>
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
       <TextInput source="nfcId" label="ID NFC метки" />

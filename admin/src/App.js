@@ -5,7 +5,7 @@ import { Dashboard } from "./components/Dashboard";
 import { UserList, UserEdit, UserCreate, UserShow } from "./components/Users";
 import { EventList } from "./components/Events";
 import {StationsList, StationsEdit, StationsCreate } from "./components/Stations";
-import { CounterpartyList, CounterpartyEdit, CounterpartyCreate } from "./components/Counterparts";
+import { CounterpartyList, CounterpartyEdit, CounterpartyCreate, CounterpartyShow } from "./components/Counterparts";
 import { RegistrationList, RegistrationEdit } from "./components/Registration";
 import { LockUsersList } from "./components/LockUsers";
 
@@ -76,6 +76,7 @@ const AdminWrapper = () => {
           list={CounterpartyList}
           edit={checkPermission(PERMISSIONS_MODULES["Контрагенты"].edit) ? CounterpartyEdit : null}
           create={checkPermission(PERMISSIONS_MODULES["Контрагенты"].create) ? CounterpartyCreate : null}
+          show={CounterpartyShow}
           options={{ label: "Контрагенты" }}
         />
       )}

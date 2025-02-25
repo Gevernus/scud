@@ -14,6 +14,8 @@ import {
   Filter,
   SelectInput,
   DateInput,
+  Show,
+  SimpleShowLayout
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
@@ -139,4 +141,20 @@ export const CounterpartyCreate = () => (
       />
     </SimpleForm>
   </Create>
+);
+
+
+export const CounterpartyShow = () => (
+  <Show>
+    <SimpleShowLayout>
+    <TextField source="id" label="ID Контрагента" />
+        <TextField source="fullName" label="Полное название" />
+        <TextField source="shortName" label="Краткое название" />
+        <TextField source="inn" label="ИНН" />
+        <TextField source="phone" label="Телефон" />
+        <EmailField source="email" label="E-mail" />
+        <TextField source="description" label="Описание" />
+        <TextField source="createdBy" label="Создатель записи" />
+    </SimpleShowLayout>
+  </Show>
 );
