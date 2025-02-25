@@ -61,7 +61,7 @@ services:
   admin:
     build:
       context: ./admin
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: scud-admin
     ports:
       - "4000:4000"
