@@ -352,9 +352,15 @@ app.post('/api/qr/scan', async (req, res) => {
             });
         }
 
-        // Проверяем, есть ли этот пользователь в списке users станции
-        const isUserAllowed = station.users.some(stationUser => stationUser._id.equals(user._id));
+        // Проверяем, есть ли этот пользователь в списке attemptedUsers станции
+        const alreadyAttempted = station.attemptedUsers.some(attempt => attempt.equals(user._id));
+        if (!alreadyAttempted) {
+            station.attemptedUsers.push(user._id);
+            await station.save();
+        }
 
+        // Проверяем, есть ли этот пользователь в списке разрешённых пользователей
+        const isUserAllowed = station.users.some(stationUser => stationUser._id.equals(user._id));
         if (!isUserAllowed) {
             console.log(`User ${userId} is not allowed to access station ${deviceId}`);
 
@@ -760,6 +766,23 @@ const handleUpdate = (Model) => async (req, res) => {
         // if(data.password) {
         //     data.password = await bcrypt.hash(data.password, 10);
         // }
+
+        // Если обновляется станция и в теле переданы разрешённые пользователи...
+        if (Model.modelName === 'Station' && data.users) {
+            // Получаем существующую станцию
+            const existingStation = await Model.findById(req.params.id);
+            if (existingStation) {
+                // Преобразуем разрешённые пользователей в массив строк (если они могут быть объектами или ID)
+                const allowedUserIds = data.users.map(u => 
+                typeof u === 'object' ? u.id : u.toString()
+                );
+                // Отфильтровываем attemptedUsers, исключая те, что есть в allowedUserIds
+                const filteredAttempted = existingStation.attemptedUsers.filter(userId =>
+                    !allowedUserIds.includes(userId.toString())
+                );
+                data.attemptedUsers = filteredAttempted;
+            }
+        }
 
         const item = await Model.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!item) return res.status(404).json({ error: "Not found" });

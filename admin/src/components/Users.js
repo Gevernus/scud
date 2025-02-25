@@ -192,7 +192,15 @@ export const UserShow = () => (
       <TextField source="username" label="username" />
       <TextField source="phone" label="Телефон" />
       <EmailField source="email" label="E-mail" />
-      <TextField source="company" label="Компания" />
+      <ReferenceArrayField
+          label="Компания"
+          source="company"
+          reference="counterparts"
+        >
+          <SingleFieldList linkType="show">
+            <ChipField source="fullName" />
+          </SingleFieldList>
+        </ReferenceArrayField>
       <TextField source="division" label="Подразделение" />
       <TextField source="position" label="Должность" />
     </SimpleShowLayout>

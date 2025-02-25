@@ -16,12 +16,11 @@ import {
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
-  ReferenceArrayInput,
-  AutocompleteArrayInput,
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
+import AttemptedUsersInput from './UI/AttemptedUsersInput';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -88,7 +87,7 @@ export const StationsList = () => {
           <SingleFieldList linkType="show">
             <ChipField source="username" />
           </SingleFieldList>
-        </ReferenceArrayField>
+        </ReferenceArrayField>       
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
         <TextField source="nfc" label="ID Метки NFC" />
@@ -123,9 +122,7 @@ export const StationsEdit = () => (
       />
       <TextInput source="company" label="Компания" />
       <TextInput source="location" label="Геопозиция" />
-      <ReferenceArrayInput label="Users" source="users" reference="users">
-        <AutocompleteArrayInput optionText="username" />
-      </ReferenceArrayInput>
+      <AttemptedUsersInput label="Выберите разрешённых пользователей" source="users" />
       <TextInput source="nfc" label="ID Метки NFC" />
     </SimpleForm>
   </Edit>
@@ -155,9 +152,6 @@ export const StationsCreate = () => (
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput source="location" label="Геопозиция" />
-      <ReferenceArrayInput label="Users" source="users" reference="users">
-        <AutocompleteArrayInput optionText="username" />
-      </ReferenceArrayInput>
       <TextInput source="nfc" label="ID Метки NFC" />
     </SimpleForm>
   </Create>

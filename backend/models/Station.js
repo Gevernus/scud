@@ -9,6 +9,7 @@ const stationSchema = new mongoose.Schema({
     name: { type: String },
     password: { type: String },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    attemptedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     deleted: { type: Boolean, default: false }  // Флаг мягкого удаления
