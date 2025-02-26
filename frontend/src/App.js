@@ -12,6 +12,7 @@ const AppContent = () => {
   const [location, setLocation] = useState(null);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [showNfc, setShowNfc] = useState(false);
   // We store the scanned data in case the device needs registration.
   const [qrData, setQrData] = useState(null);
   const { user, loading, accessDenied, registrationAllowed } = useUser();
@@ -36,8 +37,14 @@ const AppContent = () => {
 
   if (accessDenied) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-red-700 text-white p-4 rounded-lg">
+      <div className="flex flex-col justify-center items-center min-h-screen bg-red-700 text-white p-4 rounded-lg">
         <h2 className="text-2xl font-semibold">Отказано в доступе</h2>
+        <button
+          onClick={() => alert("Функционал в процессе разработки")}
+          className="w-full max-w-md bg-blue-500 py-2 mt-5 rounded-md hover:bg-blue-600 transition-colors"
+        >
+          Техподдержка
+        </button>
       </div>
     );
   }
@@ -134,6 +141,7 @@ const AppContent = () => {
             } else if (result.status === 'location_mismatch') {
               WebApp.showAlert('Локация не совпадает.');
               WebApp.closeScanQrPopup();
+              setShowNfc(true);
             } else {
               WebApp.showAlert('Неожиданный ответ от сервера');
             }
@@ -204,6 +212,7 @@ const AppContent = () => {
         </div>
       ) : (
         <div className="button-container">
+          {!showNfc ? (
           <button className="action-button qr-button" onClick={scanQR}>
             <svg className="icon" viewBox="0 0 24 24">
               <path
@@ -213,7 +222,18 @@ const AppContent = () => {
             </svg>
             <span>Сканирование QR</span>
           </button>
-
+          ) : (
+          <button className="action-button qr-button" onClick={() => alert("Функционал в процессе разработки")}>
+            <svg className="icon" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M20.5,2h-17C2.67,2,2,2.67,2,3.5v17C2,21.33,2.67,22,3.5,22h17c0.83,0,1.5-0.67,1.5-1.5v-17C22,2.67,21.33,2,20.5,2z
+                M10,19H6V5h4V19z M18,19h-4V5h4V19z"
+              />
+            </svg>
+            <span>Сканировать NFC</span>
+          </button>
+          )}
           <button className="action-button otp-button" onClick={showOTP}>
             <svg className="icon" viewBox="0 0 24 24">
               <path
