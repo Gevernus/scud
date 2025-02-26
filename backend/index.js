@@ -166,7 +166,7 @@ app.post("/api/front/users/lock", async (req, res) => {
 });
 
 app.post("/api/front/users/new", async (req, res) => {
-    const { telegramId, firstName, lastName, username,deviceId, middleName, phone, email,  division, position} = req.body;
+    const { telegramId, firstName, lastName, username,deviceId, middleName, phone, email,  division, position , company} = req.body;
 
     try {
         let user = await User.findOne({ telegramId });
@@ -185,7 +185,8 @@ app.post("/api/front/users/new", async (req, res) => {
             email,
             division,
             position,
-            deviceId, 
+            deviceId,
+            company, 
         });
 
         await user.save();
@@ -220,6 +221,17 @@ app.post("/api/front/users/verification", async (req, res) => {
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);
         res.status(500).json({ error: "Внутренняя ошибка сервера" });
+    }
+});
+
+// Эндпоинт для получения списка компаний
+app.get("/api/front/companies", async (req, res) => {
+    try {
+        const companies = await Counterparty.find({}, "_id fullName"); // Получаем только id и имя
+        res.json(companies);
+    } catch (error) {
+        console.error("Ошибка получения списка компаний:", error);
+        res.status(500).json({ error: "Ошибка сервера" });
     }
 });
 

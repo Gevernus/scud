@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '../context/UserContext';
 
 const RegisterForm = ({ apiUrl, onSuccess }) => {
@@ -18,7 +18,24 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         email: "",
         division: "",
         position: "",
+        company: "",
     });
+
+    // Список компаний
+    const [companies, setCompanies] = useState([]);
+    // Загружаем компании с сервера
+    useEffect(() => {
+        const fetchCompanies = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/front/companies`);
+                const data = await response.json();
+                setCompanies(data); // Устанавливаем компании в стейт
+            } catch (error) {
+                console.error("Ошибка загрузки компаний:", error);
+            }
+        };
+        fetchCompanies();
+    }, [apiUrl]);
 
 
     if (!registrationAllowed) {
@@ -133,6 +150,11 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
     };
 
     const handleRegister = async () => {
+        if (!formData.company) {
+            setError("Выберите компанию!");
+            return;
+        }
+
         try {
             const response = await fetch(`${apiUrl}/front/users/new`, {
                 method: 'POST',
@@ -256,6 +278,23 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                     placeholder="Подразделение"
                     className="mt-2 p-2 w-full sm:w-96 border border-gray-600 rounded-md text-black"
                 />
+                <select
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    className={`mt-2 p-2 w-full sm:w-96 border rounded-md text-black 
+                        ${error ? 'border-red-500 border-2' : 'border-gray-600'}`}
+                >
+                    <option value="">Выберите компанию</option>
+                    {companies.map((company) => (
+                        <option key={company._id} value={company._id}>
+                            {company.fullName}
+                        </option>
+                    ))}
+                </select>
+                
+                {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+
                 <input
                     type="text"
                     name="position"
