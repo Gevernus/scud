@@ -16,7 +16,6 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         middleName: "",
         phone: "",
         email: "",
-        company: "",
         division: "",
         position: "",
     });
@@ -247,14 +246,6 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="E-mail"
-                    className="mt-2 p-2 w-full sm:w-96 border border-gray-600 rounded-md text-black"
-                />
-                <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleInputChange}
-                    placeholder="Компания"
                     className="mt-2 p-2 w-full sm:w-96 border border-gray-600 rounded-md text-black"
                 />
                 <input

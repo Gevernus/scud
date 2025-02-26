@@ -166,7 +166,7 @@ app.post("/api/front/users/lock", async (req, res) => {
 });
 
 app.post("/api/front/users/new", async (req, res) => {
-    const { telegramId, firstName, lastName, username,deviceId, middleName, phone, email, company, division, position} = req.body;
+    const { telegramId, firstName, lastName, username,deviceId, middleName, phone, email,  division, position} = req.body;
 
     try {
         let user = await User.findOne({ telegramId });
@@ -183,7 +183,6 @@ app.post("/api/front/users/new", async (req, res) => {
             username,
             phone,
             email,
-            company,
             division,
             position,
             deviceId, 
@@ -378,7 +377,7 @@ app.post('/api/qr/scan', async (req, res) => {
 
         // Проверяем совпадение локации
         if (!station.location){
-            station.location = location;//Наверо это должно быть только в Add
+            station.location = location;
             await station.save();
         }
         const [stationLat, stationLon] = station.location.split(',').map(parseFloat);
