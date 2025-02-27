@@ -78,6 +78,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
             }
 
             setIsPasswordCorrect(true); // If the password is correct, show the form
+            setError(null);
             
         } catch (error) {
             setError(error.message);
@@ -184,7 +185,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         return <>
         <div className="flex flex-col items-center justify-center min-h-screen  gap-4 bg-gray-900 text-white p-4">
         
-            <h2 className="text-xl text-center font-semibold">введите PIN для верификации и перезаписи ID устройства</h2>           
+            <h2 className="text-xl text-center font-semibold">Введите PIN для верификации и добавления нового устройства.</h2>           
             <input
                 type="password"
                 value={password}
@@ -193,8 +194,8 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 className="mt-4 p-2 border border-gray-600 rounded-md text-black"
             />
             
-            {error && password === "" && !isPasswordCorrect && <p className="text-red-500 mt-2">{error}</p>}
-            {isBlocked && <p className="text-red-500 mt-2">Превышенно количество попыток ввода!</p>}
+            {error && password === "" && !isPasswordCorrect && <p className="text-red-500 text-center mt-2">{error}</p>}
+            {isBlocked && <p className="text-red-500 text-center mt-2">Превышенно количество попыток ввода! Ваш аккаунт заблокирован обратитесь к администратору.</p>}
             <button
                 onClick={handlePasswordCheck}
                 disabled={isBlocked} 
@@ -218,8 +219,8 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 className="mt-4 p-2 border border-gray-600 rounded-md text-black"
             />
             </>}
-            {error && password === "" && !isPasswordCorrect && <p className="text-red-500 mt-2">{error}</p>}
-            {isBlocked && <p className="text-red-500 mt-2">Превышенно количество попыток ввода!</p>}
+            {error && password === "" && !isPasswordCorrect && <p className="text-red-500 text-center mt-2">{error}</p>}
+            {isBlocked && <p className="text-red-500 text-center mt-2">Превышенно количество попыток ввода! Ваш аккаунт заблокирован обратитесь к администратору.</p>}
             <button
                 onClick={handlePasswordCheck}
                 disabled={isBlocked} 

@@ -15,7 +15,7 @@ const AppContent = () => {
   const [showNfc, setShowNfc] = useState(false);
   // We store the scanned data in case the device needs registration.
   const [qrData, setQrData] = useState(null);
-  const { user, loading, accessDenied, registrationAllowed } = useUser();
+  const { user, loading, accessDenied, registrationAllowed, blockReason } = useUser();
 
   const PERMISSION_ADMIN = 1;
   const adminUrl = process.env.REACT_APP_ADMIN_URL;
@@ -39,6 +39,7 @@ const AppContent = () => {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-red-700 text-white p-4 rounded-lg">
         <h2 className="text-2xl font-semibold">Отказано в доступе</h2>
+        {blockReason && <p className="text-lg text-center mt-2">{blockReason}</p>}
         <button
           onClick={() => alert("Функционал в процессе разработки")}
           className="w-full max-w-md bg-blue-500 py-2 mt-5 rounded-md hover:bg-blue-600 transition-colors"

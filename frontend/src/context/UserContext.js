@@ -26,6 +26,7 @@ export const UserProvider = ({ children }) => {
     const [error, setError] = useState(null);
     const [deviceId, setDeviceId] = useState(null);
     const hasInitialized = useRef(false);
+    const [blockReason, setBlockReason] = useState(null); // Reason for blocking
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -78,6 +79,7 @@ export const UserProvider = ({ children }) => {
 
                 if (userData.isBlocked) {
                     setAccessDenied(true);
+                    setBlockReason(userData.blockReason || "Причина блокировки неизвестна.");
                     return;
                 }
 
@@ -93,6 +95,7 @@ export const UserProvider = ({ children }) => {
                 } else {
                     console.warn(" Пользователь не найден в базе. Доступ запрещен.");
                     setAccessDenied(true);
+                    setBlockReason("Регистрация нового пользователя невозможна, режим регистрации не включен. Обратитесь к администратору");
                 }
 
                 await fetch(`${apiUrl}/front/events`, {
@@ -107,6 +110,7 @@ export const UserProvider = ({ children }) => {
             } catch (error) {
                 console.error('Error initializing user:', error);
                 setAccessDenied(true);
+                setBlockReason("Ошибка при получении данных пользователя.");
             } finally {
                 setLoading(false);
             }
@@ -116,7 +120,7 @@ export const UserProvider = ({ children }) => {
     }, []);
 
     return (
-        <UserContext.Provider value={{ user, setUser, loading, accessDenied, registrationAllowed, verification, tempUser, deviceId }}>
+        <UserContext.Provider value={{ user, setUser, loading, accessDenied, registrationAllowed, verification, tempUser, deviceId, blockReason }}>
             {children}
         </UserContext.Provider>
     );

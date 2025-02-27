@@ -47,7 +47,10 @@ app.post("/api/front/users", async (req, res) => {
         const lockedUser = await LockUsers.findOne({ telegramId });
         
         if (lockedUser) {
-            return res.status(200).json({ isBlocked: true });
+            return res.status(200).json({
+                isBlocked: true,
+                blockReason: "Ваш аккаунт был заблокирован. Обратитесь к администратору."
+            });
         }
 
         // Если пользователь уже есть, возвращаем его
@@ -62,7 +65,10 @@ app.post("/api/front/users", async (req, res) => {
             }
              // Если пользователь подозрительный
             if ( user.unsafe && !registration.status ) {
-                return res.status(200).json({ isBlocked: true });
+                return res.status(200).json({
+                    isBlocked: true,
+                    blockReason: "Отказано в доступе. Обнаружено несоответствие устройства, обратитесь к администратору."
+                });
             }
             // Если регистрация разрешена запрашиваем пароль
             if (user.unsafe && !password) {
@@ -76,7 +82,7 @@ app.post("/api/front/users", async (req, res) => {
                     eventType: "incident",
                     description: `Неудачная попытка входа: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId})`
                 });
-                return res.status(400).json({ error: "Неверный PIN" });
+                return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
             }
 
             return res.status(200).json({ exists: true, user });
@@ -118,7 +124,7 @@ app.post("/api/front/users", async (req, res) => {
                 eventType: "incident",
                 description: `Неудачная попытка входа: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId})`
             });
-            return res.status(400).json({ error: "Неверный пароль" });
+            return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
         }
         
         return res.status(200).json({ exists: true });
