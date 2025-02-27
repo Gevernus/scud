@@ -139,8 +139,11 @@ const AppContent = () => {
               setQrData(qrData);
               setShowRegistration(true);
               WebApp.showAlert('Рабочая станция не зарегистрирована');
+            } else if (result.status === 'access_denied') {
+              WebApp.showAlert('Отказано в доступе, у вас нет прав на данное рабочее место. Обратитесь к администратору.');
+              WebApp.closeScanQrPopup();
             } else if (result.status === 'location_mismatch') {
-              WebApp.showAlert('Локация не совпадает.');
+              WebApp.showAlert('Не совпадает геолокация АРМ. Подойдите к АРМ.');
               WebApp.closeScanQrPopup();
               setShowNfc(true);
             } else {
@@ -243,6 +246,15 @@ const AppContent = () => {
               />
             </svg>
             <span>Показать OTP</span>
+          </button>
+          <button className="action-button otp-button" onClick={() => alert("Функционал в процессе разработки")}>
+            <svg className="icon" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M20 2H4C2.9 2 2 2.9 2 4v14c0 1.1.9 2 2 2h4v4l4-4h8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM4 16V4h16v12H11.17L8 19.17V16H4z"
+              />
+            </svg>
+            <span>Техподдержка</span>
           </button>
           {user && (user.permissions & PERMISSION_ADMIN) === PERMISSION_ADMIN && (
             <button className="action-button admin-button" onClick={goToAdmin}>
