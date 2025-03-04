@@ -29,9 +29,9 @@ const Home = () => {
         window.location.href = adminUrl;
     };
 
-    console.log(WebApp.isVersionAtLeast('7.6'));
+    console.log(window.Telegram.WebView);
     console.log(WebApp.isVersionAtLeast('8.0'));
-    
+
     useEffect(() => {
         WebApp.ready();
         WebApp.expand();
@@ -234,7 +234,7 @@ const Home = () => {
                             <span>Сканирование QR</span>
                         </button>
                     ) : (
-                        <button className="action-button qr-button" onClick={() => WebApp.openLink('https://aura-tg.ru/nfc-scan', { tryBrowser: 'chrome', try_instant_view: false })}>
+                        <button className="action-button qr-button" onClick={() => WebApp.openLink('https://aura-tg.ru/nfc-scan', { try_browser: 'chrome', try_instant_view: false })}>
                             <svg className="icon" viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
