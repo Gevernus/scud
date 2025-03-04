@@ -29,9 +29,12 @@ const Home = () => {
         window.location.href = adminUrl;
     };
 
+    
     useEffect(() => {
         WebApp.ready();
         WebApp.expand();
+        console.log(WebApp.isVersionAtLeast('7.6'));
+        console.log(WebApp.isVersionAtLeast('8.0'));
     }, []);
 
 
