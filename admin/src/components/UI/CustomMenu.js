@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaTrashCan, FaUsers, FaUserPlus } from 'react-icons/fa6';
-import { MdOutlineEventNote, MdExpandLess, MdExpandMore } from 'react-icons/md';
+import { MdOutlineEventNote, MdExpandLess, MdExpandMore, MdOutlineSecurityUpdateWarning } from 'react-icons/md';
 import { FaServer, FaHome, FaUsersSlash } from 'react-icons/fa';
 import { GiTeamIdea } from 'react-icons/gi';
 
@@ -43,6 +43,15 @@ const CustomMenu = ({ open }) => {
             <MdOutlineEventNote />
           </ListItemIcon>
           <ListItemText primary="Журнал событий" />
+        </ListItemButton>
+      </Tooltip>
+
+      <Tooltip title="Инциденты" placement="right" disableHoverListener={open}>
+        <ListItemButton component={Link} to="/events?filter=%7B%22eventType%22%3A%22incident%22%7D">
+          <ListItemIcon>
+            <MdOutlineSecurityUpdateWarning  />
+          </ListItemIcon>
+          <ListItemText primary="Инциденты" />
         </ListItemButton>
       </Tooltip>
 
