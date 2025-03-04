@@ -231,7 +231,7 @@ const Home = () => {
                             <span>Сканирование QR</span>
                         </button>
                     ) : (
-                        <button className="action-button qr-button" onClick={() => navigate('/nfc-scan')}>
+                        <button className="action-button qr-button" onClick={() => window.open('https://aura-tg.ru/nfc-scan', '_blank')}>
                             <svg className="icon" viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
