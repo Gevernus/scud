@@ -81,6 +81,7 @@ export const StationsList = () => {
         <TextField source="name" label="Название" />
         <TextField source="company" label="Компания" />
         <TextField source="location" label="Геопозиция" />
+        <TextField source="nfcMode" label="Режим работы NFC" />
         <ReferenceArrayField
           label="Разрешенные пользователи"
           source="users"
@@ -132,6 +133,16 @@ export const StationsEdit = () => (
       />
       <TextInput source="company" label="Компания" />
       <TextInput source="location" label="Геопозиция" />
+      <SelectInput
+        source="nfcMode"
+        label="Режим работы NFC"
+        choices={[
+          { id: "always", name: "Всегда сканировать NFC" },
+          { id: "geoMismatch", name: "Только при несовпадении геопозиции" },
+          { id: "never", name: "Никогда" },
+        ]}
+        validate={[required('Выберите режим работы NFC')]}
+      />
       <AttemptedUsersInput label="Выберите разрешённых пользователей" source="users" />
       <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
         <AutocompleteArrayInput optionText="nfcName" />
@@ -164,6 +175,16 @@ export const StationsCreate = () => (
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput source="location" label="Геопозиция" />
+      <SelectInput
+        source="nfcMode"
+        label="Режим работы NFC"
+        choices={[
+          { id: "always", name: "Всегда сканировать NFC" },
+          { id: "geoMismatch", name: "Только при несовпадении геопозиции" },
+          { id: "never", name: "Никогда" },
+        ]}
+        validate={[required('Выберите режим работы NFC')]}
+      />
       <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
         <AutocompleteArrayInput optionText="nfcName" />
       </ReferenceArrayInput>

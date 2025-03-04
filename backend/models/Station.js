@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const stationSchema = new mongoose.Schema({
     nfc: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nfc' }],
+    nfcMode: { type: String, enum: ["always", "geoMismatch", "never"], default: "geoMismatch"},
     location: { type: String },
     deviceId: { type: String, required: true, unique: true },
     username: { type: String },
