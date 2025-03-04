@@ -231,7 +231,7 @@ const Home = () => {
                             <span>Сканирование QR</span>
                         </button>
                     ) : (
-                        <button className="action-button qr-button" onClick={() => alert("Функционал в процессе разработки")}>
+                        <button className="action-button qr-button" onClick={() => navigate('/nfc-scan')}>
                             <svg className="icon" viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
@@ -251,7 +251,7 @@ const Home = () => {
                         </svg>
                         <span>Показать OTP</span>
                     </button>
-                    <button className="action-button otp-button" onClick={() => navigate('/nfc-scan')}>
+                    <button className="action-button otp-button" onClick={() => alert("Функционал в процессе разработки")}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
                                 fill="currentColor"
