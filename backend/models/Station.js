@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const stationSchema = new mongoose.Schema({
-    nfc: { type: String },
+    nfc: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Nfc' }],
     location: { type: String },
     deviceId: { type: String, required: true, unique: true },
     username: { type: String },

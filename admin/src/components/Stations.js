@@ -16,6 +16,8 @@ import {
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
+  ReferenceArrayInput,
+  AutocompleteArrayInput,
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
@@ -90,7 +92,15 @@ export const StationsList = () => {
         </ReferenceArrayField>       
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
-        <TextField source="nfc" label="ID Метки NFC" />
+        <ReferenceArrayField
+          label="NFC"
+          source="nfc"
+          reference="nfc"
+        >
+          <SingleFieldList linkType="show">
+            <ChipField source="nfcName" />
+          </SingleFieldList>
+        </ReferenceArrayField>
         {canDelete && <DeleteButton />}
       </Datagrid>
     </List>
@@ -123,7 +133,9 @@ export const StationsEdit = () => (
       <TextInput source="company" label="Компания" />
       <TextInput source="location" label="Геопозиция" />
       <AttemptedUsersInput label="Выберите разрешённых пользователей" source="users" />
-      <TextInput source="nfc" label="ID Метки NFC" />
+      <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
+        <AutocompleteArrayInput optionText="nfcName" />
+      </ReferenceArrayInput>
     </SimpleForm>
   </Edit>
 );
@@ -152,7 +164,9 @@ export const StationsCreate = () => (
         validate={[required('Поле обязательно для заполнения')]}
       />
       <TextInput source="location" label="Геопозиция" />
-      <TextInput source="nfc" label="ID Метки NFC" />
+      <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
+        <AutocompleteArrayInput optionText="nfcName" />
+      </ReferenceArrayInput>
     </SimpleForm>
   </Create>
 );

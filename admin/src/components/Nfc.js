@@ -8,12 +8,13 @@ import {
   SelectInput,
   TextInput,
   DateInput,
-  Create,
   SimpleForm,
   Edit,
   Toolbar,
   SaveButton,
-  required
+  required,
+  Show,
+  SimpleShowLayout
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
@@ -92,4 +93,13 @@ export const NfcEdit = () => (
       />
     </SimpleForm>
   </Edit>
+);
+
+export const NfcShow = () => (
+  <Show>
+    <SimpleShowLayout>
+      <TextField source="guid" label="NFC идентификатор" />
+      <TextField source="nfcName" label="Название" />
+    </SimpleShowLayout>
+  </Show>
 );
