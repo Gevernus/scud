@@ -1,9 +1,9 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Home from './Home'; // your home page
 import NFCScanner from './NFCScanner'; // your NFC scan page
 
-const Routes = () => {
+const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<Home />} />
@@ -12,4 +12,4 @@ const Routes = () => {
     );
 };
 
-export default Routes;
+export default AppRoutes;
