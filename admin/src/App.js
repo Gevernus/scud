@@ -8,6 +8,7 @@ import {StationsList, StationsEdit, StationsCreate } from "./components/Stations
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate, CounterpartyShow } from "./components/Counterparts";
 import { RegistrationList, RegistrationEdit } from "./components/Registration";
 import { LockUsersList } from "./components/LockUsers";
+import { NfcList, NfcEdit } from "./components/Nfc";
 
 import { UsersTrash } from "./components/trash/UsersTrash";
 import { EventsTrash } from "./components/trash/EventsTrash";
@@ -48,6 +49,7 @@ const AdminWrapper = () => {
   const canViewCounterparty = checkPermission(PERMISSIONS_MODULES["Контрагенты"].view);
   const canViewEvents = checkPermission(PERMISSIONS_MODULES["Журнал событий"].view);
   const canViewRegistration = checkPermission(PERMISSIONS_MODULES["Регистрация"].view);
+  const canViewNfc = checkPermission(PERMISSIONS_MODULES["Nfc"].view);
 
   return (
     <Admin dashboard={Dashboard} dataProvider={dataProvider} layout={MyLayout}>
@@ -93,6 +95,14 @@ const AdminWrapper = () => {
           name="lockUsers"
           list={LockUsersList}
           options={{ label: "Заблокированные пользователи" }}
+        />
+      )}
+      {canViewNfc && (
+        <Resource
+          name="nfc"
+          list={NfcList}
+          edit={checkPermission(PERMISSIONS_MODULES["Nfc"].edit) ? NfcEdit : null}
+          options={{ label: "Nfc" }}
         />
       )}
       {canViewEvents && (

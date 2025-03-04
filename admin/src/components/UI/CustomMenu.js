@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaTrashCan, FaUsers, FaUserPlus } from 'react-icons/fa6';
-import { MdOutlineEventNote, MdExpandLess, MdExpandMore, MdOutlineSecurityUpdateWarning } from 'react-icons/md';
+import { MdOutlineEventNote, MdExpandLess, MdExpandMore, MdOutlineSecurityUpdateWarning, MdOutlineNfc } from 'react-icons/md';
 import { FaServer, FaHome, FaUsersSlash } from 'react-icons/fa';
 import { GiTeamIdea } from 'react-icons/gi';
 
@@ -88,6 +88,15 @@ const CustomMenu = ({ open }) => {
             <FaUsersSlash />
           </ListItemIcon>
           <ListItemText primary="Заблокированные пользователи" />
+        </ListItemButton>
+      </Tooltip>
+
+      <Tooltip title="Nfc" placement="right" disableHoverListener={open}>
+        <ListItemButton component={Link} to="/nfc">
+          <ListItemIcon>
+            <MdOutlineNfc />
+          </ListItemIcon>
+          <ListItemText primary="Nfc" />
         </ListItemButton>
       </Tooltip>
 

@@ -7,6 +7,7 @@ const PERMISSIONS_MODULES = {
   "Станции": { view: 512, create: 1024, edit: 2048, delete: 4096 },
   "Журнал событий": { view: 8192, delete: 16384 },
   "Регистрация": { view: 32768, edit: 65536 },
+  "Nfc": { view: 131072, edit: 262144 },
 };
 
 // Функция проверки прав

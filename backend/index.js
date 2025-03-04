@@ -9,6 +9,7 @@ const Session = require('./models/Session')
 const Counterparty = require('./models/Counterparty')
 const Registration = require('./models/Registration')
 const LockUsers = require('./models/LockUsers')
+const Nfc = require('./models/Nfc')
 const { startOfDay, endOfDay, startOfWeek, startOfMonth, toDate } = require("date-fns");
 const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissions");
 
@@ -939,6 +940,18 @@ app.get("/api/admin/lockUsers",
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].view), 
     handleAdminRoute(LockUsers, "lockUsers"));
 
+app.get("/api/admin/nfc", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].view), 
+    handleAdminRoute(Nfc, "nfc"));
+app.get("/api/admin/nfc/:id", 
+    handleGetOne(Nfc, "nfc"));
+app.post("/api/admin/nfc", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].edit), 
+    handleCreate(Nfc));
+app.put("/api/admin/nfc/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].edit), 
+    handleUpdate(Nfc));   
+
 // Эндпоинты для работы с корзиной (только удалённые объекты)
 app.get("/api/admin/UsersTrash", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
@@ -983,5 +996,8 @@ app.delete("/api/admin/counterpartyTrash/:id",
 app.delete("/api/admin/lockUsers/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].edit), 
     handlePermanentDelete(LockUsers));
+app.delete("/api/admin/nfc/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].edit), 
+    handlePermanentDelete(Nfc)); 
 
 app.listen(8000, () => console.log('Backend running on port 8000'));
