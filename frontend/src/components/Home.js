@@ -231,7 +231,7 @@ const Home = () => {
                             <span>Сканирование QR</span>
                         </button>
                     ) : (
-                        <button className="action-button qr-button" onClick={() => window.location.href = "intent://aura-tg.ru/nfc-scan#Intent;scheme=https;package=com.android.chrome;end"}>
+                        <button className="action-button qr-button" onClick={() => WebApp.openLink('https://aura-tg.ru/nfc-scan', { tryBrowser: 'chrome', try_instant_view: false })}>
                             <svg className="icon" viewBox="0 0 24 24">
                                 <path
                                     fill="currentColor"
