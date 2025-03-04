@@ -418,7 +418,7 @@ app.post('/api/qr/scan', async (req, res) => {
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение станции  ${deviceId} не совпадает. Расстояние: ${distance.toFixed(3)} km`
+                description: `Местоположение пользователя не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`
             });
 
             return res.status(200).json({
@@ -440,7 +440,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Авторизация пользователя ${userId} на станции ${deviceId}.`
+            description: `Пользовател ${user.username || ""} с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
         });
 
         console.log(`Session created ${sessionId}:${deviceId}`);
