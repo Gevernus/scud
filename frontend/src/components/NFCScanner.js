@@ -1,23 +1,55 @@
 import React from 'react';
 
 const NFCScanner = () => {
-    const handleScan = async () => {
+    const generateGUID = () => {
+        // Generates a RFC4122 version 4 compliant GUID.
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            const r = Math.random() * 16 | 0;
+            const v = c === 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    };
+
+    const handleWriteOrRead = async () => {
         if ('NDEFReader' in window) {
             const ndef = new window.NDEFReader();
-            try {
-                ndef.onreading = (event) => {
-                    let message = '';
-                    // Process each record in the NFC message.
-                    for (const record of event.message.records) {
-                        const textDecoder = new TextDecoder(record.encoding || 'utf-8');
-                        message += textDecoder.decode(record.data);
+            const abortController = new AbortController(); // Create an AbortController.
+            let ignoreRead = false;
+
+            ndef.onreading = async (event) => {
+                if (ignoreRead) return;
+
+                let message = '';
+                // Process each record in the NFC message.
+                for (const record of event.message.records) {
+                    const textDecoder = new TextDecoder(record.encoding || 'utf-8');
+                    message += textDecoder.decode(record.data);
+                }
+
+                if (message.trim() === '') {
+                    // If the tag is empty, generate a GUID and write it.
+                    const guid = generateGUID();
+                    ignoreRead = true; // Prevent handling the subsequent read event triggered by the write.
+                    try {
+                        await ndef.write(guid);
+                        alert(`GUID записан: ${guid}`);
+                    } catch (err) {
+                        alert(`Ошибка записи NFC: ${err}`);
+                    } finally {
+                        ignoreRead = false;
+                        abortController.abort(); // Stop scanning after write.
                     }
-                    // Show an alert with the read NFC data.
+                } else {
+                    // If the tag has data, show it.
                     alert(`Считанные данные: ${message}`);
-                };
-                // Start scanning on button click.
-                await ndef.scan();
-                console.log("NFC scan started successfully.");
+                    abortController.abort(); // Stop scanning after read.
+                }
+            };
+
+            try {
+                // Start scanning with the AbortController's signal.
+                await ndef.scan({ signal: abortController.signal });
+                console.log("NFC scan started.");
             } catch (err) {
                 alert(`Ошибка запуска NFC: ${err}`);
             }
@@ -29,7 +61,7 @@ const NFCScanner = () => {
     return (
         <div className="container">
             <div className="button-container">
-                <button onClick={handleScan} className="action-button qr-button">
+                <button onClick={handleWriteOrRead} className="action-button qr-button">
                     <svg className="icon" viewBox="0 0 24 24">
                         <path
                             fill="currentColor"
