@@ -5,10 +5,6 @@ const NFCScanner = () => {
         if ('NDEFReader' in window) {
             const ndef = new window.NDEFReader();
             try {
-                // Start scanning on button click.
-                await ndef.scan();
-                console.log("NFC scan started successfully.");
-
                 ndef.onreading = (event) => {
                     let message = '';
                     // Process each record in the NFC message.
@@ -19,6 +15,9 @@ const NFCScanner = () => {
                     // Show an alert with the read NFC data.
                     alert(`Считанные данные: ${message}`);
                 };
+                // Start scanning on button click.
+                await ndef.scan();
+                console.log("NFC scan started successfully.");
             } catch (err) {
                 alert(`Ошибка запуска NFC: ${err}`);
             }
