@@ -80,7 +80,7 @@ app.post("/api/front/users", async (req, res) => {
             if (password && !isPasswordValid) {
                 await registerEvent({
                     eventType: "incident",
-                    description: `Неудачная попытка входа: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId})`
+                    description: `Неудачная попытка добавления нового устройства пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}), неверный PIN.`
                 });
                 return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
             }
@@ -104,6 +104,10 @@ app.post("/api/front/users", async (req, res) => {
 
         // Если регистрация запрещена
         if (!registration || !registration.status) {
+            await registerEvent({
+                eventType: "incident",
+                description: `Запрос на авторизацию от незарегистрированного пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) .`
+            });
             return res.status(200).json({ exists: false, registrationAllowed: false });
         }
 
@@ -122,11 +126,15 @@ app.post("/api/front/users", async (req, res) => {
         if (!isPasswordValid) {
             await registerEvent({
                 eventType: "incident",
-                description: `Неудачная попытка входа: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId})`
+                description: `Неудачная попытка регестрации пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) неверный PIN.`
             });
             return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
         }
         
+        await registerEvent({
+            eventType: "registration",
+            description: `Новый пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) был зарегистрирован.`
+        });
         return res.status(200).json({ exists: true });
         
     } catch (error) {
@@ -158,7 +166,7 @@ app.post("/api/front/users/lock", async (req, res) => {
         // Логируем 
         await registerEvent({
             eventType: "incident",
-            description: `Пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
+            description: `PIN-код неправильно введен 3 раза пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
         });
 
         console.log(`🚨 Пользователь ${username} (${telegramId}) был заблокирован.`);
@@ -217,7 +225,7 @@ app.post("/api/front/users/verification", async (req, res) => {
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Добавлено новое устройство для пользователя ${user.username} c (ID: ${user._id}).`
+                    description: `Добавлено новое устройство пользователя ${user.username} c (ID: ${user._id}).`
                 });
             return res.status(200).json({ exists: true, user });
         }
@@ -384,7 +392,7 @@ app.post('/api/qr/scan', async (req, res) => {
             // Создаем событие "incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Попытка авторизации пользователя ${userId} на станции ${deviceId} - доступ запрещен.`
+                description: `Попытка авторизации пользователя ${user.username || "Неизвестно"} с ID ${userId} на станции ${station.name || "Неизвестно"} c ID ${deviceId} - доступ запрещен.`
             });
 
             return res.status(403).json({
@@ -563,7 +571,7 @@ const logDeletion = async (Model, item) => {
         case "Station": {
             const station = await Station.findById(item._id);
             if (station) {
-                description = `Станция ${station.name || "Неизвестно"} (IP: ${station.ip || "Неизвестно"}) была перенесена в корзину.`;
+                description = `Станция ${station.name || "Неизвестно"} (ID: ${station._id || "Неизвестно"}) была перенесена в корзину.`;
             } else {
                 description = `Неизвестная станция была перенесена в корзину.`;
             }
