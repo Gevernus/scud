@@ -58,25 +58,6 @@
   height: 24px;
 }
 
-/* Add media query for landscape orientation */
-@media (orientation: landscape) {
-  .button-container {
-    flex-direction: row;
-    max-width: 600px;
-  }
-
-  .action-button {
-    padding: 24px;
-    flex-direction: column;
-    height: 120px;
-  }
-
-  .icon {
-    width: 32px;
-    height: 32px;
-  }
-}
-
 .otp-container {
   width: 100%;
   height: 100vh;
@@ -85,6 +66,8 @@
 
 .back-button {
   position: absolute;
+  top: 0;
+  left: 0;
   padding: 8px 20px;
   background-color: var(--tg-theme-button-color, #2481cc);
   border: none;
@@ -104,6 +87,53 @@
   top: 10px;
   right: 10px;
   padding: 10px;
-  width: 215px;
+  width: 250px;
   background-color: var(--tg-theme-button-color, #2481cc); 
+}
+
+.add-nfc-button {
+  position: absolute;
+  top: 70px;
+  right: 10px;
+  padding: 10px;
+  width: 250px;
+  background-color: var(--tg-theme-button-color, #2481cc); 
+}
+.nfc-button {
+  width: 300px;
+  background-color: var(--tg-theme-button-color, #2481cc); 
+}
+
+.nfc-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Add media query for landscape orientation */
+@media (orientation: landscape) {
+  .button-container {
+    flex-direction: row;
+    max-width: 600px;
+  }
+
+  .action-button {
+    padding: 16px;
+    flex-direction: column;
+    height: 120px;
+  }
+
+  .icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .add-nfc-button {
+    position: absolute;
+    top: 150px;
+    right: 10px;
+  }
 }

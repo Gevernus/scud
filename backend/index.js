@@ -402,6 +402,15 @@ app.post('/api/qr/scan', async (req, res) => {
             });
         }
 
+        //проверяем режим станции
+        if (station.nfcMode === 'always') {
+            return res.status(200).json({
+                status: 'nfcMode_always',
+                message: `Необходима проверка с помощью NFC`,
+                sessionId
+            });
+        }
+
         // Проверяем совпадение локации
         if (!station.location){
             station.location = location;
@@ -413,7 +422,23 @@ app.post('/api/qr/scan', async (req, res) => {
         const distance = haversine(stationLat, stationLon, latitude, longitude);
         const maxAllowedDistance = 0.05; // 50 метров
 
-        if (distance > maxAllowedDistance) {
+        if (distance > maxAllowedDistance && station.nfcMode === 'geoMismatch') {
+            console.log(`Location mismatch: ${distance.toFixed(3)} km`);
+
+            // Создаем событие "Несовпадение локации incident"
+            await registerEvent({
+                eventType: "incident",
+                description: `Местоположение пользователя не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`,
+                sessionId
+            });
+
+            return res.status(200).json({
+                status: 'nfcMode_geoMismatch',
+                message: `Локация не совпадает. Расстояние: ${distance.toFixed(3)} км`
+            });
+        }
+
+        if (distance > maxAllowedDistance && station.nfcMode === 'never') {
             console.log(`Location mismatch: ${distance.toFixed(3)} km`);
 
             // Создаем событие "Несовпадение локации incident"

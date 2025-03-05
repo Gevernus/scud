@@ -4,6 +4,7 @@ import WebApp from '@twa-dev/sdk';
 import OTPDisplay from './OTPDisplay';
 import RegisterDevice from './RegisterDevice';
 import RegisterForm from './RegisterForm';
+import NfcButton from './NfcButton';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,9 +20,11 @@ const Home = () => {
     const [showNfc, setShowNfc] = useState(true); //FOR TESTING
     // We store the scanned data in case the device needs registration.
     const [qrData, setQrData] = useState(null);
+    const [sessionId, setSessionId] = useState(null);
     const { user, loading, accessDenied, registrationAllowed, blockReason } = useUser();
 
     const PERMISSION_ADMIN = 1;
+    const PERMISSION_NFC = 262144;
     const adminUrl = process.env.REACT_APP_ADMIN_URL;
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -149,10 +152,16 @@ const Home = () => {
                         } else if (result.status === 'access_denied') {
                             WebApp.showAlert('Отказано в доступе, у вас нет прав на данное рабочее место. Обратитесь к администратору.');
                             WebApp.closeScanQrPopup();
-                        } else if (result.status === 'location_mismatch') {
-                            WebApp.showAlert('Не совпадает геолокация АРМ. Подойдите к АРМ.');
+                        } else if (result.status === 'nfcMode_always' || result.status === 'nfcMode_geoMismatch') {
+                            WebApp.showAlert('Подтвердите доступ с помощью NFC.');
                             WebApp.closeScanQrPopup();
+                            if (result.sessionId) {
+                                setSessionId(result.sessionId);
+                            }                      
                             setShowNfc(true);
+                        } else if (result.status === 'location_mismatch') {
+                            WebApp.showAlert('Не совпадает геолокация АРМ. Отказано в доступе.');
+                            WebApp.closeScanQrPopup();
                         } else {
                             WebApp.showAlert('Неожиданный ответ от сервера');
                         }
@@ -221,30 +230,31 @@ const Home = () => {
                     </button>
                     <OTPDisplay />
                 </div>
+            ) : showNfc ? (
+                <div className="nfc-container">
+                    <button className="back-button" onClick={() => setShowNfc(false)}>
+                        ◄ Назад
+                    </button>
+                    <NfcButton 
+                    onClick={() => {
+                        WebApp.openLink(`https://aura-tg.ru/nfc-scan?sessionID=${sessionId}`, {
+                            try_browser: 'chrome',
+                            try_instant_view: false,
+                        });
+                    }} 
+                    />
+                </div>
             ) : (
                 <div className="button-container">
-                    {!showNfc ? (
-                        <button className="action-button qr-button" onClick={scanQR}>
-                            <svg className="icon" viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M2 2h8v8H2V2zm2 2v4h4V4H4zm-2 12h8v8H2v-8zm2 2v4h4v-4H4zm12-14h8v8h-8V2zm2 2v4h4V4h-4zm-2 12h8v8h-8v-8zm2 2v4h4v-4h-4z"
-                                />
-                            </svg>
-                            <span>Сканирование QR</span>
-                        </button>
-                    ) : (
-                        <button className="action-button qr-button" onClick={() => WebApp.openLink('https://aura-tg.ru/nfc-scan', { try_browser: 'chrome', try_instant_view: false })}>
-                            <svg className="icon" viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M20.5,2h-17C2.67,2,2,2.67,2,3.5v17C2,21.33,2.67,22,3.5,22h17c0.83,0,1.5-0.67,1.5-1.5v-17C22,2.67,21.33,2,20.5,2z
-                M10,19H6V5h4V19z M18,19h-4V5h4V19z"
-                                />
-                            </svg>
-                            <span>Сканировать NFC</span>
-                        </button>
-                    )}
+                    <button className="action-button qr-button" onClick={scanQR}>
+                        <svg className="icon" viewBox="0 0 24 24">
+                            <path
+                                fill="currentColor"
+                                d="M2 2h8v8H2V2zm2 2v4h4V4H4zm-2 12h8v8H2v-8zm2 2v4h4v-4H4zm12-14h8v8h-8V2zm2 2v4h4V4h-4zm-2 12h8v8h-8v-8zm2 2v4h4v-4h-4z"
+                            />
+                        </svg>
+                        <span>Сканирование QR</span>
+                    </button>                   
                     <button className="action-button otp-button" onClick={showOTP}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
@@ -272,6 +282,18 @@ const Home = () => {
                                 />
                             </svg>
                             <span>Вход в админку</span>
+                        </button>
+                    )}
+                    {user && (user.permissions & PERMISSION_NFC) === PERMISSION_NFC && (
+                        <button className="action-button add-nfc-button" onClick={() => WebApp.openLink('https://aura-tg.ru/nfc-scan', { try_browser: 'chrome', try_instant_view: false })}>
+                            <svg className="icon" viewBox="0 0 24 24">
+                                <path
+                                    fill="currentColor"
+                                    d="M20.5,2h-17C2.67,2,2,2.67,2,3.5v17C2,21.33,2.67,22,3.5,22h17c0.83,0,1.5-0.67,1.5-1.5v-17C22,2.67,21.33,2,20.5,2z
+                                    M10,19H6V5h4V19z M18,19h-4V5h4V19z"
+                                />
+                            </svg>
+                            <span>Загегистрировать NFC</span>
                         </button>
                     )}
                 </div>
