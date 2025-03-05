@@ -8,7 +8,7 @@ import {StationsList, StationsEdit, StationsCreate } from "./components/Stations
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate, CounterpartyShow } from "./components/Counterparts";
 import { RegistrationList, RegistrationEdit } from "./components/Registration";
 import { LockUsersList } from "./components/LockUsers";
-import { NfcList, NfcEdit, NfcShow } from "./components/Nfc";
+import { NfcList, NfcEdit, NfcShow, NfcCrete } from "./components/Nfc";
 
 import { UsersTrash } from "./components/trash/UsersTrash";
 import { EventsTrash } from "./components/trash/EventsTrash";
@@ -103,6 +103,7 @@ const AdminWrapper = () => {
           list={NfcList}
           edit={checkPermission(PERMISSIONS_MODULES["Nfc"].edit) ? NfcEdit : null}
           show={NfcShow}
+          create={NfcCrete}
           options={{ label: "Nfc" }}
         />
       )}

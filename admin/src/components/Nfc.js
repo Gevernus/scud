@@ -14,7 +14,8 @@ import {
   SaveButton,
   required,
   Show,
-  SimpleShowLayout
+  SimpleShowLayout,
+  Create
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
@@ -93,6 +94,23 @@ export const NfcEdit = () => (
       />
     </SimpleForm>
   </Edit>
+);
+
+export const NfcCrete = () => (
+  <Create>
+    <SimpleForm toolbar={<CustomToolbar />}>
+      <TextInput
+        source="guid"
+        label="NFC идентификатор"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput
+        source="nfcName"
+        label="Название"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+    </SimpleForm>
+  </Create>
 );
 
 export const NfcShow = () => (
