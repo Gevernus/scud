@@ -38,7 +38,7 @@ const Home = () => {
 
     if (loading) {
         return <div className="container">
-            <div className="flex justify-center items-center min-h-screen bg-blue-950 text-white">Загрузка...</div>
+            <div className="flex justify-center items-center min-h-screen text-white">Загрузка...</div>
         </div>;
     }
 
