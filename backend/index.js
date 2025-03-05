@@ -407,7 +407,8 @@ app.post('/api/qr/scan', async (req, res) => {
             return res.status(200).json({
                 status: 'nfcMode_always',
                 message: `Необходима проверка с помощью NFC`,
-                sessionId
+                sessionId,
+                deviceId
             });
         }
 
@@ -429,7 +430,8 @@ app.post('/api/qr/scan', async (req, res) => {
             await registerEvent({
                 eventType: "incident",
                 description: `Местоположение пользователя не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`,
-                sessionId
+                sessionId,
+                deviceId
             });
 
             return res.status(200).json({
@@ -548,6 +550,70 @@ app.post('/api/qr/add', async (req, res) => {
             status: 'error',
             message: error.message || 'Internal Server Error'
         });
+    }
+});
+
+//Универсальный эндпоинт для работы с NFC (сканирование + регистрация)
+app.post('/api/nfc-handler', async (req, res) => {
+    try {
+        const { tagId, sessionId, actionType, nfcName, deviceId, userId } = req.body;
+
+        if (!tagId) return res.status(400).json({ error: 'Не передан tagId' });
+
+        const user = await User.findOne({ _id: userId });
+        if (!user) return res.status(403).json({ error: 'Доступ запрещен. Пользователь не найден.' });
+
+        if (actionType === 'register') {
+            if (!nfcName || nfcName.trim() === '') {
+                return res.status(400).json({ error: 'Не указано имя NFC-метки' });
+            }
+
+            // Проверяем, есть ли у пользователя права на добавление меток
+            if (!checkPermission(user.permissions, PERMISSIONS_MODULES["Nfc"].edit)) {
+                return res.status(403).json({ error: 'Недостаточно прав для регистрации NFC.' });
+            }
+
+            // Проверяем, существует ли уже метка
+            const existingTag = await Nfc.findOne({ guid: tagId });
+
+            if (existingTag) return res.status(400).json({ error: 'Эта NFC-метка уже зарегистрирована' });
+
+            // Создаем новую метку
+            const newTag = new Nfc({ guid: tagId, nfcName});
+            await newTag.save();
+
+            return res.json({ message: '✅ NFC-метка успешно зарегистрирована' });
+        }
+
+        // Сканирование NFC
+        const nfcTag = await Nfc.findOne({ guid: tagId });
+        if (!nfcTag) return res.status(404).json({ error: 'Метка не найдена' });
+
+        // Обновляем статус сессии
+        const session = new Session({
+            deviceId,
+            sessionId,
+            userId,
+            status: 'approved',
+            createdAt: new Date()
+        });
+        await session.save();
+
+        // Создаем событие "authorization"
+        await registerEvent({
+            eventType: "authorization",
+            description: `Пользовател ${user.username || ""} с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
+        });
+
+        console.log(`Session created ${sessionId}:${deviceId}`);
+        return res.status(200).json({
+            
+            message: 'Успешно авторизован'
+        });
+
+    } catch (error) {
+        console.error('Ошибка NFC:', error);
+        return res.status(500).json({ error: 'Внутренняя ошибка сервера' });
     }
 });
 
