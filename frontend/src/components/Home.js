@@ -16,8 +16,7 @@ const Home = () => {
     const [location, setLocation] = useState(null);
     const [loginSuccess, setLoginSuccess] = useState(false);
     const [showRegistration, setShowRegistration] = useState(false);
-    // const [showNfc, setShowNfc] = useState(false);
-    const [showNfc, setShowNfc] = useState(true); //FOR TESTING
+    const [showNfc, setShowNfc] = useState(false);
     // We store the scanned data in case the device needs registration.
     const [qrData, setQrData] = useState(null);
     const [sessionId, setSessionId] = useState(null);
