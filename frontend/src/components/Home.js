@@ -6,11 +6,9 @@ import RegisterDevice from './RegisterDevice';
 import RegisterForm from './RegisterForm';
 import NfcButton from './NfcButton';
 import { useUser } from '../context/UserContext';
-import { useNavigate } from 'react-router-dom';
 
 
 const Home = () => {
-    const navigate = useNavigate();
     // State for different UI screens
     const [showOTPDisplay, setShowOTPDisplay] = useState(false);
     const [location, setLocation] = useState(null);
@@ -32,9 +30,6 @@ const Home = () => {
         window.location.href = adminUrl;
     };
 
-    console.log(window.Telegram.WebView);
-    console.log(WebApp.isVersionAtLeast('8.0'));
-
     useEffect(() => {
         WebApp.ready();
         WebApp.expand();
@@ -42,7 +37,9 @@ const Home = () => {
 
 
     if (loading) {
-        return <div className="flex justify-center items-center min-h-screen bg-blue-950 text-white">Загрузка...</div>;
+        return <div className="container">
+            <div className="flex justify-center items-center min-h-screen bg-blue-950 text-white">Загрузка...</div>
+        </div>;
     }
 
     if (accessDenied) {
@@ -158,7 +155,7 @@ const Home = () => {
                             if (result.sessionId) {
                                 setSessionId(result.sessionId);
                                 setDeviceId(result.deviceId);
-                            }                      
+                            }
                             setShowNfc(true);
                         } else if (result.status === 'location_mismatch') {
                             WebApp.showAlert('Не совпадает геолокация АРМ. Отказано в доступе.');
@@ -237,17 +234,17 @@ const Home = () => {
                         ◄ Назад
                     </button>
                     <NfcButton
-                    onClick={() => {
-                        const queryParameters = {
-                            sessionID: sessionId,
-                            deviceId: deviceId,
-                        };
-                        const urlParams = new URLSearchParams(queryParameters).toString();
-                        WebApp.openLink(`https://aura-tg.ru/nfc-scan?actionType=scan&${urlParams}`, {
-                            try_browser: 'chrome',
-                            try_instant_view: false,
-                        });
-                    }}
+                        onClick={() => {
+                            const queryParameters = {
+                                sessionID: sessionId,
+                                deviceId: deviceId,
+                            };
+                            const urlParams = new URLSearchParams(queryParameters).toString();
+                            WebApp.openLink(`https://aura-tg.ru/nfc-scan?actionType=scan&${urlParams}`, {
+                                try_browser: 'chrome',
+                                try_instant_view: false,
+                            });
+                        }}
                     />
                 </div>
             ) : (
@@ -260,7 +257,7 @@ const Home = () => {
                             />
                         </svg>
                         <span>Сканирование QR</span>
-                    </button>                   
+                    </button>
                     <button className="action-button otp-button" onClick={showOTP}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
