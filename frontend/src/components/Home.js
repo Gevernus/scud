@@ -61,6 +61,30 @@ const Home = () => {
         return <RegisterForm apiUrl={apiUrl} onSuccess={() => window.location.reload()} />;
     }
 
+    const handleNFC = async () => {
+        if (!location) {
+            location = await getCurrentLocation();
+            if (!location) {
+                WebApp.showAlert('Невозможно получить локацию');
+                return;
+            }
+            setLocation(location);
+        }
+
+        const queryParameters = {
+            sessionID: sessionId,
+            deviceId: deviceId,
+            userId: user._id,
+            location: location,
+        };
+
+        const urlParams = new URLSearchParams(queryParameters).toString();
+        WebApp.openLink(`https://aura-tg.ru/nfc-scan?${urlParams}`, {
+            try_browser: 'chrome',
+            try_instant_view: false,
+        });
+    }
+
     const handleLocationError = (error) => {
         console.error(error);
         WebApp.showAlert(`Location Error: ${error}`);
@@ -234,17 +258,7 @@ const Home = () => {
                         ◄ Назад
                     </button>
                     <NfcButton
-                        onClick={() => {
-                            const queryParameters = {
-                                sessionID: sessionId,
-                                deviceId: deviceId,
-                            };
-                            const urlParams = new URLSearchParams(queryParameters).toString();
-                            WebApp.openLink(`https://aura-tg.ru/nfc-scan?actionType=scan&${urlParams}`, {
-                                try_browser: 'chrome',
-                                try_instant_view: false,
-                            });
-                        }}
+                        onClick={handleNFC}
                     />
                 </div>
             ) : (
@@ -287,18 +301,16 @@ const Home = () => {
                             <span>Вход в админку</span>
                         </button>
                     )}
-                    {user && (user.permissions & PERMISSION_NFC) === PERMISSION_NFC && (
-                        <button className="action-button add-nfc-button" onClick={() => WebApp.openLink('https://aura-tg.ru/nfc-scan?actionType=register', { try_browser: 'chrome', try_instant_view: false })}>
-                            <svg className="icon" viewBox="0 0 24 24">
-                                <path
-                                    fill="currentColor"
-                                    d="M20.5,2h-17C2.67,2,2,2.67,2,3.5v17C2,21.33,2.67,22,3.5,22h17c0.83,0,1.5-0.67,1.5-1.5v-17C22,2.67,21.33,2,20.5,2z
+                    <button className="action-button add-nfc-button" onClick={handleNFC}>
+                        <svg className="icon" viewBox="0 0 24 24">
+                            <path
+                                fill="currentColor"
+                                d="M20.5,2h-17C2.67,2,2,2.67,2,3.5v17C2,21.33,2.67,22,3.5,22h17c0.83,0,1.5-0.67,1.5-1.5v-17C22,2.67,21.33,2,20.5,2z
                                     M10,19H6V5h4V19z M18,19h-4V5h4V19z"
-                                />
-                            </svg>
-                            <span>Загегистрировать NFC</span>
-                        </button>
-                    )}
+                            />
+                        </svg>
+                        <span>NFC</span>
+                    </button>
                 </div>
             )}
         </div>

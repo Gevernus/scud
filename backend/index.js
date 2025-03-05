@@ -378,17 +378,17 @@ app.post('/api/qr/scan', async (req, res) => {
             });
         }
 
-        // Проверяем, есть ли этот пользователь в списке attemptedUsers станции
-        const alreadyAttempted = station.attemptedUsers.some(attempt => attempt.equals(user._id));
-        if (!alreadyAttempted) {
-            station.attemptedUsers.push(user._id);
-            await station.save();
-        }
-
         // Проверяем, есть ли этот пользователь в списке разрешённых пользователей
         const isUserAllowed = station.users.some(stationUser => stationUser._id.equals(user._id));
         if (!isUserAllowed) {
             console.log(`User ${userId} is not allowed to access station ${deviceId}`);
+
+            // Проверяем, есть ли этот пользователь в списке attemptedUsers станции
+            const alreadyAttempted = station.attemptedUsers.some(attempt => attempt.equals(user._id));
+            if (!alreadyAttempted) {
+                station.attemptedUsers.push(user._id);
+                await station.save();
+            }
 
             // Создаем событие "incident"
             await registerEvent({
@@ -401,6 +401,16 @@ app.post('/api/qr/scan', async (req, res) => {
                 message: 'У пользователя нет прав для доступа к рабочей станции'
             });
         }
+
+        const session = new Session({
+            deviceId,
+            sessionId,
+            userId,
+            location,
+            status: 'pending',
+            createdAt: new Date()
+        });
+        await session.save();
 
         //проверяем режим станции
         if (station.nfcMode === 'always') {
@@ -417,13 +427,14 @@ app.post('/api/qr/scan', async (req, res) => {
             station.location = location;
             await station.save();
         }
+
         const [stationLat, stationLon] = station.location.split(',').map(parseFloat);
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
         const maxAllowedDistance = 0.05; // 50 метров
 
-        if (distance > maxAllowedDistance && station.nfcMode === 'geoMismatch') {
+        if (distance > maxAllowedDistance && (station.nfcMode === 'geoMismatch' || station.nfcMode === 'never')) {
             console.log(`Location mismatch: ${distance.toFixed(3)} km`);
 
             // Создаем событие "Несовпадение локации incident"
@@ -433,36 +444,14 @@ app.post('/api/qr/scan', async (req, res) => {
                 sessionId,
                 deviceId
             });
-
+            const status = station.nfcMode === 'geoMismatch' ? 'nfcMode_geoMismatch' : 'location_mismatch';
             return res.status(200).json({
-                status: 'nfcMode_geoMismatch',
+                status,
                 message: `Локация не совпадает. Расстояние: ${distance.toFixed(3)} км`
             });
-        }
+        }        
 
-        if (distance > maxAllowedDistance && station.nfcMode === 'never') {
-            console.log(`Location mismatch: ${distance.toFixed(3)} km`);
-
-            // Создаем событие "Несовпадение локации incident"
-            await registerEvent({
-                eventType: "incident",
-                description: `Местоположение пользователя не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`
-            });
-
-            return res.status(200).json({
-                status: 'location_mismatch',
-                message: `Локация не совпадает. Расстояние: ${distance.toFixed(3)} км`
-            });
-        }
-
-        const session = new Session({
-            deviceId,
-            sessionId,
-            userId,
-            location,
-            status: 'approved',
-            createdAt: new Date()
-        });
+        session.status = 'approved';
         await session.save();
 
         // Создаем событие "authorization"
@@ -471,7 +460,6 @@ app.post('/api/qr/scan', async (req, res) => {
             description: `Пользовател ${user.username || ""} с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
         });
 
-        console.log(`Session created ${sessionId}:${deviceId}`);
         return res.status(200).json({
             status: 'success',
             message: 'Успешно авторизован'
@@ -556,16 +544,23 @@ app.post('/api/qr/add', async (req, res) => {
 //Универсальный эндпоинт для работы с NFC (сканирование + регистрация)
 app.post('/api/nfc-handler', async (req, res) => {
     try {
-        const { tagId, sessionId, actionType, nfcName, deviceId, userId } = req.body;
+        const { tagId, sessionId, nfcName, nfcDescription, userId, location } = req.body;
 
         if (!tagId) return res.status(400).json({ error: 'Не передан tagId' });
+
+        const nfcTag = await Nfc.findOne({ guid: tagId });
+        if (!nfcTag && !nfcName) return res.status(404).json({ status: 'NFC not found', message: 'NFC метка не найдена. Добавьте метку' });
 
         const user = await User.findOne({ _id: userId });
         if (!user) return res.status(403).json({ error: 'Доступ запрещен. Пользователь не найден.' });
 
-        if (actionType === 'register') {
+        if (nfcName && !nfcTag) {
             if (!nfcName || nfcName.trim() === '') {
                 return res.status(400).json({ error: 'Не указано имя NFC-метки' });
+            }
+
+            if (!nfcDescription || nfcDescription.trim() === '') {
+                return res.status(400).json({ error: 'Не указано описание NFC-метки' });
             }
 
             // Проверяем, есть ли у пользователя права на добавление меток
@@ -573,41 +568,56 @@ app.post('/api/nfc-handler', async (req, res) => {
                 return res.status(403).json({ error: 'Недостаточно прав для регистрации NFC.' });
             }
 
-            // Проверяем, существует ли уже метка
-            const existingTag = await Nfc.findOne({ guid: tagId });
-
-            if (existingTag) return res.status(400).json({ error: 'Эта NFC-метка уже зарегистрирована' });
-
             // Создаем новую метку
-            const newTag = new Nfc({ guid: tagId, nfcName});
+            const newTag = new Nfc({ guid: tagId, nfcName, nfcDescription, location});
             await newTag.save();
 
+            await registerEvent({
+                eventType: "NFC",
+                description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcName}.`
+            });
+
             return res.json({ message: '✅ NFC-метка успешно зарегистрирована' });
-        }
+        } 
 
-        // Сканирование NFC
-        const nfcTag = await Nfc.findOne({ guid: tagId });
-        if (!nfcTag) return res.status(404).json({ error: 'Метка не найдена' });
-
-        // Обновляем статус сессии
-        const session = new Session({
-            deviceId,
-            sessionId,
-            userId,
-            status: 'approved',
-            createdAt: new Date()
-        });
-        await session.save();
-
-        // Создаем событие "authorization"
         await registerEvent({
-            eventType: "authorization",
-            description: `Пользовател ${user.username || ""} с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
+            eventType: "NFC",
+            description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
         });
+        
+        if (sessionId){
+            const session = await Session.findOne({
+                sessionId,
+            });
 
-        console.log(`Session created ${sessionId}:${deviceId}`);
-        return res.status(200).json({
+            if (!session) {
+                return res.status(400).json({
+                    status: 'error',
+                    error: 'Не найдено активной сессии',
+                });
+            }   
+
+            const station = await Station.findOne({ deviceId:session.deviceId, deleted: false });
+            const hasNfc = station.nfc.some(nfcId => nfcId.toString() === tagId);
+
+            if (!hasNfc) {
+                return res.status(400).json({
+                    status: 'error',
+                    error: 'NFC метка не привязана к этой рабочей станции',
+                });
+            } 
             
+            session.status = 'approved';
+            await session.save();
+
+            // Создаем событие "authorization"
+            await registerEvent({
+                eventType: "authorization",
+                description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}.`
+            });
+        }  
+        
+        return res.status(200).json({            
             message: 'Успешно авторизован'
         });
 
