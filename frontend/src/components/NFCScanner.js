@@ -24,7 +24,7 @@ const NFCScanner = () => {
                     'Content-Type': 'application/json',
                     'x-telegram-id': window.Telegram.WebApp.initDataUnsafe?.user?.id,
                 },
-                body: JSON.stringify(payload)
+                json: payload
             });
             const data = await response.json();
             setStatus(data.status);
