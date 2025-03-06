@@ -26,6 +26,7 @@ const EventFilter = (props) => (
         { id: 'incident', name: 'Инцидент' },
         { id: 'registration', name: 'Регистрация' },
         { id: 'authorization', name: 'Авторизация' },
+        { id: 'NFC', name: 'NFC' },
       ]}
       alwaysOn
     />
