@@ -744,6 +744,11 @@ const logPermanentDeletion = async (Model, item) => {
             description = `Пользователь ${item.username || "Неизвестно"} (Id: ${item.telegramId || "Неизвестно"}) был разблокирован.`;
             break;
         }
+        case "Nfc": {
+            eventType = "full_delete",
+            description = `Nfc ${item.nfcName || "Неизвестно"} (идентифекатор: ${item.guid || "Неизвестно"}) был удален.`;
+            break;
+        }
         default:
             eventType = "full_delete",
             description = `Неизвестный объект типа ${Model.modelName} был полностью удален.`;
