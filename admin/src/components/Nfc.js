@@ -34,7 +34,7 @@ const NfcFilter = (props) => (
       source="searchField"
       choices={[
         // { id: null, name: 'Без фильтра' },
-        { id: '_id', name: 'NFC идентификатор' },
+        { id: 'id', name: 'NFC идентификатор' },
         { id: 'nfcName', name: 'Название' },
       ]}
       alwaysOn
@@ -70,7 +70,7 @@ export const NfcList = () => {
   return (
     <List filters={<NfcFilter />}>
       <Datagrid isRowSelectable={() => canDelete}>
-        <TextField source="_id" label="NFC идентификатор" />
+        <TextField source="id" label="NFC идентификатор" />
         <TextField source="nfcName" label="Название" />
         <TextField source="nfcDescription" label="Описание" />
         <TextField source="location" label="location" />
@@ -85,7 +85,7 @@ export const NfcEdit = () => (
   <Edit>
     <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput
-        source="_id"
+        source="id"
         label="NFC идентификатор"
         validate={[required('Поле обязательно для заполнения')]}
       />
@@ -112,7 +112,7 @@ export const NfcCrete = () => (
   <Create>
     <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput
-        source="_id"
+        source="id"
         label="NFC идентификатор"
         validate={[required('Поле обязательно для заполнения')]}
       />
@@ -138,7 +138,7 @@ export const NfcCrete = () => (
 export const NfcShow = () => (
   <Show>
     <SimpleShowLayout>
-      <TextField source="_id" label="NFC идентификатор" />
+      <TextField source="id" label="NFC идентификатор" />
       <TextField source="nfcName" label="Название" />
       <TextField source="nfcDescription" label="Описание" />
     </SimpleShowLayout>
