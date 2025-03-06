@@ -65,7 +65,7 @@ const checkPermissionsMiddleware =
       next();
     } catch (error) {
       console.error('Ошибка проверки прав:', error);
-      res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+      res.status(500).json({ error: `Внутренняя ошибка сервера: ${error.message}` });
     }
   };
 
