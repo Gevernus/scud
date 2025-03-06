@@ -585,7 +585,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
         });
         
-        if (sessionId != ''){
+        if (sessionId){
             const session = await Session.findOne({
                 sessionId,
             });
@@ -598,7 +598,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             }   
 
             const station = await Station.findOne({ deviceId:session.deviceId, deleted: false });
-            const hasNfc = station.nfc.some(nfcId => nfcId.toString() === tagId);
+            const hasNfc = station.nfc.some(nfcId => nfcId.toString() === nfcTag.id);
 
             if (!hasNfc) {
                 return res.status(400).json({
@@ -610,15 +610,23 @@ app.post('/api/nfc-handler', async (req, res) => {
             session.status = 'approved';
             await session.save();
 
+            if (!nfcTag.location) {
+                nfcTag.location = location;
+                await nfcTag.save();
+            }
+
             // Создаем событие "authorization"
             await registerEvent({
                 eventType: "authorization",
                 description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}.`
             });
+            return res.status(200).json({
+                message: 'Успешно авторизован'
+            });
         }  
         
         return res.status(200).json({            
-            message: 'Успешно авторизован'
+            message: 'Сканирование прошло успешно'
         });
 
     } catch (error) {
