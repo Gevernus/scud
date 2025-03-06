@@ -598,7 +598,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             }   
 
             const station = await Station.findOne({ deviceId:session.deviceId, deleted: false });
-            const hasNfc = station.nfc.some(nfcId => nfcId.toString() === tagId);
+            const hasNfc = station.nfc.some(nfcId => nfcId.toString() === nfcTag.id);
 
             if (!hasNfc) {
                 return res.status(400).json({
