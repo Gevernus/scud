@@ -49,7 +49,7 @@ const AdminWrapper = () => {
   const canViewCounterparty = checkPermission(PERMISSIONS_MODULES["Контрагенты"].view);
   const canViewEvents = checkPermission(PERMISSIONS_MODULES["Журнал событий"].view);
   const canViewRegistration = checkPermission(PERMISSIONS_MODULES["Регистрация"].view);
-  const canViewNfc = checkPermission(PERMISSIONS_MODULES["Nfc"].view);
+  const canViewNfc = checkPermission(PERMISSIONS_MODULES["Метки NFC"].view);
 
   return (
     <Admin dashboard={Dashboard} dataProvider={dataProvider} layout={MyLayout}>
