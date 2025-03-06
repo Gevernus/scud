@@ -75,12 +75,12 @@ const Home = () => {
                     });
                 });
             }
-            location = await getCurrentLocation();
-            if (!location) {
+            const newLocation = await getCurrentLocation();
+            if (!newLocation) {
                 WebApp.showAlert('Невозможно получить локацию');
                 return;
             }
-            setLocation(location);
+            setLocation(newLocation);
         }
 
         const queryParameters = {
