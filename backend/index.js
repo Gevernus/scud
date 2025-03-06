@@ -603,7 +603,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             if (!hasNfc) {
                 return res.status(400).json({
                     status: 'error',
-                    error: `NFC метка не привязана к этой рабочей станции: ${station.nfc}:${tagId}`,
+                    error: 'NFC метка не привязана к этой рабочей станции',
                 });
             } 
             
