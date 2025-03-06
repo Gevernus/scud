@@ -98,13 +98,13 @@ const NFCScanner = () => {
     return (
         <div className="container">
             <div className="button-container">
-                <h2>Сканирование NFC</h2>
                 {status === 'NFC not found' && (
                     <input
                         type="text"
                         placeholder="Введите имя NFC-метки"
                         value={nfcName}
                         onChange={(e) => setNfcName(e.target.value)}
+                        className='p-2 border border-gray-600 rounded-md text-black'
                         required
                     />
                 )}
@@ -114,6 +114,7 @@ const NFCScanner = () => {
                         placeholder="Введите описание NFC-метки"
                         value={nfcDescription}
                         onChange={(e) => setNfcDescription(e.target.value)}
+                        className='p-2 border border-gray-600 rounded-md text-black'
                         required
                     />
                 )}
