@@ -610,6 +610,11 @@ app.post('/api/nfc-handler', async (req, res) => {
             session.status = 'approved';
             await session.save();
 
+            if (!nfcTag.location) {
+                nfcTag.location = location;
+                await nfcTag.save();
+            }
+
             // Создаем событие "authorization"
             await registerEvent({
                 eventType: "authorization",
