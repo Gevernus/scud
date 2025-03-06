@@ -584,6 +584,28 @@ app.post('/api/nfc-handler', async (req, res) => {
             eventType: "NFC",
             description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
         });
+
+        if (!nfcTag.location && location) {
+            nfcTag.location = location;
+            await nfcTag.save();
+        }
+
+        const [stationLat, stationLon] = nfcTag.location.split(',').map(parseFloat);
+        const [latitude, longitude] = location.split(',').map(parseFloat);
+
+        const distance = haversine(stationLat, stationLon, latitude, longitude);
+        const maxAllowedDistance = 0.05; // 50 метров
+
+        if (distance > maxAllowedDistance) {
+
+            // Создаем событие "Несовпадение локации incident"
+            await registerEvent({
+                eventType: "incident",
+                description: `Местоположение пользователя ${user.username || ""} с ID ${userId} не совпадает с NFC меткой ${nfcTag.name}. Расстояние: ${distance.toFixed(3)} km`,
+                sessionId,
+                deviceId
+            });
+        }      
         
         if (sessionId){
             const session = await Session.findOne({
@@ -608,12 +630,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             } 
             
             session.status = 'approved';
-            await session.save();
-
-            if (!nfcTag.location) {
-                nfcTag.location = location;
-                await nfcTag.save();
-            }
+            await session.save();            
 
             // Создаем событие "authorization"
             await registerEvent({
