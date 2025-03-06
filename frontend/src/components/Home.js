@@ -63,6 +63,18 @@ const Home = () => {
 
     const handleNFC = async () => {
         if (!location) {
+            if (!WebApp.LocationManager.isInited) {
+                await new Promise((resolve) => {
+                    WebApp.LocationManager.init(() => {
+                        if (!WebApp.LocationManager.isInited) {
+                            WebApp.showAlert("Невозможно получить локацию");
+                            resolve(false);
+                            return;
+                        }
+                        resolve(true);
+                    });
+                });
+            }
             location = await getCurrentLocation();
             if (!location) {
                 WebApp.showAlert('Невозможно получить локацию');
