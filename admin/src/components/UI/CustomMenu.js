@@ -91,12 +91,12 @@ const CustomMenu = ({ open }) => {
         </ListItemButton>
       </Tooltip>
 
-      <Tooltip title="Nfc" placement="right" disableHoverListener={open}>
+      <Tooltip title="Метки NFC" placement="right" disableHoverListener={open}>
         <ListItemButton component={Link} to="/nfc">
           <ListItemIcon>
             <MdOutlineNfc />
           </ListItemIcon>
-          <ListItemText primary="Nfc" />
+          <ListItemText primary="Метки NFC" />
         </ListItemButton>
       </Tooltip>
 

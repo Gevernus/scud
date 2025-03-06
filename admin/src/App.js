@@ -104,7 +104,7 @@ const AdminWrapper = () => {
           edit={checkPermission(PERMISSIONS_MODULES["Nfc"].edit) ? NfcEdit : null}
           show={NfcShow}
           create={NfcCrete}
-          options={{ label: "Nfc" }}
+          options={{ label: "Метки NFC" }}
         />
       )}
       {canViewEvents && (
