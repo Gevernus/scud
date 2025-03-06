@@ -615,10 +615,13 @@ app.post('/api/nfc-handler', async (req, res) => {
                 eventType: "authorization",
                 description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}.`
             });
+            return res.status(200).json({
+                message: 'Успешно авторизован'
+            });
         }  
         
         return res.status(200).json({            
-            message: 'Успешно авторизован'
+            message: 'Сканирование прошло успешно'
         });
 
     } catch (error) {
