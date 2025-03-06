@@ -18,13 +18,16 @@ const NFCScanner = () => {
     const sendToServer = async (tagId) => {
         try {
             const payload = { tagId, sessionId, nfcName, nfcDescription, userId, location };
+            const jsonPayload = JSON.stringify(payload, (key, value) =>
+                value === null ? undefined : value
+            );
             const response = await fetch(`https://aura-tg.ru/api/nfc-handler`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'x-telegram-id': window.Telegram.WebApp.initDataUnsafe?.user?.id,
                 },
-                json: payload
+                body: jsonPayload
             });
             const data = await response.json();
             setStatus(data.status);

@@ -585,7 +585,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
         });
         
-        if (sessionId != ''){
+        if (!sessionId){
             const session = await Session.findOne({
                 sessionId,
             });
