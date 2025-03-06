@@ -140,7 +140,7 @@ app.post("/api/front/users", async (req, res) => {
         
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);
-        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+        res.status(500).json({ error: `Внутренняя ошибка сервера: ${error.message}` });
     }
 });    
 
@@ -209,7 +209,7 @@ app.post("/api/front/users/new", async (req, res) => {
 
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);
-        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+        res.status(500).json({ error: `Внутренняя ошибка сервера: ${error.message}` });
     }
 });
 
@@ -235,7 +235,7 @@ app.post("/api/front/users/verification", async (req, res) => {
 
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);
-        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+        res.status(500).json({ error: `Внутренняя ошибка сервера: ${error.message}` });
     }
 });
 
@@ -265,7 +265,7 @@ app.post("/api/admin/auth/check", async (req, res) => {
         res.json(user);
     } catch (error) {
         console.error("Ошибка проверки пользователя:", error);
-        res.status(500).json({ error: "Внутренняя ошибка сервера" });
+        res.status(500).json({ error: `Внутренняя ошибка сервера: ${error.message}` });
     }
 });
 
@@ -623,7 +623,7 @@ app.post('/api/nfc-handler', async (req, res) => {
 
     } catch (error) {
         console.error('Ошибка NFC:', error);
-        return res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+        return res.status(500).json({ error: `Внутренняя ошибка сервера: ${error.message}` });
     }
 });
 
