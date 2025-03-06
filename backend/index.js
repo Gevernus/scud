@@ -1126,6 +1126,11 @@ app.delete("/api/admin/lockUsers/:id",
     handlePermanentDelete(LockUsers));
 app.delete("/api/admin/nfc/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].edit), 
-    handlePermanentDelete(Nfc)); 
+    handlePermanentDelete(Nfc));
+    
+app.patch("/api/admin/nfc/:id", 
+    checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].edit), 
+    handleUpdate(Nfc));
+    
 
 app.listen(8000, () => console.log('Backend running on port 8000'));

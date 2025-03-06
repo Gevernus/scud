@@ -19,6 +19,7 @@ import {
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
+import ClearLocationButton from './UI/ClearLocationButton';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -73,7 +74,8 @@ export const NfcList = () => {
         <TextField source="guid" label="NFC идентификатор" />
         <TextField source="nfcName" label="Название" />
         <TextField source="nfcDescription" label="Описание" />
-        <TextField source="location" label="location" />
+        <TextField source="location" label="location" />      
+        {(canDelete) && (<ClearLocationButton />)}
         <DateField source="createdAt" label="Дата" showTime />
         {(canDelete) && (<DeleteButton />)}
       </Datagrid>
@@ -102,7 +104,6 @@ export const NfcEdit = () => (
       <TextInput
         source="location"
         label="location"
-        validate={[required('Поле обязательно для заполнения')]}
       />
     </SimpleForm>
   </Edit>
@@ -129,7 +130,6 @@ export const NfcCrete = () => (
       <TextInput
         source="location"
         label="location"
-        validate={[required('Поле обязательно для заполнения')]}
       />
     </SimpleForm>
   </Create>
