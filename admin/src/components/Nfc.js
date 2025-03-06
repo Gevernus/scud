@@ -72,6 +72,8 @@ export const NfcList = () => {
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="guid" label="NFC идентификатор" />
         <TextField source="nfcName" label="Название" />
+        <TextField source="nfcDescription" label="Описание" />
+        <TextField source="location" label="location" />
         <DateField source="createdAt" label="Дата" showTime />
         {(canDelete) && (<DeleteButton />)}
       </Datagrid>
@@ -92,6 +94,16 @@ export const NfcEdit = () => (
         label="Название"
         validate={[required('Поле обязательно для заполнения')]}
       />
+      <TextInput
+        source="nfcDescription"
+        label="Описание"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput
+        source="location"
+        label="location"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
     </SimpleForm>
   </Edit>
 );
@@ -109,6 +121,16 @@ export const NfcCrete = () => (
         label="Название"
         validate={[required('Поле обязательно для заполнения')]}
       />
+      <TextInput
+        source="nfcDescription"
+        label="Описание"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
+      <TextInput
+        source="location"
+        label="location"
+        validate={[required('Поле обязательно для заполнения')]}
+      />
     </SimpleForm>
   </Create>
 );
@@ -118,6 +140,7 @@ export const NfcShow = () => (
     <SimpleShowLayout>
       <TextField source="guid" label="NFC идентификатор" />
       <TextField source="nfcName" label="Название" />
+      <TextField source="nfcDescription" label="Описание" />
     </SimpleShowLayout>
   </Show>
 );
