@@ -601,7 +601,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение пользователя ${user.username || ""} с ID ${userId} не совпадает с NFC меткой ${nfcTag.name}. Расстояние: ${distance.toFixed(3)} km`,
+                description: `Местоположение пользователя ${user.username || ""} с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distance.toFixed(3)} km`,
                 sessionId,
                 deviceId
             });
