@@ -569,7 +569,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             // }
 
             // Создаем новую метку
-            const newTag = new Nfc({ id: mongoose.Types.ObjectId(tagId), nfcName, nfcDescription, location});
+            const newTag = new Nfc({ _id: tagId, nfcName, nfcDescription, location});
             await newTag.save();
 
             await registerEvent({
