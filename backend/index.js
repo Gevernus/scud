@@ -597,13 +597,10 @@ app.post('/api/nfc-handler', async (req, res) => {
         const maxAllowedDistance = 0.05; // 50 метров
 
         if (distance > maxAllowedDistance) {
-
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
                 description: `Местоположение пользователя ${user.username || ""} с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distance.toFixed(3)} km`,
-                sessionId,
-                deviceId
             });
         }      
         
