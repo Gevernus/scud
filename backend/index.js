@@ -548,7 +548,7 @@ app.post('/api/nfc-handler', async (req, res) => {
 
         if (!tagId) return res.status(400).json({ error: 'Не передан tagId' });
 
-        const nfcTag = await Nfc.findOne({ _id: tagId });
+        const nfcTag = await Nfc.findOne({ guid: tagId });
         if (!nfcTag && !nfcName) return res.status(404).json({ status: 'NFC not found', message: 'NFC метка не найдена. Добавьте метку' });
 
         const user = await User.findOne({ _id: userId });
@@ -569,7 +569,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             // }
 
             // Создаем новую метку
-            const newTag = new Nfc({ _id: tagId, nfcName, nfcDescription, location});
+            const newTag = new Nfc({ guid: tagId, nfcName, nfcDescription, location});
             await newTag.save();
 
             await registerEvent({

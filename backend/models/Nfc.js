@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const NfcSchema = new mongoose.Schema({
+  guid: { type: String, required: true },
   nfcName: { type: String, required: true },
   nfcDescription: { type: String, required: true },
   location: { type: String, required: true },
