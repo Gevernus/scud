@@ -126,11 +126,11 @@ export const StationsEdit = () => (
         label="Имя пользователя"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput
+      {/* <TextInput
         source="password"
         label="Пароль"
         validate={[required('Поле обязательно для заполнения')]}
-      />
+      /> */}
       <TextInput source="company" label="Компания" />
       <TextInput source="location" label="Геопозиция" />
       <SelectInput
@@ -151,43 +151,43 @@ export const StationsEdit = () => (
   </Edit>
 );
 
-export const StationsCreate = () => (
-  <Create>
-    <SimpleForm>
-      <TextInput
-        source="deviceId"
-        label="ID станции"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
-        source="name"
-        label="Имя станции"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
-        source="username"
-        label="Имя пользователя"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
-        source="password"
-        label="Пароль"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput source="location" label="Геопозиция" />
-      <SelectInput
-        source="nfcMode"
-        label="Режим работы NFC"
-        choices={[
-          { id: "always", name: "Всегда сканировать NFC" },
-          { id: "geoMismatch", name: "Только при несовпадении геопозиции" },
-          { id: "never", name: "Никогда" },
-        ]}
-        validate={[required('Выберите режим работы NFC')]}
-      />
-      <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
-        <AutocompleteArrayInput optionText="nfcName" />
-      </ReferenceArrayInput>
-    </SimpleForm>
-  </Create>
-);
+// export const StationsCreate = () => (
+//   <Create>
+//     <SimpleForm>
+//       <TextInput
+//         source="deviceId"
+//         label="ID станции"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput
+//         source="name"
+//         label="Имя станции"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput
+//         source="username"
+//         label="Имя пользователя"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput
+//         source="password"
+//         label="Пароль"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput source="location" label="Геопозиция" />
+//       <SelectInput
+//         source="nfcMode"
+//         label="Режим работы NFC"
+//         choices={[
+//           { id: "always", name: "Всегда сканировать NFC" },
+//           { id: "geoMismatch", name: "Только при несовпадении геопозиции" },
+//           { id: "never", name: "Никогда" },
+//         ]}
+//         validate={[required('Выберите режим работы NFC')]}
+//       />
+//       <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
+//         <AutocompleteArrayInput optionText="nfcName" />
+//       </ReferenceArrayInput>
+//     </SimpleForm>
+//   </Create>
+// );

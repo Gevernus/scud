@@ -68,7 +68,7 @@ const AdminWrapper = () => {
           name="stations"
           list={StationsList}
           edit={checkPermission(PERMISSIONS_MODULES["Станции"].edit) ? StationsEdit : null}
-          create={checkPermission(PERMISSIONS_MODULES["Станции"].create) ? StationsCreate : null}
+          // create={checkPermission(PERMISSIONS_MODULES["Станции"].create) ? StationsCreate : null}
           options={{ label: "Станции" }}
         />
       )}
