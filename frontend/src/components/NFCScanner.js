@@ -19,7 +19,7 @@ const NFCScanner = () => {
         try {
             const payload = { tagId, sessionId, nfcName, nfcDescription, userId, location };
             const jsonPayload = JSON.stringify(payload, (key, value) =>
-                value === null ? undefined : value
+                value === null || value === 'null' ? undefined : value
             );
             const response = await fetch(`https://aura-tg.ru/api/nfc-handler`, {
                 method: 'POST',
