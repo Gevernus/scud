@@ -564,9 +564,9 @@ app.post('/api/nfc-handler', async (req, res) => {
             }
 
             // Проверяем, есть ли у пользователя права на добавление меток
-            if (!checkPermission(user.permissions, PERMISSIONS_MODULES["Nfc"].edit)) {
-                return res.status(403).json({ error: 'Недостаточно прав для регистрации NFC.' });
-            }
+            // if (!checkPermission(user.permissions, PERMISSIONS_MODULES["Nfc"].edit)) {
+            //     return res.status(403).json({ error: 'Недостаточно прав для регистрации NFC.' });
+            // }
 
             // Создаем новую метку
             const newTag = new Nfc({ guid: tagId, nfcName, nfcDescription, location});
