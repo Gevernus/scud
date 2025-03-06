@@ -56,7 +56,7 @@ export const LockUsersList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Регистрация'].edit);
 
   return (
-    <List filters={<LockUsersFilter />}>
+    <List filters={<LockUsersFilter />} sort={{ field: "createdAt", order: "DESC" }}>
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="telegramId" label="Telegram ID" />
         <TextField source="firstName" label="Имя" />

@@ -68,7 +68,7 @@ export const NfcList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Nfc'].edit);
 
   return (
-    <List filters={<NfcFilter />}>
+    <List filters={<NfcFilter />} sort={{ field: "createdAt", order: "DESC" }}>
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="guid" label="NFC идентификатор" />
         <TextField source="nfcName" label="Название" />

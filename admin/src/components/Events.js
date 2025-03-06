@@ -13,7 +13,7 @@ import { PERMISSIONS_MODULES } from '../permissions';
 
 
 const EventFilter = (props) => (
-  <Filter {...props}>
+  <Filter {...props} defaultValues={{ eventType: '', dateRange: '', startDate: '', endDate: '' }}>
     {/* Filter by event type */}
     <SelectInput
       label="Тип события"
@@ -56,7 +56,7 @@ export const EventList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Журнал событий'].delete);
   
   return (
-    <List filters={<EventFilter />}>
+    <List filters={<EventFilter />} sort={{ field: "createdAt", order: "DESC" }}>
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="eventType" label="Тип события" />
         <TextField source="description" label="Описание" />

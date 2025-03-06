@@ -73,7 +73,7 @@ export const CounterpartyList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Контрагенты'].delete);
 
   return (
-    <List filters={<CounterpartyFilter />}>
+    <List filters={<CounterpartyFilter />} sort={{ field: "createdAt", order: "DESC" }}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="id" label="ID Контрагента" />
         <TextField source="fullName" label="Полное название" />

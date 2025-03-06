@@ -29,7 +29,7 @@ const CustomMenu = ({ open }) => {
       </Tooltip>
 
       <Tooltip title="Пользователи" placement="right" disableHoverListener={open}>
-        <ListItemButton component={Link} to="/users">
+        <ListItemButton component={Link} to="/users?filter=%7B%7D">
           <ListItemIcon>
             <FaUsers />
           </ListItemIcon>
@@ -38,7 +38,7 @@ const CustomMenu = ({ open }) => {
       </Tooltip>
 
       <Tooltip title="Журнал событий" placement="right" disableHoverListener={open}>
-        <ListItemButton component={Link} to="/events">
+        <ListItemButton component={Link} to="/events?filter=%7B%7D">
           <ListItemIcon>
             <MdOutlineEventNote />
           </ListItemIcon>
@@ -56,7 +56,7 @@ const CustomMenu = ({ open }) => {
       </Tooltip>
 
       <Tooltip title="Станции" placement="right" disableHoverListener={open}>
-        <ListItemButton component={Link} to="/stations">
+        <ListItemButton component={Link} to="/stations?filter=%7B%7D">
           <ListItemIcon>
             <FaServer />
           </ListItemIcon>
@@ -65,7 +65,7 @@ const CustomMenu = ({ open }) => {
       </Tooltip>
 
       <Tooltip title="Контрагенты" placement="right" disableHoverListener={open}>
-        <ListItemButton component={Link} to="/counterparts">
+        <ListItemButton component={Link} to="/counterparts?filter=%7B%7D">
           <ListItemIcon>
             <GiTeamIdea />
           </ListItemIcon>
@@ -83,7 +83,7 @@ const CustomMenu = ({ open }) => {
       </Tooltip>
       
       <Tooltip title="Заблокированные пользователи" placement="right" disableHoverListener={open}>
-        <ListItemButton component={Link} to="/lockUsers">
+        <ListItemButton component={Link} to="/lockUsers?filter=%7B%7D">
           <ListItemIcon>
             <FaUsersSlash />
           </ListItemIcon>
@@ -92,7 +92,7 @@ const CustomMenu = ({ open }) => {
       </Tooltip>
 
       <Tooltip title="Метки NFC" placement="right" disableHoverListener={open}>
-        <ListItemButton component={Link} to="/nfc">
+        <ListItemButton component={Link} to="/nfc?filter=%7B%7D">
           <ListItemIcon>
             <MdOutlineNfc />
           </ListItemIcon>

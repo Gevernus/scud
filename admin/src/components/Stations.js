@@ -75,7 +75,7 @@ export const StationsList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Станции'].delete);
 
   return (
-    <List filters={<StationFilter />}>
+    <List filters={<StationFilter />} sort={{ field: "createdAt", order: "DESC" }}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="deviceId" label="ID станции" />
         <TextField source="name" label="Название" />
