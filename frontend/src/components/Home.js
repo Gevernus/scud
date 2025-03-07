@@ -186,7 +186,6 @@ const Home = () => {
                             WebApp.showAlert('Отказано в доступе, у вас нет прав на данное рабочее место. Обратитесь к администратору.');
                             WebApp.closeScanQrPopup();
                         } else if (result.status === 'nfcMode_always' || result.status === 'nfcMode_geoMismatch') {
-                            WebApp.showAlert('Подтвердите доступ с помощью NFC.');
                             WebApp.closeScanQrPopup();
                             if (result.sessionId) {
                                 setSessionId(result.sessionId);
