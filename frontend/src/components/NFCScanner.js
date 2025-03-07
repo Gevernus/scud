@@ -121,7 +121,7 @@ const NFCScanner = () => {
                         required
                     />
                 )}
-                {showLabel ? (
+                {!showLabel ? (
                     <button onClick={handleWriteOrRead} className="action-button qr-button">
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
