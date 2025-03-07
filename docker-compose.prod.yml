@@ -53,6 +53,7 @@ services:
     environment:
       - PUBLIC_URL=/admin
       - REACT_APP_API_URL=https://aura-tg.ru/api/admin
+      - REACT_APP_FRONT_URL=https://aura-tg.ru/
       - NODE_ENV=production
     depends_on:
       - backend

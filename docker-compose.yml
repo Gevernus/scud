@@ -73,6 +73,7 @@ services:
       - "traefik.http.services.admin.loadbalancer.server.port=4000"
     environment:
       - REACT_APP_API_URL=http://localhost:8000/api/admin
+      - REACT_APP_FRONT_URL=http://localhost:3000/
       - NODE_ENV=development
     volumes:
       - ./admin:/app

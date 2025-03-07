@@ -10,15 +10,26 @@ import {
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FaTrashCan, FaUsers, FaUserPlus } from 'react-icons/fa6';
-import { MdOutlineEventNote, MdExpandLess, MdExpandMore, MdOutlineSecurityUpdateWarning, MdOutlineNfc } from 'react-icons/md';
+import { MdOutlineEventNote, MdExpandLess, MdExpandMore, MdOutlineSecurityUpdateWarning, MdOutlineNfc, MdOutlineExitToApp } from 'react-icons/md';
 import { FaServer, FaHome, FaUsersSlash } from 'react-icons/fa';
 import { GiTeamIdea } from 'react-icons/gi';
 
 const CustomMenu = ({ open }) => {
   const [openTrash, setOpenTrash] = useState(false); // Basket opening control
+  const frontUrl = process.env.REACT_APP_FRONT_URL;
 
   return (
     <List component="nav">
+      
+      <Tooltip title="Выход" placement="right" disableHoverListener={open}>
+        <ListItemButton onClick={() => window.location.href = frontUrl}>
+          <ListItemIcon>
+          <MdOutlineExitToApp />
+          </ListItemIcon>
+          <ListItemText primary="Выход" />
+        </ListItemButton>
+      </Tooltip>
+
       <Tooltip title="Главная" placement="right" disableHoverListener={open}>
         <ListItemButton component={Link} to="/">
           <ListItemIcon>
