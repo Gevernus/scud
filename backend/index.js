@@ -127,7 +127,7 @@ app.post("/api/front/users", async (req, res) => {
         if (!isPasswordValid) {
             await registerEvent({
                 eventType: "incident",
-                description: `Неудачная попытка регестрации пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) неверный PIN.`
+                description: `Неудачная попытка регистрации пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) неверный PIN.`
             });
             return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
         }

@@ -13,7 +13,7 @@ export const RegistrationList = () => (
   <List>
     <Datagrid rowClick="edit" isRowSelectable={() => false}>
       <TextField source="pass" label="Пароль" />
-      <BooleanField source="status" label="Активация регестрации" />
+      <BooleanField source="status" label="Активация регистрации" />
     </Datagrid>
   </List>
 );
@@ -21,7 +21,7 @@ export const RegistrationList = () => (
 export const RegistrationEdit = () => (
   <Edit>
     <SimpleForm>
-      <BooleanInput source="status" label="Активация регестрации" />
+      <BooleanInput source="status" label="Активация регистрации" />
       <PasswordInput source="pass" label="Пароль" />
     </SimpleForm>
   </Edit>
