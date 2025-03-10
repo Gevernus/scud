@@ -32,6 +32,7 @@ const NFCScanner = () => {
             });
             const data = await response.json();
             setStatus(data.status);
+            setShowLabel(false);
             alert(data.message || `❌ Ошибка: ${data.error}`);
         } catch (error) {
             alert(`Ошибка сети: ${error}`);
@@ -75,7 +76,7 @@ const NFCScanner = () => {
                         alert(`Ошибка записи NFC: ${err}`);
                     } finally {
                         ignoreRead = false;
-                        abortController.abort(); // Stop scanning after write.
+                        abortController.abort(); // Stop scanning after write.                        
                     }
                 } else {
                     // If the tag has data, show it.
