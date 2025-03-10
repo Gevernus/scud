@@ -81,6 +81,7 @@ export const StationsList = () => {
         <TextField source="name" label="Название" />
         <TextField source="company" label="Компания" />
         <TextField source="location" label="Геопозиция" />
+        <TextField source="loginMode" label="Способ входа" />
         <TextField source="nfcMode" label="Режим работы NFC" />
         <ReferenceArrayField
           label="Разрешенные пользователи"
@@ -134,6 +135,15 @@ export const StationsEdit = () => (
       /> */}
       <TextInput source="company" label="Компания" />
       <TextInput source="location" label="Геопозиция" />
+      <SelectInput
+        source="loginMode"
+        label="Способ входа"
+        choices={[
+          { id: "QR", name: "Вход по QR" },
+          { id: "PASSWORD", name: "Вход по паролю" },
+        ]}
+        validate={[required('Выберите режим работы')]}
+      />
       <SelectInput
         source="nfcMode"
         label="Режим работы NFC"
