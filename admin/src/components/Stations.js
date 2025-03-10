@@ -90,7 +90,8 @@ export const StationsList = () => {
           <SingleFieldList linkType="show">
             <ChipField source="username" />
           </SingleFieldList>
-        </ReferenceArrayField>       
+        </ReferenceArrayField>
+        <TextField source="description" label="Описание" />       
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
         <ReferenceArrayField
@@ -147,6 +148,7 @@ export const StationsEdit = () => (
       <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
         <AutocompleteArrayInput optionText="nfcName" />
       </ReferenceArrayInput>
+      <TextInput source="description" label="Описание" /> 
     </SimpleForm>
   </Edit>
 );

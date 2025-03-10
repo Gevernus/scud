@@ -7,6 +7,7 @@ const stationSchema = new mongoose.Schema({
     deviceId: { type: String, required: true, unique: true },
     username: { type: String },
     company: { type: String },
+    description: { type: String },
     name: { type: String },
     password: { type: String },
     users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
