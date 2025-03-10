@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import { Title } from 'react-admin';
 import { useUser } from '../context/UserContext';
-import { PERMISSIONS_MODULES } from '../permissions';
+import { PERMISSIONS_MODULES, checkPermission } from '../permissions';
 
 export const Dashboard = () => {
-  const { user, checkPermission } = useUser();
+  const { user } = useUser();
 
   const permissions = user.permissions || 0;
   const modulePermissions = {};
