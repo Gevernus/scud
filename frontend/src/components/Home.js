@@ -312,7 +312,7 @@ const Home = () => {
                             <span>Вход в админку</span>
                         </button>
                     )}
-                    <button className="action-button add-nfc-button" onClick={handleNFC}>
+                    <button className="action-button otp-button" onClick={handleNFC}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
                                 fill="currentColor"
