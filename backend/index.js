@@ -312,9 +312,16 @@ app.get('/api/qr', async (req, res) => {
         if (!station) {
             return res.status(404).json({
                 status: 'device_not_found',
+                mode: 'PASSWORD',
                 message: 'Рабочая станция не зарегистрирована',
-                username: '',
-                password: ''
+            });
+        }
+
+        if (station.loginMode == 'PASSWORD') {
+            return res.status(200).json({
+                status: 'password_mode',
+                mode: 'PASSWORD',
+                message: 'Необходимо ввести логин и пароль',
             });
         }
 
@@ -328,25 +335,20 @@ app.get('/api/qr', async (req, res) => {
         if (!session) {
             return res.status(200).json({
                 status: 'pending',
+                mode: 'PASSWORD',
                 message: 'Не найдено активной сессии',
-                username: '',
-                password: ''
             });
         }
         // Return credentials for approved session
         return res.status(200).json({
             status: 'approved',
             message: 'Session approved',
-            username: station.username,
-            password: station.password
         });
     } catch (error) {
         console.error('Error in /api/qr:', error);
         res.status(500).json({
             status: 'error',
             message: 'Internal server error',
-            username: '',
-            password: ''
         });
     }
 });
@@ -365,7 +367,14 @@ app.post('/api/qr/scan', async (req, res) => {
                 status: 'device_not_found',
                 message: 'Нужно зарегистрировать рабочую станцию'
             });
-        }      
+        }   
+        
+        if (station.loginMode == 'PASSWORD') {
+            return res.status(200).json({
+                status: 'password_mode',
+                message: 'Вход по QR запрещен',
+            });
+        }
         
         // Проверяем, существует ли пользователь
         const user = await User.findOne({ _id: userId });
@@ -479,16 +488,15 @@ app.post('/api/qr/scan', async (req, res) => {
 });
 
 app.post('/api/qr/add', async (req, res) => {
-    const { deviceId, name, companyName, username, password } = req.body;
+    const { deviceId, name, companyName, description } = req.body;
 
     // Decode base64 QR data
     // const { deviceId, sessionId } = decodeQRData(qrData);
     try {
         const existingStation = await Station.findOne({ deviceId });
         if (existingStation) {
-            existingStation.username = username;
-            existingStation.password = password;
             existingStation.name = name;
+            existingStation.description = description;
             existingStation.company = companyName;
             existingStation.deleted = false;
             existingStation.updatedAt = new Date();
@@ -510,10 +518,9 @@ app.post('/api/qr/add', async (req, res) => {
 
         const station = new Station({
             deviceId,
-            username,
             name,
+            description,
             company: companyName,
-            password: password,
             createdAt: new Date()
         });
         await station.save();
