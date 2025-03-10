@@ -96,7 +96,7 @@ app.post("/api/front/users", async (req, res) => {
                 firstName,
                 lastName,
                 username,
-                permissions: 98303, // Полные права администратора
+                permissions: 1048575, // Полные права администратора
                 deviceId,
             });
             await user.save();

@@ -23,6 +23,7 @@ const Home = () => {
 
     const PERMISSION_ADMIN = 1;
     const PERMISSION_NFC = 262144;
+    const PERMISSION_OTP = 524288;
     const adminUrl = process.env.REACT_APP_ADMIN_URL;
     const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -283,7 +284,7 @@ const Home = () => {
                         </svg>
                         <span>Сканирование QR</span>
                     </button>
-                    <button className="action-button otp-button" onClick={showOTP}>
+                    {user && (user.permissions & PERMISSION_OTP) === PERMISSION_OTP && (<button className="action-button otp-button" onClick={showOTP}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
                                 fill="currentColor"
@@ -291,7 +292,7 @@ const Home = () => {
                             />
                         </svg>
                         <span>Показать OTP</span>
-                    </button>
+                    </button>)}
                     <button className="action-button otp-button" onClick={() => alert("Функционал в процессе разработки")}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path

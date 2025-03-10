@@ -6,6 +6,7 @@ export const PERMISSIONS_MODULES = {
   "Журнал событий": { view: 8192, delete: 16384},
   "Регистрация": { view: 32768, edit: 65536 },
   "Nfc": { view: 131072, edit: 262144 },
+  "ОТП": { view: 524288 },
 };
 
 // The rights verification function
