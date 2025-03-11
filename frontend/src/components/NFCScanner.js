@@ -133,7 +133,7 @@ const NFCScanner = () => {
                         <span>{status === 'NFC not found' ? 'Добавить метку' : 'Сканировать NFC'}</span>
                     </button>
                 ) : (
-                    <div className="text-center mb-8">
+                    <div className="text-center mb-8 p-3 border rounded-lg bg-gray-800">
                         <p className="text-gray-400">Поднесите телефон к NFC метке</p>
                     </div>
                 )}
