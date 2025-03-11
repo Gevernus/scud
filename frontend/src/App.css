@@ -6,7 +6,7 @@
   max-width: 100%;
   position: relative;
   min-height: 100vh;
-  background-color: rgb(17 24 39 / var(--tw-bg-opacity, 1));
+  background: rgb(17 24 39 / var(--tw-bg-opacity, 1)) url("../public/images/720х1600_1.png") no-repeat center / cover;
   padding: 10px;
   display: flex;
   align-items: center;
@@ -35,6 +35,7 @@
   transition: all 0.2s ease;
   width: 100%;
   color: var(--tg-theme-button-text-color, #ffffff);
+  box-shadow: 0px 0px 9px 3px #d8dadb5c; 
 }
 
 .action-button:hover {
@@ -76,6 +77,7 @@
   font-size: 16px;
   cursor: pointer;
   z-index: 10;
+  box-shadow: 0px 0px 9px 3px #d8dadb5c; 
 }
 
 .back-button:hover {
@@ -88,7 +90,7 @@
   right: 10px;
   padding: 10px;
   width: 250px;
-  background-color: var(--tg-theme-button-color, #2481cc); 
+  background-color: var(--tg-theme-button-color, #2481cc);
 }
 
 .add-nfc-button {
@@ -113,6 +115,10 @@
   height: 100vh;
 }
 
+.registration-container {
+  position: relative;
+}
+
 /* Add media query for landscape orientation */
 @media (orientation: landscape) {
   .button-container {
@@ -135,5 +141,9 @@
     position: absolute;
     top: 150px;
     right: 10px;
+  }
+
+  .container {
+    background: rgb(17 24 39 / var(--tw-bg-opacity, 1)) url("../public/images/1920х1080_1.png") no-repeat center / cover;
   }
 }

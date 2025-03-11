@@ -234,7 +234,7 @@ const Home = () => {
     return (
         <div className="container">
             {loginSuccess ? (
-                <div className="flex justify-center items-center min-h-screen bg-gray-900 p-2">
+                <div className="flex justify-center items-center min-h-screen p-2">
                     <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg text-center">
                         <h2 className="text-xl font-semibold mb-4">Успешно авторизован. Нажмите "Войти" на экране Windows</h2>
                         <button

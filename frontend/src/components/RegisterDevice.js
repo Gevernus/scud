@@ -48,7 +48,7 @@ const RegisterDevice = ({ qrData, location, apiUrl, onRegistrationSuccess }) => 
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-900 p-2">
+        <div className="flex justify-center items-center min-h-screen p-2">
             <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg">
                 <div className="text-center mb-8">
                     <h2 className="text-xl font-semibold mb-2">Зарегистрировать Рабочую Станцию</h2>
