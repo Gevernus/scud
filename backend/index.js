@@ -312,6 +312,7 @@ app.get('/api/qr', async (req, res) => {
         if (!station) {
             return res.status(404).json({
                 status: 'device_not_found',
+                mode: 'PASSWORD',
                 message: 'Рабочая станция не зарегистрирована',
             });
         }
@@ -334,18 +335,21 @@ app.get('/api/qr', async (req, res) => {
         if (!session) {
             return res.status(200).json({
                 status: 'pending',
+                mode: 'QR',
                 message: 'Не найдено активной сессии',
             });
         }
         // Return credentials for approved session
         return res.status(200).json({
             status: 'approved',
+            mode: 'QR',
             message: 'Session approved',
         });
     } catch (error) {
         console.error('Error in /api/qr:', error);
         res.status(500).json({
             status: 'error',
+            mode: 'QR',
             message: 'Internal server error',
         });
     }
