@@ -31,6 +31,14 @@ const Home = () => {
         window.location.href = adminUrl;
     };
 
+    const handleSupportClick = () => {
+        WebApp.openLink("https://t.me/SKUD22_bot", {
+            try_instant_view: false,
+            try_browser: 'default'
+        });
+    };
+    
+
     useEffect(() => {
         WebApp.ready();
         WebApp.expand();
@@ -49,7 +57,7 @@ const Home = () => {
                 <h2 className="text-2xl font-semibold">Отказано в доступе</h2>
                 {blockReason && <p className="text-lg text-center mt-2">{blockReason}</p>}
                 <button
-                    onClick={() => alert("Функционал в процессе разработки")}
+                    onClick={handleSupportClick}
                     className="w-full max-w-md bg-blue-500 py-2 mt-5 rounded-md hover:bg-blue-600 transition-colors"
                 >
                     Техподдержка
@@ -293,7 +301,7 @@ const Home = () => {
                         </svg>
                         <span>Показать OTP</span>
                     </button>)}
-                    <button className="action-button otp-button" onClick={() => alert("Функционал в процессе разработки")}>
+                    <button className="action-button otp-button" onClick={handleSupportClick}>
                         <svg className="icon" viewBox="0 0 24 24">
                             <path
                                 fill="currentColor"
