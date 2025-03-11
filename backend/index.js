@@ -312,7 +312,6 @@ app.get('/api/qr', async (req, res) => {
         if (!station) {
             return res.status(404).json({
                 status: 'device_not_found',
-                mode: 'PASSWORD',
                 message: 'Рабочая станция не зарегистрирована',
             });
         }
@@ -335,7 +334,6 @@ app.get('/api/qr', async (req, res) => {
         if (!session) {
             return res.status(200).json({
                 status: 'pending',
-                mode: 'PASSWORD',
                 message: 'Не найдено активной сессии',
             });
         }
