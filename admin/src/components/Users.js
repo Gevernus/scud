@@ -54,7 +54,6 @@ const UserFilter = (props) => (
         { id: 'email', name: 'E-mail' },
         { id: 'division', name: 'Подразделение' },
         { id: 'position', name: 'Должность' },
-        { id: 'nfcId', name: 'ID NFC' },
       ]}
       alwaysOn
     />
@@ -109,8 +108,7 @@ export const UserList = () => {
         <TextField source="division" label="Подразделение" />
         <TextField source="position" label="Должность" />
         <DeviceIdField source="deviceId" label="ID устройств" />     
-        <TextField source="nfcId" label="ID NFC метки" />
-        <BooleanField source="unsafe" label="Подозрительный" />
+        <BooleanField source="unsafe" label="Заблокированный" />
         <PermissionsField source="permissions" label="Разрешения" />
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
@@ -141,7 +139,6 @@ export const UserEdit = () => (
       </ReferenceArrayInput>
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
-      <TextInput source="nfcId" label="ID NFC метки" />
       <ArrayInput source="deviceId" label="ID устройств">
         <SimpleFormIterator>
           <TextInput source="" label="Устройство" />
@@ -175,7 +172,6 @@ export const UserCreate = () => (
       </ReferenceArrayInput>
       <TextInput source="division" label="Подразделение" />
       <TextInput source="position" label="Должность" />
-      <TextInput source="nfcId" label="ID NFC метки" />
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Create>

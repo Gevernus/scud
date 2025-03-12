@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '../context/UserContext';
+import WebApp from '@twa-dev/sdk';
 
 const RegisterForm = ({ apiUrl, onSuccess }) => {
     const { registrationAllowed, verification, tempUser, deviceId } = useUser();
@@ -20,6 +21,13 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         position: "",
         company: "",
     });
+
+    const handleSupportLeadtehClick = () => {
+        WebApp.openLink("https://app.leadteh.ru/w/djk3S", {
+            try_instant_view: false,
+            try_browser: 'default'
+        });
+    };
 
     // Список компаний
     const [companies, setCompanies] = useState([]);
@@ -193,6 +201,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 disabled={isBlocked} // Input blocking after 3 errors
                 className="mt-4 p-2 border border-gray-600 rounded-md text-black"
             />
+            <h4 className="text-base text-center font-semibold">Если вы не знаете PIN-код, обратитесь к администратору</h4>
             
             {error && password === "" && !isPasswordCorrect && <p className="text-red-500 text-center mt-2">{error}</p>}
             {isBlocked && <p className="text-red-500 text-center mt-2">Превышенно количество попыток ввода! Ваш аккаунт заблокирован обратитесь к администратору.</p>}
@@ -202,6 +211,12 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 className={`mt-4 px-4 py-2 rounded-md ${isBlocked ? "bg-gray-600" :(isPasswordCorrect ? "bg-green-500" : "bg-blue-500")}`}
             >
                 {isBlocked ? "Заблокировано" :(isPasswordCorrect ? "PIN верный" : "Проверить PIN")}
+            </button>
+            <button
+                    onClick={handleSupportLeadtehClick}
+                    className=" mt-4 px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-600 transition-colors"
+                >
+                    Техподдержка
             </button>
         </div>
         </>
@@ -218,6 +233,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 disabled={isBlocked} // Input blocking after 5 errors
                 className="mt-4 p-2 border border-gray-600 rounded-md text-black"
             />
+            <h4 className="text-base text-center font-semibold">Если вы не знаете PIN-код, обратитесь к администратору</h4>
             </>}
             {error && password === "" && !isPasswordCorrect && <p className="text-red-500 text-center mt-2">{error}</p>}
             {isBlocked && <p className="text-red-500 text-center mt-2">Превышенно количество попыток ввода! Ваш аккаунт заблокирован обратитесь к администратору.</p>}
@@ -228,6 +244,12 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
             >
                 {isBlocked ? "Заблокировано" :(isPasswordCorrect ? "Пароль верный" : "Зарегистрироваться")}
             </button>
+            {!isPasswordCorrect && <button
+                    onClick={handleSupportLeadtehClick}
+                    className=" mt-4 px-4 py-2 rounded-md bg-blue-500 hover:bg-blue-600 transition-colors"
+                >
+                    Техподдержка
+            </button>}
 
             {isPasswordCorrect && <>
                 <h2 className="text-xl font-semibold">Введите пожалуйста ваши данные.</h2>
