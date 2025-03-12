@@ -93,7 +93,6 @@ const Home = () => {
             }
             const newLocation = await getCurrentLocation();
             if (!newLocation) {
-                WebApp.showAlert('Невозможно получить локацию');
                 return;
             }
             setLocation(newLocation);
@@ -122,7 +121,7 @@ const Home = () => {
         return new Promise((resolve) => {
             WebApp.LocationManager.getLocation((locationData) => {
                 if (!locationData) {
-                    WebApp.showAlert("Доступ к геолокации отключен. Включите его в настройках Telegram.");
+                    // WebApp.showAlert("Доступ к геолокации отключен. Включите его в настройках Telegram.");
                     resolve(false);
                     return;
                 }
@@ -187,7 +186,6 @@ const Home = () => {
             // Get location data.
             const locationData = await getCurrentLocation();
             if (!locationData) {
-                WebApp.showAlert('Невозможно получить локацию');
                 return;
             }
             setLocation(locationData);
