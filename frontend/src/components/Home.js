@@ -37,6 +37,13 @@ const Home = () => {
             try_browser: 'default'
         });
     };
+
+    const handleSupportLeadtehClick = () => {
+        WebApp.openLink("https://app.leadteh.ru/w/djk3S", {
+            try_instant_view: false,
+            try_browser: 'default'
+        });
+    };
     
 
     useEffect(() => {
@@ -53,11 +60,11 @@ const Home = () => {
 
     if (accessDenied) {
         return (
-            <div className="flex flex-col justify-center items-center min-h-screen bg-red-700 text-white p-4 rounded-lg">
+            <div className="flex flex-col justify-center items-center min-h-screen bg-red-500 text-white p-4 rounded-lg">
                 <h2 className="text-2xl font-semibold">Отказано в доступе</h2>
                 {blockReason && <p className="text-lg text-center mt-2">{blockReason}</p>}
                 <button
-                    onClick={handleSupportClick}
+                    onClick={handleSupportLeadtehClick}
                     className="w-full max-w-md bg-blue-500 py-2 mt-5 rounded-md hover:bg-blue-600 transition-colors"
                 >
                     Техподдержка
