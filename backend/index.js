@@ -925,10 +925,35 @@ const handleCreate = (Model) => async (req, res) => {
 const handleUpdate = (Model) => async (req, res) => {
     try {
         // Hashing password
-        let data = req.body;
         // if(data.password) {
         //     data.password = await bcrypt.hash(data.password, 10);
         // }
+        let data = req.body;
+        const user = req.user; // Получаем текущего пользователя
+        const userId = user?.id || "Системный процесс";
+
+        // Получаем старые данные перед изменением
+        const oldItem = await Model.findById(req.params.id);
+        if (!oldItem) return res.status(404).json({ error: "Not found" });
+
+        // Проверяем, изменились ли `pass` или `status`
+        const formatStatus = (status) => status ? "Разрешён" : "Запрещён";
+        const changes = [];
+        if (oldItem.pass !== data.pass) {
+            changes.push(`Пароль изменён с "${oldItem.pass}" на "${data.pass}"`);
+        }
+        if (oldItem.status !== data.status) {
+            changes.push(`Режим регистрации изменён с "${formatStatus(oldItem.status)}" на "${formatStatus(data.status)}"`);
+        }
+
+        // Если были изменения, записываем событие
+        if (changes.length > 0 && Model.modelName === 'Registration') {
+            await registerEvent({
+                eventType: "registration",
+                description: `Администратор ${user.username} (${user.firstName || ""} ${user.lastName || ""}) изменил регистрацию. ${changes.join(", ")}`,
+                userId: userId,
+            });
+        }
 
         // Если обновляется станция и в теле переданы разрешённые пользователи...
         if (Model.modelName === 'Station' && data.users) {
