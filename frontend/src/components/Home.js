@@ -118,35 +118,56 @@ const Home = () => {
         WebApp.showAlert(`Location Error: ${error}`);
     };
 
-    const getCurrentLocation = () => {
+    const checkLocationAccess = async () => {
         return new Promise((resolve) => {
             WebApp.LocationManager.getLocation((locationData) => {
                 if (!locationData) {
-                    handleLocationError('Невозможно получить локацию');
-                    resolve(null);
+                    WebApp.showAlert("Доступ к геолокации отключен. Включите его в настройках Telegram.");
+                    resolve(false);
                     return;
                 }
-                const locationString = `${locationData.latitude},${locationData.longitude}`;
-                resolve(locationString);
+                resolve(true);
             });
         });
     };
 
+    const requestUserToEnableLocation = () => {
+        WebApp.showConfirm(
+            "Доступ к геопозиции отключён. Чтобы включить его:\n\n" +
+            "1️⃣ Откройте профиль бота (@sskuds_bot)\n" +
+            "2️⃣ Нажмите на его название в верхней части экрана\n" +
+            "3️⃣ Включите доступ к геопозиции",
+            (confirmed) => {
+                if (confirmed) {
+                    WebApp.openTelegramLink("https://t.me/sskuds_bot");
+                }
+            }
+        );
+    };
+
+    const getCurrentLocation = async () => {
+        try {
+            await checkLocationAccess();
+            return new Promise((resolve) => {
+                WebApp.LocationManager.getLocation((locationData) => {
+                    if (!locationData) {
+                        handleLocationError('Невозможно получить локацию');
+                        resolve(null);
+                        return;
+                    }
+                    const locationString = `${locationData.latitude},${locationData.longitude}`;
+                    resolve(locationString);
+                });
+            });
+        } catch (error) {
+            handleLocationError(error);
+            requestUserToEnableLocation();
+            return null;
+        }
+    };
+
     const scanQR = async () => {
         try {
-            // Initialize the location manager if not already inited.
-            if (!WebApp.LocationManager.isInited) {
-                await new Promise((resolve) => {
-                    WebApp.LocationManager.init(() => {
-                        if (!WebApp.LocationManager.isInited) {
-                            WebApp.showAlert("Невозможно получить локацию");
-                            resolve(false);
-                            return;
-                        }
-                        resolve(true);
-                    });
-                });
-            }
 
             // Get location data.
             const locationData = await getCurrentLocation();
