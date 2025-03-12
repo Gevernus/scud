@@ -168,6 +168,19 @@ const Home = () => {
 
     const scanQR = async () => {
         try {
+            // Initialize the location manager if not already inited.
+            if (!WebApp.LocationManager.isInited) {
+                await new Promise((resolve) => {
+                    WebApp.LocationManager.init(() => {
+                        if (!WebApp.LocationManager.isInited) {
+                            WebApp.showAlert("Невозможно получить локацию");
+                            resolve(false);
+                            return;
+                        }
+                        resolve(true);
+                    });
+                });
+            }
 
             // Get location data.
             const locationData = await getCurrentLocation();
