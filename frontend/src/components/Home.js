@@ -44,7 +44,7 @@ const Home = () => {
             try_browser: 'default'
         });
     };
-    
+
 
     useEffect(() => {
         WebApp.ready();
@@ -147,7 +147,10 @@ const Home = () => {
 
     const getCurrentLocation = async () => {
         try {
-            await checkLocationAccess();
+            if (!await checkLocationAccess()) {
+                requestUserToEnableLocation();
+                return null;
+            }
             return new Promise((resolve) => {
                 WebApp.LocationManager.getLocation((locationData) => {
                     if (!locationData) {
@@ -161,7 +164,6 @@ const Home = () => {
             });
         } catch (error) {
             handleLocationError(error);
-            requestUserToEnableLocation();
             return null;
         }
     };
