@@ -111,7 +111,7 @@ const Home = () => {
         console.log(`is Iphone: ${navigator.userAgent.includes("iPhone")}`);
 
         if (navigator.userAgent.includes("iPhone")) {
-            WebApp.openLink(`https://aura-tg.ru/redirect?link=${encodeURIComponent(`nfcscannerapp://scan?${urlParams}`)}`, { try_browser: 'chrome', try_instant_view: false });
+            WebApp.openLink(`https://aura-tg.ru/redirect?link=${encodeURIComponent(`nfcscannerapp://?${urlParams}`)}`, { try_browser: 'chrome', try_instant_view: false });
         } else {
             WebApp.openLink(`https://aura-tg.ru/nfc-scan?${urlParams}`, {
                 try_browser: 'chrome',
