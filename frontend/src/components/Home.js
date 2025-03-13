@@ -111,6 +111,8 @@ const Home = () => {
                 try_instant_view: false,
             });
         console.log(`User agent is: ${navigator.userAgent}`);
+        console.log(`is Iphone: ${navigator.userAgent.includes("iPhone")}`);
+        
         // Check if the device is an iPhone using the user agent
         // const isIphone = /iPhone/.test(navigator.userAgent);
         // WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
