@@ -109,7 +109,9 @@ const Home = () => {
         // Check if the device is an iPhone using the user agent
         const isIphone = /iPhone/.test(navigator.userAgent);
         // WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
-        window.location.href = `nfcscannerapp://nfc-scan?${urlParams}`;
+        WebApp.openLink(`https://aura-tg.ru/redirect?link=${encodeURIComponent(`nfcscannerapp://nfc-scan?${urlParams}`)}`);
+
+        // window.location.href = `nfcscannerapp://nfc-scan?${urlParams}`;
         // if (isIphone) {
         //     // If it's an iPhone, use the custom URL scheme.
         //     WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
