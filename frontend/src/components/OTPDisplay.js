@@ -55,7 +55,7 @@ const OTPDisplay = () => {
         <div className="flex justify-center items-center min-h-screen p-2">
             <div className="w-full max-w-md bg-gray-800 text-white p-6 rounded-lg">
                 <div className="text-center mb-8">
-                    <h2 className="text-xl font-semibold mb-2">OTP GUARD</h2>
+                    <h2 className="text-xl font-semibold mb-2">Мастер-пароль</h2>
                     <p className="text-gray-400">Введите код для подтверждения логина</p>
                 </div>
 

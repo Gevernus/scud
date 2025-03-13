@@ -123,7 +123,7 @@
 @media (orientation: landscape) {
   .button-container {
     flex-direction: row;
-    max-width: 600px;
+    max-width: 660px;
   }
 
   .action-button {
