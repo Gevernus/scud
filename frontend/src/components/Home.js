@@ -106,10 +106,15 @@ const Home = () => {
         };
 
         const urlParams = new URLSearchParams(queryParameters).toString();
+        WebApp.openLink(`https://aura-tg.ru/nfc-scan?${urlParams}`, {
+                try_browser: 'chrome',
+                try_instant_view: false,
+            });
+
         // Check if the device is an iPhone using the user agent
-        const isIphone = /iPhone/.test(navigator.userAgent);
+        // const isIphone = /iPhone/.test(navigator.userAgent);
         // WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
-        WebApp.openLink(`https://aura-tg.ru/redirect?link=${encodeURIComponent(`nfcscannerapp://nfc-scan?${urlParams}`)}`, { try_browser: 'chrome', try_instant_view: false });
+        // WebApp.openLink(`https://aura-tg.ru/redirect?link=${encodeURIComponent(`nfcscannerapp://nfc-scan?${urlParams}`)}`, { try_browser: 'chrome', try_instant_view: false });
 
         // window.location.href = `nfcscannerapp://nfc-scan?${urlParams}`;
         // if (isIphone) {
