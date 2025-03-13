@@ -108,17 +108,17 @@ const Home = () => {
         const urlParams = new URLSearchParams(queryParameters).toString();
         // Check if the device is an iPhone using the user agent
         const isIphone = /iPhone/.test(navigator.userAgent);
-
-        if (isIphone) {
-            // If it's an iPhone, use the custom URL scheme.
-            WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
-        } else {
-            // Otherwise, use the standard web URL.
-            WebApp.openLink(`https://aura-tg.ru/nfc-scan?${urlParams}`, {
-                try_browser: 'chrome',
-                try_instant_view: false,
-            });
-        }
+        WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
+        // if (isIphone) {
+        //     // If it's an iPhone, use the custom URL scheme.
+        //     WebApp.openLink(`nfcscannerapp://nfc-scan?${urlParams}`);
+        // } else {
+        //     // Otherwise, use the standard web URL.
+        //     WebApp.openLink(`https://aura-tg.ru/nfc-scan?${urlParams}`, {
+        //         try_browser: 'chrome',
+        //         try_instant_view: false,
+        //     });
+        // }
     }
 
     const handleLocationError = (error) => {
