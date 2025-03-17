@@ -238,7 +238,7 @@ const Home = () => {
                         } else if (result.status === 'device_not_found') {
                             // Save the scanned data for later use in registration.
                             setQrData(qrData);
-                            setShowRegistration(true);
+                            // setShowRegistration(true);
                             WebApp.showAlert('Рабочая станция не зарегистрирована');
                         } else if (result.status === 'access_denied') {
                             WebApp.showAlert('Отказано в доступе, у вас нет прав на данное рабочее место. Обратитесь к администратору.');
