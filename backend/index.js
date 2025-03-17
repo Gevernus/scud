@@ -578,20 +578,20 @@ app.post('/api/nfc-handler', async (req, res) => {
             // }
 
             // Создаем новую метку
-            const newTag = new Nfc({ guid: tagId, nfcName, nfcDescription, location});
-            await newTag.save();
+            const nfcTag = new Nfc({ guid: tagId, nfcName, nfcDescription, location});
+            await nfcTag.save();
 
             await registerEvent({
                 eventType: "NFC",
-                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcName}.`
+                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcTag.nfcName}.`
             });
 
             return res.json({ message: '✅ NFC-метка успешно зарегистрирована' });
-        } 
+        }
 
         await registerEvent({
             eventType: "NFC",
-            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
+            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отсканировал NFC метку с именем ${nfcTag.nfcName}.`
         });
 
         if (!nfcTag.location && location) {
