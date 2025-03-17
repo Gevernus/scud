@@ -443,15 +443,15 @@ app.post('/api/qr/scan', async (req, res) => {
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
-        const maxAllowedDistance = 0.01; // 50 метров
-
+        const maxAllowedDistance = 0.01; // 10 метров
+        const distanceInMeters = distance * 1000;
         if (distance > maxAllowedDistance && (station.nfcMode === 'geoMismatch' || station.nfcMode === 'never')) {
             console.log(`Location mismatch: ${distance.toFixed(3)} km`);
 
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`,
+                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает со станцией ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
                 sessionId,
                 deviceId
             });
@@ -468,7 +468,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
+            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
         });
 
         return res.status(200).json({
@@ -603,13 +603,14 @@ app.post('/api/nfc-handler', async (req, res) => {
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
-        const maxAllowedDistance = 0.01; // 50 метров
+        const distanceInMeters = distance * 1000;
+        const maxAllowedDistance = 0.01; // 10 метров
 
         if (distance > maxAllowedDistance) {
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distance.toFixed(3)} km`,
+                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
             });
         }      
         
