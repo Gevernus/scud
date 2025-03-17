@@ -599,20 +599,22 @@ app.post('/api/nfc-handler', async (req, res) => {
             await nfcTag.save();
         }
 
-        const [stationLat, stationLon] = nfcTag.location.split(',').map(parseFloat);
-        const [latitude, longitude] = location.split(',').map(parseFloat);
+        if (nfcTag.location && location) {
+            const [stationLat, stationLon] = nfcTag.location.split(',').map(parseFloat);
+            const [latitude, longitude] = location.split(',').map(parseFloat);
 
-        const distance = haversine(stationLat, stationLon, latitude, longitude);
-        const distanceInMeters = distance * 1000;
-        const maxAllowedDistance = 0.01; // 10 метров
+            const distance = haversine(stationLat, stationLon, latitude, longitude);
+            const distanceInMeters = distance * 1000;
+            const maxAllowedDistance = 0.01; // 10 метров
 
-        if (distance > maxAllowedDistance) {
-            // Создаем событие "Несовпадение локации incident"
-            await registerEvent({
-                eventType: "incident",
-                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
-            });
-        }      
+            if (distance > maxAllowedDistance) {
+                // Создаем событие "Несовпадение локации incident"
+                await registerEvent({
+                    eventType: "incident",
+                    description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
+                });
+            } 
+        }             
         
         if (sessionId){
             const session = await Session.findOne({
