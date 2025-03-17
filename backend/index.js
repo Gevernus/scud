@@ -61,7 +61,7 @@ app.post("/api/front/users", async (req, res) => {
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Id устройства пользователя ${user.username} c Id ${user._id} не совпадает.`
+                    description: `Id устройства пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) c Id ${user._id} не совпадает.`
                 });
             }
              // Если пользователь подозрительный
@@ -226,7 +226,7 @@ app.post("/api/front/users/verification", async (req, res) => {
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Добавлено новое устройство пользователя ${user.username} c (ID: ${user._id}).`
+                    description: `Добавлено новое устройство пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) c (ID: ${user._id}).`
                 });
             return res.status(200).json({ exists: true, user });
         }
@@ -404,7 +404,7 @@ app.post('/api/qr/scan', async (req, res) => {
             // Создаем событие "incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Попытка авторизации пользователя ${user.username || "Неизвестно"} с ID ${userId} на станции ${station.name || "Неизвестно"} c ID ${deviceId} - доступ запрещен.`
+                description: `Попытка авторизации пользователя: ${user.firstName || "Неизвестно"} ${user.lastName || "Неизвестно"} (username: ${user.username || "Неизвестно"}) с ID ${userId} на станции ${station.name || "Неизвестно"} c ID ${deviceId} - доступ запрещен.`
             });
 
             return res.status(403).json({
@@ -451,7 +451,7 @@ app.post('/api/qr/scan', async (req, res) => {
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение пользователя ${user.username || ""} с ID ${userId} не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`,
+                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает со станцией ${deviceId}. Расстояние: ${distance.toFixed(3)} km`,
                 sessionId,
                 deviceId
             });
@@ -468,7 +468,7 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Пользователь ${user.username || ""} с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
+            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}.`
         });
 
         return res.status(200).json({
@@ -583,7 +583,7 @@ app.post('/api/nfc-handler', async (req, res) => {
 
             await registerEvent({
                 eventType: "NFC",
-                description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcName}.`
+                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcName}.`
             });
 
             return res.json({ message: '✅ NFC-метка успешно зарегистрирована' });
@@ -591,7 +591,7 @@ app.post('/api/nfc-handler', async (req, res) => {
 
         await registerEvent({
             eventType: "NFC",
-            description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
+            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отсканировал NFC метку с именем ${nfcName}.`
         });
 
         if (!nfcTag.location && location) {
@@ -609,7 +609,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             // Создаем событие "Несовпадение локации incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Местоположение пользователя ${user.username || ""} с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distance.toFixed(3)} km`,
+                description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distance.toFixed(3)} km`,
             });
         }      
         
@@ -641,7 +641,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             // Создаем событие "authorization"
             await registerEvent({
                 eventType: "authorization",
-                description: `Пользователь ${user.username || ""}(${user.firstName} ${user.lastName}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}.`
+                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}.`
             });
             return res.status(200).json({
                 message: 'Успешно авторизован'
@@ -950,7 +950,7 @@ const handleUpdate = (Model) => async (req, res) => {
         if (changes.length > 0 && Model.modelName === 'Registration') {
             await registerEvent({
                 eventType: "registration",
-                description: `Администратор ${user.username} (${user.firstName || ""} ${user.lastName || ""}) изменил регистрацию. ${changes.join(", ")}`,
+                description: `Администратор: ${user.firstName} ${user.lastName} (username: ${user.username}) изменил регистрацию. ${changes.join(", ")}`,
                 userId: userId,
             });
         }
