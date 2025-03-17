@@ -443,7 +443,7 @@ app.post('/api/qr/scan', async (req, res) => {
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
-        const maxAllowedDistance = 0.05; // 50 метров
+        const maxAllowedDistance = 0.01; // 50 метров
 
         if (distance > maxAllowedDistance && (station.nfcMode === 'geoMismatch' || station.nfcMode === 'never')) {
             console.log(`Location mismatch: ${distance.toFixed(3)} km`);
@@ -603,7 +603,7 @@ app.post('/api/nfc-handler', async (req, res) => {
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
-        const maxAllowedDistance = 0.05; // 50 метров
+        const maxAllowedDistance = 0.01; // 50 метров
 
         if (distance > maxAllowedDistance) {
             // Создаем событие "Несовпадение локации incident"
