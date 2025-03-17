@@ -86,7 +86,7 @@ app.post("/api/front/users", async (req, res) => {
                 return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
             }
 
-            return res.status(200).json({ exists: true, user });
+            return res.status(200).json({ exists: true, user, passwordVerified: true });
         }
 
         // Если пользователей нет — создаем первого с правами админа
@@ -121,7 +121,7 @@ app.post("/api/front/users", async (req, res) => {
         if (!password) {
             return res.status(200).json({ exists: false, registrationAllowed: true });
         }
-
+        
         const isPasswordValid = password === registration.pass;
 
         if (!isPasswordValid) {
@@ -136,7 +136,7 @@ app.post("/api/front/users", async (req, res) => {
             eventType: "registration",
             description: `Новый пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) был зарегистрирован.`
         });
-        return res.status(200).json({ exists: true });
+        return res.status(200).json({ exists: true, passwordVerified: true });
         
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);

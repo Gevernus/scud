@@ -81,12 +81,14 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
                 throw new Error(data.error || "Неверный пароль");
             }
 
-            if(verification) {
+            if(verification && data.passwordVerified) {
                 verificationUser(tempUser);
             }
 
-            setIsPasswordCorrect(true); // If the password is correct, show the form
-            setError(null);
+            if (data.passwordVerified) {// If the password is correct, show the form
+                setIsPasswordCorrect(true);
+                setError(null);
+            }
             
         } catch (error) {
             setError(error.message);
