@@ -644,7 +644,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             // Создаем событие "authorization"
             await registerEvent({
                 eventType: "authorization",
-                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
+                description: `С помощью NFC был авторизован пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
             });
             return res.status(200).json({
                 message: 'Успешно авторизован'
