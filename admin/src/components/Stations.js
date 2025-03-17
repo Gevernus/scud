@@ -155,7 +155,11 @@ export const StationsEdit = () => (
         validate={[required('Выберите режим работы NFC')]}
       />
       <AttemptedUsersInput label="Выберите разрешённых пользователей" source="users" />
-      <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
+      <ReferenceArrayInput 
+        source="nfc" 
+        label="ID Метки NFC" 
+        reference="nfc" 
+        filter={{ attached: false }}> 
         <AutocompleteArrayInput optionText="nfcName" />
       </ReferenceArrayInput>
       <TextInput source="description" label="Описание" /> 

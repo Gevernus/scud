@@ -935,27 +935,29 @@ const handleUpdate = (Model) => async (req, res) => {
         const user = req.user; // Получаем текущего пользователя
         const userId = user?.id || "Системный процесс";
 
-        // Получаем старые данные перед изменением
-        const oldItem = await Model.findById(req.params.id);
-        if (!oldItem) return res.status(404).json({ error: "Not found" });
+        if (Model.modelName === 'Registration' ) {
 
-        // Проверяем, изменились ли `pass` или `status`
-        const formatStatus = (status) => status ? "Разрешён" : "Запрещён";
-        const changes = [];
-        if (oldItem.pass !== data.pass) {
-            changes.push(`Пароль изменён с "${oldItem.pass}" на "${data.pass}"`);
-        }
-        if (oldItem.status !== data.status) {
-            changes.push(`Режим регистрации изменён с "${formatStatus(oldItem.status)}" на "${formatStatus(data.status)}"`);
-        }
-
-        // Если были изменения, записываем событие
-        if (changes.length > 0 && Model.modelName === 'Registration') {
-            await registerEvent({
-                eventType: "registration",
-                description: `Администратор: ${user.firstName} ${user.lastName} (username: ${user.username}) изменил регистрацию. ${changes.join(", ")}`,
-                userId: userId,
-            });
+            // Получаем старые данные перед изменением
+            const oldItem = await Model.findById(req.params.id);
+            if (!oldItem) return res.status(404).json({ error: "Not found" });
+    
+            // Проверяем, изменились ли `pass` или `status`
+            const formatStatus = (status) => status ? "Разрешён" : "Запрещён";
+            const changes = [];
+            if (oldItem.pass !== data.pass) {
+                changes.push(`Пароль изменён с "${oldItem.pass}" на "${data.pass}"`);
+            }
+            if (oldItem.status !== data.status) {
+                changes.push(`Режим регистрации изменён с "${formatStatus(oldItem.status)}" на "${formatStatus(data.status)}"`);
+            }
+    
+            // Если были изменения, записываем событие
+            if (changes.length > 0 && Model.modelName === 'Registration') {
+                await registerEvent({
+                    eventType: "registration",
+                    description: `Администратор: ${user.firstName} ${user.lastName} (username: ${user.username}) изменил регистрацию. ${changes.join(", ")}`,
+                });
+            }
         }
 
         // Если обновляется станция и в теле переданы разрешённые пользователи...
@@ -972,6 +974,46 @@ const handleUpdate = (Model) => async (req, res) => {
                     !allowedUserIds.includes(userId.toString())
                 );
                 data.attemptedUsers = filteredAttempted;
+            }
+
+            const oldItem = await Model.findById(req.params.id).populate("nfc");
+            // Получаем ID старых и новых NFC-меток
+            const oldNfcIds = oldItem.nfc.map(nfc => nfc._id.toString());
+            const newNfcIds = (data.nfc || []).map(id => id.toString());
+
+            // Определяем, какие метки были удалены и какие добавлены
+            const detachedNfcIds = oldNfcIds.filter(id => !newNfcIds.includes(id)); // Больше не привязаны
+            const attachedNfcIds = newNfcIds.filter(id => !oldNfcIds.includes(id)); // Новые привязанные
+             // Снимаем флаг `attached` у отвязанных меток
+            if (detachedNfcIds.length > 0) {
+                const detachedNfcs = await Nfc.find({ _id: { $in: detachedNfcIds } }); // Загружаем объекты NFC
+                await Nfc.updateMany(
+                    { _id: { $in: detachedNfcIds } },
+                    { $set: { attached: false } }
+                );
+
+                for (let nfc of detachedNfcs) {
+                    await registerEvent({
+                        eventType: "NFC",
+                        description: `NFC метка "${nfc.nfcName}" (NFC идентификатор: ${nfc.guid}) была отвязана от станции "${oldItem.name}" (ID: ${oldItem.deviceId}).`,
+                    });
+                }
+            }
+
+            // Устанавливаем `attached = true` для новых привязанных меток
+            if (attachedNfcIds.length > 0) {
+                const attachedNfcs = await Nfc.find({ _id: { $in: attachedNfcIds } }); // Загружаем объекты NFC
+                await Nfc.updateMany(
+                    { _id: { $in: attachedNfcIds } },
+                    { $set: { attached: true } }
+                );
+
+                for (let nfc of attachedNfcs) {
+                    await registerEvent({
+                        eventType: "NFC",
+                        description: `NFC метка "${nfc.nfcName}" (NFC идентификатор: ${nfc.guid}) была привязана к станции "${oldItem.name}" (ID: ${oldItem.deviceId}).`,
+                    });
+                }
             }
         }
 

@@ -15,7 +15,8 @@ import {
   required,
   Show,
   SimpleShowLayout,
-  Create
+  Create,
+  BooleanField
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
@@ -74,8 +75,9 @@ export const NfcList = () => {
         <TextField source="guid" label="NFC идентификатор" />
         <TextField source="nfcName" label="Название" />
         <TextField source="nfcDescription" label="Описание" />
-        <TextField source="location" label="location" />      
+        <TextField source="location" label="location" /> 
         {(canDelete) && (<ClearLocationButton />)}
+        <BooleanField source="attached" label="Метка привязана к АРМ" />     
         <DateField source="createdAt" label="Дата" showTime />
         {(canDelete) && (<DeleteButton />)}
       </Datagrid>
