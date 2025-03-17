@@ -119,7 +119,7 @@ app.post("/api/front/users", async (req, res) => {
 
         // Если регистрация разрешена, но пароль не передан — просим его
         if (!password) {
-            return res.status(200).json({ exists: false, registrationAllowed: true });
+            return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
         }
 
         const isPasswordValid = password === registration.pass;
@@ -131,12 +131,8 @@ app.post("/api/front/users", async (req, res) => {
             });
             return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
         }
-        
-        await registerEvent({
-            eventType: "registration",
-            description: `Новый пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) был зарегистрирован.`
-        });
-        return res.status(200).json({ exists: true });
+
+        return res.status(200).json({ exists: false, registrationAllowed: true });
         
     } catch (error) {
         console.error("Ошибка в /api/front/users:", error);
