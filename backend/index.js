@@ -632,6 +632,11 @@ app.post('/api/nfc-handler', async (req, res) => {
             const hasNfc = station.nfc.some(nfcId => nfcId.toString() === nfcTag.id);
 
             if (!hasNfc) {
+                await registerEvent({
+                    eventType: "incident",
+                    description: `Метка NFC не  привязана к станции. Пользователю: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отказано в авторизации на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
+                });
+
                 return res.status(400).json({
                     status: 'error',
                     error: 'NFC метка не привязана к этой рабочей станции. Обратитесь к администратору.',
