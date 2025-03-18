@@ -123,11 +123,11 @@ export const StationsEdit = () => (
         label="Имя станции"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      <TextInput
+      {/* <TextInput
         source="username"
         label="Имя пользователя"
         validate={[required('Поле обязательно для заполнения')]}
-      />
+      /> */}
       {/* <TextInput
         source="password"
         label="Пароль"
