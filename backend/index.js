@@ -598,7 +598,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             nfcTag.location = location;
             await nfcTag.save();
         }
-        const distanceInMeters = 0.0;
+        let distanceInMeters = 0.0;
 
         if (nfcTag.location && location) {
             const [stationLat, stationLon] = nfcTag.location.split(',').map(parseFloat);
