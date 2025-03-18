@@ -6,6 +6,7 @@ const NfcSchema = new mongoose.Schema({
   nfcDescription: { type: String, required: true },
   location: { type: String },
   attached: { type: Boolean, default: false },
+  attachedStation: { type: mongoose.Schema.Types.ObjectId, ref: "Station", default: null },
   createdAt: { type: Date, default: Date.now },
   deleted: { type: Boolean, default: false }
 });

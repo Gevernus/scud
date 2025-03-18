@@ -18,6 +18,8 @@ import {
   ChipField,
   ReferenceArrayInput,
   AutocompleteArrayInput,
+  Show,
+  SimpleShowLayout
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
@@ -93,8 +95,6 @@ export const StationsList = () => {
           </SingleFieldList>
         </ReferenceArrayField>
         <TextField source="description" label="Описание" />       
-        <DateField source="createdAt" label="Дата создания" showTime />
-        <DateField source="updatedAt" label="Дата обновления" showTime />
         <ReferenceArrayField
           label="NFC"
           source="nfc"
@@ -104,6 +104,8 @@ export const StationsList = () => {
             <ChipField source="nfcName" />
           </SingleFieldList>
         </ReferenceArrayField>
+        <DateField source="createdAt" label="Дата создания" showTime />
+        <DateField source="updatedAt" label="Дата обновления" showTime />
         {canDelete && <DeleteButton />}
       </Datagrid>
     </List>
@@ -165,6 +167,40 @@ export const StationsEdit = () => (
       <TextInput source="description" label="Описание" /> 
     </SimpleForm>
   </Edit>
+);
+
+export const StationsShow = () => (
+  <Show>
+    <SimpleShowLayout>
+    <TextField source="deviceId" label="ID станции" />
+        <TextField source="name" label="Название" />
+        <TextField source="company" label="Компания" />
+        <TextField source="location" label="Геопозиция" />
+        <TextField source="loginMode" label="Способ входа" />
+        <TextField source="nfcMode" label="Режим работы NFC" />
+        <ReferenceArrayField
+          label="Разрешенные пользователи"
+          source="users"
+          reference="users"
+        >
+          <SingleFieldList linkType="show">
+            <ChipField source="username" />
+          </SingleFieldList>
+        </ReferenceArrayField>
+        <TextField source="description" label="Описание" />
+        <ReferenceArrayField
+          label="NFC"
+          source="nfc"
+          reference="nfc"
+        >
+          <SingleFieldList linkType="show">
+            <ChipField source="nfcName" />
+          </SingleFieldList>
+        </ReferenceArrayField>       
+        <DateField source="createdAt" label="Дата создания" showTime />
+        <DateField source="updatedAt" label="Дата обновления" showTime />    
+    </SimpleShowLayout>
+  </Show>
 );
 
 // export const StationsCreate = () => (

@@ -4,7 +4,7 @@ import createDataProvider from "./dataProvider";
 import { Dashboard } from "./components/Dashboard";
 import { UserList, UserEdit, UserCreate, UserShow } from "./components/Users";
 import { EventList } from "./components/Events";
-import {StationsList, StationsEdit, StationsCreate } from "./components/Stations";
+import {StationsList, StationsEdit, StationsCreate, StationsShow } from "./components/Stations";
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate, CounterpartyShow } from "./components/Counterparts";
 import { RegistrationList, RegistrationEdit } from "./components/Registration";
 import { LockUsersList } from "./components/LockUsers";
@@ -68,6 +68,7 @@ const AdminWrapper = () => {
           name="stations"
           list={StationsList}
           edit={checkPermission(PERMISSIONS_MODULES["Станции"].edit) ? StationsEdit : null}
+          show={StationsShow}
           // create={checkPermission(PERMISSIONS_MODULES["Станции"].create) ? StationsCreate : null}
           options={{ label: "Станции" }}
         />

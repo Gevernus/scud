@@ -990,12 +990,15 @@ const handleUpdate = (Model) => async (req, res) => {
             // Определяем, какие метки были удалены и какие добавлены
             const detachedNfcIds = oldNfcIds.filter(id => !newNfcIds.includes(id)); // Больше не привязаны
             const attachedNfcIds = newNfcIds.filter(id => !oldNfcIds.includes(id)); // Новые привязанные
-             // Снимаем флаг `attached` у отвязанных меток
+            
+            const stationId = req.params.id; // ID текущей станции
+            
+            // Снимаем флаг `attached` у отвязанных меток
             if (detachedNfcIds.length > 0) {
                 const detachedNfcs = await Nfc.find({ _id: { $in: detachedNfcIds } }); // Загружаем объекты NFC
                 await Nfc.updateMany(
                     { _id: { $in: detachedNfcIds } },
-                    { $set: { attached: false } }
+                    { $set: { attached: false, attachedStation: null } }
                 );
 
                 for (let nfc of detachedNfcs) {
@@ -1011,7 +1014,7 @@ const handleUpdate = (Model) => async (req, res) => {
                 const attachedNfcs = await Nfc.find({ _id: { $in: attachedNfcIds } }); // Загружаем объекты NFC
                 await Nfc.updateMany(
                     { _id: { $in: attachedNfcIds } },
-                    { $set: { attached: true } }
+                    { $set: { attached: true, attachedStation: stationId } }
                 );
 
                 for (let nfc of attachedNfcs) {

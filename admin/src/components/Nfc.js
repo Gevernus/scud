@@ -16,11 +16,14 @@ import {
   Show,
   SimpleShowLayout,
   Create,
-  BooleanField
+  BooleanField,
+  ReferenceField,
+  FunctionField
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
 import ClearLocationButton from './UI/ClearLocationButton';
+import AttachedStationField from './UI/AttachedStationField';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -77,7 +80,7 @@ export const NfcList = () => {
         <TextField source="nfcDescription" label="Описание" />
         <TextField source="location" label="location" /> 
         {(canDelete) && (<ClearLocationButton />)}
-        <BooleanField source="attached" label="Метка привязана к АРМ" />     
+        <AttachedStationField label="Привязана к станции"/>   
         <DateField source="createdAt" label="Дата" showTime />
         {(canDelete) && (<DeleteButton />)}
       </Datagrid>
@@ -143,6 +146,8 @@ export const NfcShow = () => (
       <TextField source="guid" label="NFC идентификатор" />
       <TextField source="nfcName" label="Название" />
       <TextField source="nfcDescription" label="Описание" />
+      <AttachedStationField label="Привязана к станции"/>
+      <DateField source="createdAt" label="Дата" showTime />
     </SimpleShowLayout>
   </Show>
 );
