@@ -41,6 +41,7 @@ const NfcFilter = (props) => (
         // { id: null, name: 'Без фильтра' },
         { id: 'guid', name: 'NFC идентификатор' },
         { id: 'nfcName', name: 'Название' },
+        { id: 'attachedStation', name: 'Станция' },
       ]}
       alwaysOn
     />
@@ -80,7 +81,7 @@ export const NfcList = () => {
         <TextField source="nfcDescription" label="Описание" />
         <TextField source="location" label="location" /> 
         {(canDelete) && (<ClearLocationButton />)}
-        <AttachedStationField label="Привязана к станции"/>   
+        <AttachedStationField source="attachedStation" label="Привязана к станции"/>   
         <DateField source="createdAt" label="Дата" showTime />
         {(canDelete) && (<DeleteButton />)}
       </Datagrid>

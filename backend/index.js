@@ -832,6 +832,22 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
             delete filter.endDate;
         }
 
+        // 🔹 Полнотекстовый поиск (по `attachedStation.name`)
+        if (Model.modelName === "Nfc") {
+            if (filter.q && filter.searchField === "attachedStation") {
+                // Вместо $options используем $lookup и $match
+                const stations = await mongoose.model("Station").find({
+                    name: new RegExp(filter.q, "i") // Используем RegExp вместо `$options`
+                });
+    
+                const stationIds = stations.map(station => station._id);
+                filter.attachedStation = { $in: stationIds };
+    
+                delete filter.q;
+                delete filter.searchField;
+            }
+        }
+
         // 🔹 Логируем фильтр, чтобы проверить, что даты верные
         // console.log("Фильтр по датам (UTC):", filter.createdAt);
 
@@ -858,8 +874,8 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
         
             delete filter.q;
             delete filter.searchField;
-        }  
-
+        }
+        
         if (filter.deleted === undefined) {
             filter.deleted = false; 
         }
