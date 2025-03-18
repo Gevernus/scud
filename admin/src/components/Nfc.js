@@ -67,7 +67,7 @@ const NfcFilter = (props) => (
 
 export const NfcList = () => {
   const { checkPermission } = useUser();
-  const canDelete = checkPermission(PERMISSIONS_MODULES['Nfc'].edit);
+  const canDelete = checkPermission(PERMISSIONS_MODULES['Метки NFC'].edit);
 
   return (
     <List filters={<NfcFilter />} sort={{ field: "createdAt", order: "DESC" }}>

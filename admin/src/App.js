@@ -49,7 +49,7 @@ const AdminWrapper = () => {
   const canViewCounterparty = checkPermission(PERMISSIONS_MODULES["Контрагенты"].view);
   const canViewEvents = checkPermission(PERMISSIONS_MODULES["Журнал событий"].view);
   const canViewRegistration = checkPermission(PERMISSIONS_MODULES["Регистрация"].view);
-  const canViewNfc = checkPermission(PERMISSIONS_MODULES["Nfc"].view);
+  const canViewNfc = checkPermission(PERMISSIONS_MODULES["Метки NFC"].view);
 
   return (
     <Admin dashboard={Dashboard} dataProvider={dataProvider} layout={MyLayout}>
@@ -101,8 +101,8 @@ const AdminWrapper = () => {
         <Resource
           name="nfc"
           list={NfcList}
-          edit={checkPermission(PERMISSIONS_MODULES["Nfc"].edit) ? NfcEdit : null}
-          create={checkPermission(PERMISSIONS_MODULES["Nfc"].edit) ? NfcCrete : null}
+          edit={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcEdit : null}
+          create={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcCrete : null}
           show={NfcShow}
           options={{ label: "Метки NFC" }}
         />
