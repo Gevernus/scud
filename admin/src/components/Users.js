@@ -22,7 +22,8 @@ import {
   AutocompleteArrayInput,
   ReferenceArrayField,
   SingleFieldList,
-  ChipField
+  ChipField,
+  ReferenceManyField
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
@@ -55,6 +56,7 @@ const UserFilter = (props) => (
         { id: 'email', name: 'E-mail' },
         { id: 'division', name: 'Подразделение' },
         { id: 'position', name: 'Должность' },
+        { id: 'stations', name: 'Станции' }
       ]}
       alwaysOn
     />
@@ -115,6 +117,16 @@ export const UserList = () => {
         <TextField source="position" label="Должность" />
         <DeviceIdField source="deviceId" label="ID устройств" />     
         <BooleanField source="unsafe" label="Заблокированный" />
+        <ReferenceManyField
+          label="Разрешён на станциях"
+          reference="stations"
+          target="users"
+          source="id"
+        >
+          <SingleFieldList linkType="show">
+            <ChipField source="name" />
+          </SingleFieldList>
+        </ReferenceManyField>
         <PermissionsField source="permissions" label="Разрешения" />
         <DateField source="createdAt" label="Дата создания" showTime />
         <DateField source="updatedAt" label="Дата обновления" showTime />
@@ -205,6 +217,15 @@ export const UserShow = () => (
         </ReferenceArrayField>
       <TextField source="division" label="Подразделение" />
       <TextField source="position" label="Должность" />
+      <ReferenceManyField
+        label="Разрешён на станциях"
+        reference="stations"
+        target="users"
+      >
+        <SingleFieldList linkType="show">
+          <ChipField source="name" />
+        </SingleFieldList>
+      </ReferenceManyField>
     </SimpleShowLayout>
   </Show>
 );

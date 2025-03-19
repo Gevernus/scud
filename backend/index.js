@@ -873,6 +873,22 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
                 delete filter.q;
                 delete filter.searchField;
             }
+        }    
+        // 🔹 Фильтрация пользователей по станциям ( `stations.name`)
+        if (Model.modelName === "User" && filter.q && filter.searchField === "stations") {
+            // Найти станции по имени
+            const stations = await mongoose.model("Station").find({
+                name: new RegExp(filter.q, "i")
+            });
+        
+            // Собираем ID пользователей, которые есть в этих станциях
+            const userIds = stations.flatMap(station => station.users);
+        
+            // Фильтруем пользователей, у которых ID совпадает с найденными
+            filter._id = { $in: userIds };
+        
+            delete filter.q;
+            delete filter.searchField;
         }
 
         // 🔹 Логируем фильтр, чтобы проверить, что даты верные
