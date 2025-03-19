@@ -35,7 +35,7 @@ export const UserProvider = ({ children }) => {
             try {
                 console.log('Init user');
                 WebApp.ready();
-                const tgUser = WebApp.initDataUnsafe.user || { id: 55678678, first_name: 'Test678678', last_name: 'User6786', username: 'test67867' };
+                const tgUser = WebApp.initDataUnsafe.user || { id: 55, first_name: 'Test', last_name: 'User', username: 'test' };
 
                 if (!tgUser) {
                     console.warn("Telegram user data not found.");
