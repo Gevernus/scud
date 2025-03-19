@@ -88,6 +88,12 @@ app.post("/api/front/users", async (req, res) => {
                 return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
             }
 
+            await registerEvent({
+                eventType: "login_attempt",
+                description: `Пользователь: ${user.firstName} ${user.lastName} (telegrammID: ${user.telegramId}, ID: ${user._id}), вошел в приложение.`,
+                userId:user._id
+            });
+
             return res.status(200).json({ exists: true, user, passwordVerified: true });
         }
 
