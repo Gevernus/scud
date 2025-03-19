@@ -847,6 +847,33 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
                 delete filter.searchField;
             }
         }
+        // 🔹 Полнотекстовый поиск (по `users.username nfc.nfcName`)
+        if (Model.modelName === "Station") {
+            if (filter.q && filter.searchField === "users") {
+                // Вместо $options используем $lookup и $match
+                const user = await mongoose.model("User").find({
+                    username: new RegExp(filter.q, "i") // Используем RegExp вместо `$options`
+                });
+    
+                const userIds = user.map(user => user._id);
+                filter.users = { $in: userIds };
+    
+                delete filter.q;
+                delete filter.searchField;
+            }
+            if (filter.q && filter.searchField === "nfc") {
+                // Вместо $options используем $lookup и $match
+                const nfc = await mongoose.model("Nfc").find({
+                    nfcName: new RegExp(filter.q, "i") // Используем RegExp вместо `$options`
+                });
+    
+                const nfcIds = nfc.map(nfc => nfc._id);
+                filter.nfc = { $in: nfcIds };
+    
+                delete filter.q;
+                delete filter.searchField;
+            }
+        }
 
         // 🔹 Логируем фильтр, чтобы проверить, что даты верные
         // console.log("Фильтр по датам (UTC):", filter.createdAt);
