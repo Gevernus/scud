@@ -104,7 +104,8 @@ export const UserProvider = ({ children }) => {
                     body: JSON.stringify({
                         eventType: 'login_attempt',
                         description: `Пользователь ${tgUser.first_name} с telegramId ${tgUser.id} открыл приложение.`,
-                        userId: tgUser.id
+                        userId: tgUser.id,
+                        userName: `${tgUser.first_name} ${tgUser.last_name}`
                     }),
                 });
 

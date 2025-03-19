@@ -39,6 +39,9 @@ const EventFilter = (props) => (
       source="searchField"
       choices={[
         // { id: null, name: 'Без фильтра' },
+        { id: 'userName', name: 'Пользователь' },
+        { id: 'stationName', name: 'Название станции' },
+        { id: 'nfcName', name: 'Название Nfc' },
         { id: 'userId', name: 'ID пользователя' },
         { id: 'stationDeviceId', name: 'ID станции' },
         { id: 'nfcGuid', name: 'ID Nfc' },
@@ -79,6 +82,9 @@ export const EventList = () => {
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="eventType" label="Тип события" />
         <TextField source="description" label="Описание" />
+        <TextField source="userName" label="Пользователь" />
+        <TextField source="stationName" label="Название станции" />
+        <TextField source="nfcName" label="Название Nfc" />
         <TextField source="userId" label="ID пользователя" />
         <TextField source="stationDeviceId" label="ID станции" />
         <TextField source="nfcGuid" label="ID Nfc" />
