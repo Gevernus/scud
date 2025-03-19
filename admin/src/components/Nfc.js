@@ -16,6 +16,7 @@ import {
   Show,
   SimpleShowLayout,
   Create,
+  CreateButton,
   BooleanField,
   ReferenceField,
   FunctionField
@@ -73,14 +74,21 @@ const NfcFilter = (props) => (
 export const NfcList = () => {
   const { checkPermission } = useUser();
   const canDelete = checkPermission(PERMISSIONS_MODULES['Метки NFC'].edit);
+  const canCreate = checkPermission(PERMISSIONS_MODULES['Метки NFC'].edit);
 
   return (
-    <List filters={<NfcFilter />} sort={{ field: "createdAt", order: "DESC" }} 
-      actions={<ExportToExcelButton resource="nfc" 
-      referenceFields={{
-        attachedStation: { reference: "stations", replaceField: "name" },
-      }} 
-      />}
+    <List 
+      filters={<NfcFilter />} 
+      sort={{ field: "createdAt", order: "DESC" }}    
+      actions={(
+        <div>
+          {(canCreate) && (<CreateButton />)}
+          <ExportToExcelButton 
+            resource="nfc" 
+            referenceFields={{attachedStation: { reference: "stations", replaceField: "name" },}} 
+          />
+        </div>
+      )}  
     >
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="guid" label="NFC идентификатор" />

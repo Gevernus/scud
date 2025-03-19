@@ -15,7 +15,8 @@ import {
   SelectInput,
   DateInput,
   Show,
-  SimpleShowLayout
+  SimpleShowLayout,
+  CreateButton
 } from 'react-admin';
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
@@ -72,9 +73,19 @@ const CounterpartyFilter = (props) => (
 export const CounterpartyList = () => {
   const { checkPermission } = useUser();
   const canDelete = checkPermission(PERMISSIONS_MODULES['Контрагенты'].delete);
+  const canCreate = checkPermission(PERMISSIONS_MODULES['Контрагенты'].create);
 
   return (
-    <List filters={<CounterpartyFilter />} sort={{ field: "createdAt", order: "DESC" }} actions={<ExportToExcelButton resource="counterparts" />}>
+    <List 
+      filters={<CounterpartyFilter />} 
+      sort={{ field: "createdAt", order: "DESC" }} 
+      actions={(
+        <div>
+          {(canCreate) && (<CreateButton />)}
+          <ExportToExcelButton resource="counterparts" />
+        </div>
+      )}
+    >
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="id" label="ID Контрагента" />
         <TextField source="fullName" label="Полное название" />

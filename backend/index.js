@@ -749,12 +749,12 @@ const logPermanentDeletion = async (Model, item) => {
         }
         case "Station": {
             eventType = "full_delete",
-            description = `Станция ${item.name || "Неизвестно"} (IP: ${item.ip || "Неизвестно"}) была полностью удалена.`;
+            description = `Станция ${item.name || "Неизвестно"} (ID: ${item._id || "Неизвестно"}) была полностью удалена.`;
             break;
         }
         case "Counterparty": {
             eventType = "full_delete",
-            description = `Контрагент ${item.fullName || "Неизвестно"} (Id: ${item.counterpartyId || "Неизвестно"}) был полностью удален.`;
+            description = `Контрагент ${item.fullName || "Неизвестно"} (Id: ${item._id || "Неизвестно"}) был полностью удален.`;
             break;
         }
         case "LockUsers": {
@@ -1131,21 +1131,46 @@ const handleRestore = (Model) => async (req, res) => {
 
 const handlePermanentDelete = (Model) => async (req, res) => {
     try {
-        // Сначала находим объект, чтобы извлечь его данные (telegramId и _id)
+        // Найти объект перед удалением
         const item = await Model.findById(req.params.id);
-        if (!item) return res.status(404).json({ error: "Not found" });       
-        
-        // Удаляем объект окончательно из базы
+        if (!item) return res.status(404).json({ error: "Not found" });
+
+        // Проверяем, если удаляемая модель - это "Station"
+        if (Model.modelName === 'Station') {
+            // Получаем все привязанные NFC-метки
+            const oldItem = await Model.findById(req.params.id).populate("nfc");
+            
+            if (oldItem && oldItem.nfc.length > 0) {
+                const detachedNfcIds = oldItem.nfc.map(nfc => nfc._id.toString());
+
+                // Обновляем `attached = false` и `attachedStation = null`
+                await Nfc.updateMany(
+                    { _id: { $in: detachedNfcIds } },
+                    { $set: { attached: false, attachedStation: null } }
+                );
+
+                // Логируем каждую отвязанную метку
+                for (let nfc of oldItem.nfc) {
+                    await registerEvent({
+                        eventType: "NFC",
+                        description: `NFC метка "${nfc.nfcName}" (NFC идентификатор: ${nfc.guid}) была отвязана от станции "${oldItem.name}" (ID: ${oldItem.deviceId}) перед удалением.`,
+                    });
+                }
+            }
+        }
+
+        // Удаление объекта
         await Model.findByIdAndDelete(req.params.id);
         // Вызываем универсальную функцию логирования события полного удаления
         if (Model.modelName !== "Event") {await logPermanentDeletion(Model, item)}
-        
-        
-        res.json({ message: "Полностью удалено" });
+
+        res.json({ success: true });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("Ошибка при удалении:", error);
+        res.status(500).json({ error: "Ошибка сервера" });
     }
 };
+
 
 // Эндпоинты для админа (неудалённые объекты)
 app.get("/api/admin/users", 

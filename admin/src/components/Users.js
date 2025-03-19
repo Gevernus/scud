@@ -23,7 +23,8 @@ import {
   ReferenceArrayField,
   SingleFieldList,
   ChipField,
-  ReferenceManyField
+  ReferenceManyField,
+  CreateButton
 } from 'react-admin';
 import { required } from 'react-admin';
 import PermissionsInput from './UI/PermissionsInput';
@@ -87,14 +88,22 @@ const UserFilter = (props) => (
 export const UserList = () => {
   const { checkPermission } = useUser();
   const canDelete = checkPermission(PERMISSIONS_MODULES['Пользователи'].delete);
+  const canCreate = checkPermission(PERMISSIONS_MODULES['Пользователи'].create);
 
   return (
-    <List filters={<UserFilter />} 
-    sort={{ field: "createdAt", order: "DESC" }} 
-    actions={<ExportToExcelButton resource="users" referenceFields={{
-      company: { reference: "counterparts", replaceField: "fullName" }
-    }} 
-    />}>
+    <List 
+      filters={<UserFilter />} 
+      sort={{ field: "createdAt", order: "DESC" }} 
+      actions={(
+        <div>
+          {(canCreate) && (<CreateButton />)}
+          <ExportToExcelButton 
+            resource="users" 
+            referenceFields={{company: { reference: "counterparts", replaceField: "fullName" }}} 
+          />
+        </div>
+      )}
+    >
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="id" label="ID Пользователя" />
         <TextField source="telegramId" label="Telegram ID" />
