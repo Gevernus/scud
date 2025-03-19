@@ -61,7 +61,8 @@ app.post("/api/front/users", async (req, res) => {
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Id устройства пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) c Id ${user._id} не совпадает.`
+                    description: `Id устройства пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) c Id ${user._id} не совпадает.`,
+                    userId:user._id         
                 });
             }
              // Если пользователь подозрительный
@@ -81,7 +82,8 @@ app.post("/api/front/users", async (req, res) => {
             if (password && !isPasswordValid) {
                 await registerEvent({
                     eventType: "incident",
-                    description: `Неудачная попытка добавления нового устройства пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}), неверный PIN.`
+                    description: `Неудачная попытка добавления нового устройства пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}), неверный PIN.`,
+                    userId:user._id
                 });
                 return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
             }
@@ -107,7 +109,8 @@ app.post("/api/front/users", async (req, res) => {
         if (!registration || !registration.status) {
             await registerEvent({
                 eventType: "incident",
-                description: `Запрос на авторизацию от незарегистрированного пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) .`
+                description: `Запрос на авторизацию от незарегистрированного пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) .`,
+                userId:telegramId
             });
             return res.status(200).json({ exists: false, registrationAllowed: false });
         }
@@ -127,14 +130,16 @@ app.post("/api/front/users", async (req, res) => {
         if (!isPasswordValid) {
             await registerEvent({
                 eventType: "incident",
-                description: `Неудачная попытка регистрации пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) неверный PIN.`
+                description: `Неудачная попытка регистрации пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) неверный PIN.`,
+                userId:telegramId
             });
             return res.status(400).json({ error: "PIN-код неверный, обратитесь к администратору." });
         }
         
         await registerEvent({
             eventType: "registration",
-            description: `Новый пользователя: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) был зарегистрирован.`
+            description: `Новый пользователь: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) вошел в форму регистрации.`,
+            userId:telegramId
         });
         return res.status(200).json({ exists: true, passwordVerified: true });
         
@@ -168,6 +173,7 @@ app.post("/api/front/users/lock", async (req, res) => {
         await registerEvent({
             eventType: "incident",
             description: `PIN-код неправильно введен 3 раза пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
+            userId:telegramId
         });
 
         console.log(`🚨 Пользователь ${username} (${telegramId}) был заблокирован.`);
@@ -205,6 +211,13 @@ app.post("/api/front/users/new", async (req, res) => {
         });
 
         await user.save();
+
+        await registerEvent({
+            eventType: "registration",
+            description: `Новый пользователь: ${firstName} ${lastName} (username: ${username}, telegrammID: ${telegramId}) успешно зарегистрировался.`,
+            userId:user._id
+        });
+
         return res.status(201).json({ exists: true, user });
 
     } catch (error) {
@@ -226,7 +239,8 @@ app.post("/api/front/users/verification", async (req, res) => {
                 await user.save();
                 await registerEvent({
                     eventType: "incident",
-                    description: `Добавлено новое устройство пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) c (ID: ${user._id}).`
+                    description: `Добавлено новое устройство пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) c (ID: ${user._id}).`,
+                    userId: user._id
                 });
             return res.status(200).json({ exists: true, user });
         }
@@ -404,7 +418,9 @@ app.post('/api/qr/scan', async (req, res) => {
             // Создаем событие "incident"
             await registerEvent({
                 eventType: "incident",
-                description: `Попытка авторизации пользователя: ${user.firstName || "Неизвестно"} ${user.lastName || "Неизвестно"} (username: ${user.username || "Неизвестно"}) с ID ${userId} на станции ${station.name || "Неизвестно"} c ID ${deviceId} - доступ запрещен.`
+                description: `Попытка авторизации пользователя: ${user.firstName || "Неизвестно"} ${user.lastName || "Неизвестно"} (username: ${user.username || "Неизвестно"}) с ID ${userId} на станции ${station.name || "Неизвестно"} c ID ${deviceId} - доступ запрещен.`,
+                userId:user._id,
+                stationDeviceId: station.deviceId
             });
 
             return res.status(403).json({
@@ -452,8 +468,8 @@ app.post('/api/qr/scan', async (req, res) => {
             await registerEvent({
                 eventType: "incident",
                 description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает со станцией ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
-                sessionId,
-                deviceId
+                userId: userId,
+                stationDeviceId: deviceId
             });
             const status = station.nfcMode === 'geoMismatch' ? 'nfcMode_geoMismatch' : 'location_mismatch';
             return res.status(200).json({
@@ -468,7 +484,9 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "authorization"
         await registerEvent({
             eventType: "authorization",
-            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
+            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
+            userId: userId,
+            stationDeviceId: deviceId
         });
 
         return res.status(200).json({
@@ -479,7 +497,9 @@ app.post('/api/qr/scan', async (req, res) => {
         // Создаем событие "incident"
         await registerEvent({
             eventType: "incident",
-            description: `Авторизации пользователя ${userId} на станции ${deviceId} не удалась.`
+            description: `Авторизации пользователя ${userId} на станции ${deviceId} не удалась.`,
+            userId: userId,
+            stationDeviceId: deviceId
         });
         console.error('Error in /api/qr/scan:', error);
         res.status(500).json({
@@ -506,7 +526,8 @@ app.post('/api/qr/add', async (req, res) => {
 
             await registerEvent({
                 eventType: "registration",
-                description: `Успешно зарегистрирована станция ${deviceId}.`
+                description: `Успешно зарегистрирована станция ${deviceId}.`,
+                stationDeviceId: deviceId
             });
 
             return res.status(200).json({
@@ -529,7 +550,8 @@ app.post('/api/qr/add', async (req, res) => {
         // event "registration"
         await registerEvent({
             eventType: "registration",
-            description: `Рабочая станция ${deviceId} добавлена.`
+            description: `Рабочая станция ${deviceId} добавлена.`,
+            stationDeviceId: deviceId
         });
 
         return res.status(200).json({
@@ -540,7 +562,8 @@ app.post('/api/qr/add', async (req, res) => {
         // event "error"
         await registerEvent({
             eventType: "incident",
-            description: `Попытка регистрации станции ${deviceId}.`
+            description: `Попытка регистрации станции ${deviceId}.`,
+            stationDeviceId: deviceId
         });
         console.error('Error in /api/qr/add:', error);
         res.status(500).json({
@@ -583,7 +606,9 @@ app.post('/api/nfc-handler', async (req, res) => {
 
             await registerEvent({
                 eventType: "NFC",
-                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcTag.nfcName}.`
+                description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} зарегистрировал новую NFC метку с именем ${nfcTag.nfcName}.`,
+                userId: user._id,
+                nfcGuid: nfcTag.guid
             });
 
             return res.json({ message: '✅ NFC-метка успешно зарегистрирована' });
@@ -591,7 +616,9 @@ app.post('/api/nfc-handler', async (req, res) => {
 
         await registerEvent({
             eventType: "NFC",
-            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отсканировал NFC метку с именем ${nfcTag.nfcName}.`
+            description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отсканировал NFC метку с именем ${nfcTag.nfcName}.`,
+            userId: user._id,
+            nfcGuid: nfcTag.guid
         });
 
         if (!nfcTag.location && location) {
@@ -613,6 +640,8 @@ app.post('/api/nfc-handler', async (req, res) => {
                 await registerEvent({
                     eventType: "incident",
                     description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
+                    userId: user._id,
+                    nfcGuid: nfcTag.guid
                 });
             } 
         }             
@@ -635,7 +664,9 @@ app.post('/api/nfc-handler', async (req, res) => {
             if (!hasNfc) {
                 await registerEvent({
                     eventType: "incident",
-                    description: `Метка NFC не  привязана к станции. Пользователю: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отказано в авторизации на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
+                    description: `Метка NFC не  привязана к станции. Пользователю: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} отказано в авторизации на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
+                    userId: user._id,
+                    stationDeviceId: station.deviceId
                 });
 
                 return res.status(400).json({
@@ -650,7 +681,10 @@ app.post('/api/nfc-handler', async (req, res) => {
             // Создаем событие "authorization"
             await registerEvent({
                 eventType: "authorization",
-                description: `С помощью NFC был авторизован пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`
+                description: `С помощью NFC был авторизован пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
+                userId: user._id,
+                nfcGuid: nfcTag.guid,
+                stationDeviceId: station.deviceId
             });
             return res.status(200).json({
                 message: 'Успешно авторизован'
@@ -668,11 +702,14 @@ app.post('/api/nfc-handler', async (req, res) => {
 });
 
 // Универсальная функция для регистрации события
-const registerEvent = async ({ eventType, description }) => {
+const registerEvent = async ({ eventType, description, userId, stationDeviceId, nfcGuid }) => {
     try {
         const event = new Event({
             eventType,
             description,
+            userId,
+            stationDeviceId,
+            nfcGuid
         });
 
         await event.save();
@@ -685,10 +722,10 @@ const registerEvent = async ({ eventType, description }) => {
 
 // Эндпоинт для регистрации события
 app.post("/api/front/events", async (req, res) => {
-    const { eventType, description } = req.body;
+    const { eventType, description, userId, stationDeviceId, nfcGuid  } = req.body;
     try {
         // В данном случае функция самостоятельно найдёт пользователя по telegramId
-        const event = await registerEvent({ eventType, description });
+        const event = await registerEvent({ eventType, description, userId, stationDeviceId, nfcGuid });
         res.status(201).json({ message: "Event recorded successfully", event });
     } catch (error) {
         console.error("Error in /api/front/events:", error);
@@ -699,12 +736,15 @@ app.post("/api/front/events", async (req, res) => {
 //функции для логирования событий удаления
 const logDeletion = async (Model, item) => {
     let description = "";
+    let userId = "";
+    let stationDeviceId = "";
 
     switch (Model.modelName) {
         case "User": {
             const user = await User.findById(item._id);
             if (user) {
-                description = `Пользователь ${user.firstName || "Неизвестно"} ${user.lastName || ""} (Telegram ID: ${user.telegramId}) был перенесен в корзину.`;
+                description = `Пользователь ${user.firstName || "Неизвестно"} ${user.lastName || ""} (Telegram ID: ${user.telegramId}) был перенесен в корзину.`,
+                userId = user._id;
             } else {
                 description = `Неизвестный пользователь был перенесен в корзину.`;
             }
@@ -713,7 +753,8 @@ const logDeletion = async (Model, item) => {
         case "Station": {
             const station = await Station.findById(item._id);
             if (station) {
-                description = `Станция ${station.name || "Неизвестно"} (ID: ${station._id || "Неизвестно"}) была перенесена в корзину.`;
+                description = `Станция ${station.name || "Неизвестно"} (ID: ${station.deviceId || "Неизвестно"}) была перенесена в корзину.`,
+                stationDeviceId = station.deviceId
             } else {
                 description = `Неизвестная станция была перенесена в корзину.`;
             }
@@ -735,21 +776,29 @@ const logDeletion = async (Model, item) => {
 
     await registerEvent({
         eventType: "soft_delete",
-        description
+        description,
+        userId,
+        stationDeviceId
     });
 };
 
 const logPermanentDeletion = async (Model, item) => {
     let description = "";
+    let userId = "";
+    let stationDeviceId = "";
+    let nfcGuid = "";
+
     switch (Model.modelName) {
         case "User": {
             eventType = "full_delete",
-            description = `Пользователь ${item.firstName || "Неизвестно"} ${item.lastName || ""} (Telegram ID: ${item.telegramId}) был полностью удален.`;
+            description = `Пользователь ${item.firstName || "Неизвестно"} ${item.lastName || ""} (Telegram ID: ${item.telegramId}) был полностью удален.`,
+            userId = item._id;
             break;
         }
         case "Station": {
             eventType = "full_delete",
-            description = `Станция ${item.name || "Неизвестно"} (ID: ${item._id || "Неизвестно"}) была полностью удалена.`;
+            description = `Станция ${item.name || "Неизвестно"} (ID: ${item.deviceId || "Неизвестно"}) была полностью удалена.`,
+            stationDeviceId = item.deviceId;
             break;
         }
         case "Counterparty": {
@@ -759,12 +808,14 @@ const logPermanentDeletion = async (Model, item) => {
         }
         case "LockUsers": {
             eventType = "incident",
-            description = `Пользователь ${item.username || "Неизвестно"} (Id: ${item.telegramId || "Неизвестно"}) был разблокирован.`;
+            description = `Пользователь ${item.username || "Неизвестно"} (Id: ${item.telegramId || "Неизвестно"}) был разблокирован.`,
+            userId = item._id;
             break;
         }
         case "Nfc": {
             eventType = "full_delete",
-            description = `Nfc ${item.nfcName || "Неизвестно"} (идентифекатор: ${item.guid || "Неизвестно"}) был удален.`;
+            description = `Nfc ${item.nfcName || "Неизвестно"} (идентифекатор: ${item.guid || "Неизвестно"}) был удален.`,
+            nfcGuid = item.guid
             break;
         }
         default:
@@ -775,7 +826,10 @@ const logPermanentDeletion = async (Model, item) => {
 
     await registerEvent({
         eventType,
-        description
+        description,
+        userId,
+        stationDeviceId,
+        nfcGuid
     });
 };
 // Универсальная Функция для обработки маршрутов администратора
@@ -1021,6 +1075,7 @@ const handleUpdate = (Model) => async (req, res) => {
                 await registerEvent({
                     eventType: "registration",
                     description: `Администратор: ${user.firstName} ${user.lastName} (username: ${user.username}) изменил регистрацию. ${changes.join(", ")}`,
+                    userId: user._id
                 });
             }
         }
@@ -1064,6 +1119,7 @@ const handleUpdate = (Model) => async (req, res) => {
                     await registerEvent({
                         eventType: "NFC",
                         description: `NFC метка "${nfc.nfcName}" (NFC идентификатор: ${nfc.guid}) была отвязана от станции "${oldItem.name}" (ID: ${oldItem.deviceId}).`,
+                        nfcGuid: nfc.guid
                     });
                 }
             }
@@ -1080,6 +1136,7 @@ const handleUpdate = (Model) => async (req, res) => {
                     await registerEvent({
                         eventType: "NFC",
                         description: `NFC метка "${nfc.nfcName}" (NFC идентификатор: ${nfc.guid}) была привязана к станции "${oldItem.name}" (ID: ${oldItem.deviceId}).`,
+                        nfcGuid: nfc.guid
                     });
                 }
             }
@@ -1154,6 +1211,7 @@ const handlePermanentDelete = (Model) => async (req, res) => {
                     await registerEvent({
                         eventType: "NFC",
                         description: `NFC метка "${nfc.nfcName}" (NFC идентификатор: ${nfc.guid}) была отвязана от станции "${oldItem.name}" (ID: ${oldItem.deviceId}) перед удалением.`,
+                        nfcGuid: nfc.guid
                     });
                 }
             }

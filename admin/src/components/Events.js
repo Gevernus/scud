@@ -7,6 +7,7 @@ import {
   Filter,
   SelectInput,
   DateInput,
+  TextInput
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
@@ -31,6 +32,23 @@ const EventFilter = (props) => (
       ]}
       alwaysOn
     />
+
+    {/* Selecting a column to search for */}
+    <SelectInput
+      label="Поле для поиска"
+      source="searchField"
+      choices={[
+        // { id: null, name: 'Без фильтра' },
+        { id: 'userId', name: 'ID пользователя' },
+        { id: 'stationDeviceId', name: 'ID станции' },
+        { id: 'nfcGuid', name: 'ID Nfc' },
+        
+      ]}
+      alwaysOn
+    />
+
+    {/* Full-text search */}
+    <TextInput label="Значение" source="q" resettable={true} alwaysOn />
 
     {/* Filter by period */}
     <SelectInput
@@ -61,6 +79,9 @@ export const EventList = () => {
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="eventType" label="Тип события" />
         <TextField source="description" label="Описание" />
+        <TextField source="userId" label="ID пользователя" />
+        <TextField source="stationDeviceId" label="ID станции" />
+        <TextField source="nfcGuid" label="ID Nfc" />
         <DateField source="createdAt" label="Дата" showTime />
         {(canDelete) && (
           <DeleteButton />
