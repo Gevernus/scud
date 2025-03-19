@@ -20,6 +20,7 @@ import {
 import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
+import ExportToExcelButton from './UI/ExportToExcelButton';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -73,7 +74,7 @@ export const CounterpartyList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Контрагенты'].delete);
 
   return (
-    <List filters={<CounterpartyFilter />} sort={{ field: "createdAt", order: "DESC" }}>
+    <List filters={<CounterpartyFilter />} sort={{ field: "createdAt", order: "DESC" }} actions={<ExportToExcelButton resource="counterparts" />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="id" label="ID Контрагента" />
         <TextField source="fullName" label="Полное название" />

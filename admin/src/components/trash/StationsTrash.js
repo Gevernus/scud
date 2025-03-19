@@ -4,13 +4,14 @@ import { List, Datagrid, TextField, ReferenceArrayField,
 import RestoreButton from '../UI/RestoreButton';
 import { useUser } from '../../context/UserContext';
 import { PERMISSIONS_MODULES } from '../../permissions';
+import ExportToExcelButton from '../UI/ExportToExcelButton';
 
 export const StationsTrash = () => {
   const { checkPermission } = useUser();
   const canDelete = checkPermission(PERMISSIONS_MODULES['Станции'].delete);
 
   return (
-    <List>
+    <List actions={<ExportToExcelButton resource="stationsTrash" />}>
       <Datagrid isRowSelectable={() => canDelete}>
       <TextField source="deviceId" label="ID станции" />
         <TextField source="username" label="Название Точки геопозиции" />

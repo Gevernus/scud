@@ -11,6 +11,7 @@ import {
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
+import ExportToExcelButton from './UI/ExportToExcelButton';
 
 const LockUsersFilter = (props) => (
   <Filter {...props}>
@@ -56,7 +57,7 @@ export const LockUsersList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Регистрация'].edit);
 
   return (
-    <List filters={<LockUsersFilter />} sort={{ field: "createdAt", order: "DESC" }}>
+    <List filters={<LockUsersFilter />} sort={{ field: "createdAt", order: "DESC" }} actions={<ExportToExcelButton resource="lockUsers" />}>
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="telegramId" label="Telegram ID" />
         <TextField source="firstName" label="Имя" />

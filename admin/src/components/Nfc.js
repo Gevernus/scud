@@ -24,6 +24,7 @@ import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
 import ClearLocationButton from './UI/ClearLocationButton';
 import AttachedStationField from './UI/AttachedStationField';
+import ExportToExcelButton from './UI/ExportToExcelButton';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -74,7 +75,13 @@ export const NfcList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Метки NFC'].edit);
 
   return (
-    <List filters={<NfcFilter />} sort={{ field: "createdAt", order: "DESC" }}>
+    <List filters={<NfcFilter />} sort={{ field: "createdAt", order: "DESC" }} 
+      actions={<ExportToExcelButton resource="nfc" 
+      referenceFields={{
+        attachedStation: { reference: "stations", replaceField: "name" },
+      }} 
+      />}
+    >
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="guid" label="NFC идентификатор" />
         <TextField source="nfcName" label="Название" />

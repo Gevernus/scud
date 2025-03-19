@@ -10,6 +10,7 @@ import {
 import RestoreButton from '../UI/RestoreButton';
 import { useUser } from '../../context/UserContext';
 import { PERMISSIONS_MODULES } from '../../permissions';
+import ExportToExcelButton from '../UI/ExportToExcelButton';
 
 const EventFilter = (props) => (
   <Filter {...props}>
@@ -54,7 +55,7 @@ export const EventsTrash = () => {
   );
 
   return (
-    <List filters={<EventFilter />}>
+    <List filters={<EventFilter />} actions={<ExportToExcelButton resource="eventsTrash" />}>
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="eventType" label="Тип события" />
         <TextField source="description" label="Описание" />

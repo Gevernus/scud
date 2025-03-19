@@ -10,6 +10,7 @@ import {
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
+import ExportToExcelButton from './UI/ExportToExcelButton';
 
 
 const EventFilter = (props) => (
@@ -56,7 +57,7 @@ export const EventList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Журнал событий'].delete);
   
   return (
-    <List filters={<EventFilter />} sort={{ field: "createdAt", order: "DESC" }}>
+    <List filters={<EventFilter />} sort={{ field: "createdAt", order: "DESC" }} actions={<ExportToExcelButton resource="events" />}>
       <Datagrid isRowSelectable={() => canDelete}>
         <TextField source="eventType" label="Тип события" />
         <TextField source="description" label="Описание" />

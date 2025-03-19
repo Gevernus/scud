@@ -25,6 +25,7 @@ import { required } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
 import AttemptedUsersInput from './UI/AttemptedUsersInput';
+import ExportToExcelButton from './UI/ExportToExcelButton';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -77,7 +78,15 @@ export const StationsList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Станции'].delete);
 
   return (
-    <List filters={<StationFilter />} sort={{ field: "createdAt", order: "DESC" }}>
+    <List filters={<StationFilter />} 
+    sort={{ field: "createdAt", order: "DESC" }} 
+    actions={<ExportToExcelButton 
+      resource="stations" 
+      referenceFields={{
+        users: { reference: "users", replaceField: "username" },
+        nfc: { reference: "nfc", replaceField: "nfcName" }
+    }}
+    />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="deviceId" label="ID станции" />
         <TextField source="name" label="Название" />

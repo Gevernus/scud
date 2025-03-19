@@ -30,6 +30,7 @@ import PermissionsField from './UI/PermissionsField';
 import DeviceIdField from './UI/DeviceIdField';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
+import ExportToExcelButton from './UI/ExportToExcelButton';
 
 const CustomToolbar = () => (
   <Toolbar>
@@ -86,7 +87,12 @@ export const UserList = () => {
   const canDelete = checkPermission(PERMISSIONS_MODULES['Пользователи'].delete);
 
   return (
-    <List filters={<UserFilter />} sort={{ field: "createdAt", order: "DESC" }}>
+    <List filters={<UserFilter />} 
+    sort={{ field: "createdAt", order: "DESC" }} 
+    actions={<ExportToExcelButton resource="users" referenceFields={{
+      company: { reference: "counterparts", replaceField: "fullName" }
+    }} 
+    />}>
       <Datagrid rowClick="edit" isRowSelectable={() => canDelete}>
         <TextField source="id" label="ID Пользователя" />
         <TextField source="telegramId" label="Telegram ID" />
