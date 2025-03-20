@@ -169,6 +169,7 @@ export const StationsEdit = () => (
           { id: "always", name: "Всегда сканировать NFC" },
           { id: "geoMismatch", name: "Только при несовпадении геопозиции" },
           { id: "never", name: "Никогда" },
+          { id: "ignore", name: "Игнорировать геолокацию" },
         ]}
         validate={[required('Выберите режим работы NFC')]}
       />
