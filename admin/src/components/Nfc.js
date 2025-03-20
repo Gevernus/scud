@@ -82,7 +82,7 @@ export const NfcList = () => {
       sort={{ field: "createdAt", order: "DESC" }}    
       actions={(
         <div style={{display:"flex"}}>
-          {(canCreate) && (<CreateButton />)}
+          {/* {(canCreate) && (<CreateButton />)} */}
           <ExportToExcelButton 
             resource="nfc" 
             referenceFields={{attachedStation: { reference: "stations", replaceField: "name" },}} 
@@ -125,31 +125,31 @@ export const NfcEdit = () => (
   </Edit>
 );
 
-export const NfcCrete = () => (
-  <Create>
-    <SimpleForm toolbar={<CustomToolbar />}>
-      <TextInput
-        source="guid"
-        label="NFC идентификатор"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
-        source="nfcName"
-        label="Название"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
-        source="nfcDescription"
-        label="Описание"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
-        source="location"
-        label="location"
-      />
-    </SimpleForm>
-  </Create>
-);
+// export const NfcCrete = () => (
+//   <Create>
+//     <SimpleForm toolbar={<CustomToolbar />}>
+//       <TextInput
+//         source="guid"
+//         label="NFC идентификатор"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput
+//         source="nfcName"
+//         label="Название"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput
+//         source="nfcDescription"
+//         label="Описание"
+//         validate={[required('Поле обязательно для заполнения')]}
+//       />
+//       <TextInput
+//         source="location"
+//         label="location"
+//       />
+//     </SimpleForm>
+//   </Create>
+// );
 
 export const NfcShow = () => (
   <Show>

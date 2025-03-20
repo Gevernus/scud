@@ -103,7 +103,7 @@ const AdminWrapper = () => {
           name="nfc"
           list={NfcList}
           edit={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcEdit : null}
-          create={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcCrete : null}
+          // create={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcCrete : null}
           show={NfcShow}
           options={{ label: "Метки NFC" }}
         />
