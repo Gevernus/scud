@@ -108,11 +108,6 @@ export const NfcEdit = () => (
   <Edit>
     <SimpleForm toolbar={<CustomToolbar />}>
       <TextInput
-        source="guid"
-        label="NFC идентификатор"
-        validate={[required('Поле обязательно для заполнения')]}
-      />
-      <TextInput
         source="nfcName"
         label="Название"
         validate={[required('Поле обязательно для заполнения')]}
