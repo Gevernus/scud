@@ -95,7 +95,7 @@ export const UserList = () => {
       filters={<UserFilter />} 
       sort={{ field: "createdAt", order: "DESC" }} 
       actions={(
-        <div>
+        <div style={{display:"flex"}}>
           {(canCreate) && (<CreateButton />)}
           <ExportToExcelButton 
             resource="users" 

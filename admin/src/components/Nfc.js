@@ -81,7 +81,7 @@ export const NfcList = () => {
       filters={<NfcFilter />} 
       sort={{ field: "createdAt", order: "DESC" }}    
       actions={(
-        <div>
+        <div style={{display:"flex"}}>
           {(canCreate) && (<CreateButton />)}
           <ExportToExcelButton 
             resource="nfc" 

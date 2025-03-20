@@ -81,7 +81,7 @@ const ExportToExcelButton = ({ resource, referenceFields = {} }) => {
         }
     };
 
-    return <Button label="Экспорт в Excel" onClick={handleExport} />;
+    return <Button style={{margin:"10px"}} label="Экспорт в Excel" onClick={handleExport} />;
 };
 
 export default ExportToExcelButton;
