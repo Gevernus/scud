@@ -3,7 +3,6 @@ import {
   Datagrid,
   TextField,
   DeleteButton,
-  Create,
   SimpleForm,
   TextInput,
   Edit,
@@ -40,7 +39,6 @@ const StationFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'deviceId', name: 'ID станции' },
         { id: 'name', name: 'Название' },
         { id: 'company', name: 'Компания' },
@@ -59,7 +57,6 @@ const StationFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
@@ -141,16 +138,6 @@ export const StationsEdit = () => (
         label="Имя станции"
         validate={[required('Поле обязательно для заполнения')]}
       />
-      {/* <TextInput
-        source="username"
-        label="Имя пользователя"
-        validate={[required('Поле обязательно для заполнения')]}
-      /> */}
-      {/* <TextInput
-        source="password"
-        label="Пароль"
-        validate={[required('Поле обязательно для заполнения')]}
-      /> */}
       <TextInput source="company" label="Компания" />
       <TextInput source="location" label="Геопозиция" />
       <SelectInput
@@ -219,44 +206,3 @@ export const StationsShow = () => (
     </SimpleShowLayout>
   </Show>
 );
-
-// export const StationsCreate = () => (
-//   <Create>
-//     <SimpleForm>
-//       <TextInput
-//         source="deviceId"
-//         label="ID станции"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput
-//         source="name"
-//         label="Имя станции"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput
-//         source="username"
-//         label="Имя пользователя"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput
-//         source="password"
-//         label="Пароль"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput source="location" label="Геопозиция" />
-//       <SelectInput
-//         source="nfcMode"
-//         label="Режим работы NFC"
-//         choices={[
-//           { id: "always", name: "Всегда сканировать NFC" },
-//           { id: "geoMismatch", name: "Только при несовпадении геопозиции" },
-//           { id: "never", name: "Никогда" },
-//         ]}
-//         validate={[required('Выберите режим работы NFC')]}
-//       />
-//       <ReferenceArrayInput source="nfc" label="ID Метки NFC" reference="nfc">
-//         <AutocompleteArrayInput optionText="nfcName" />
-//       </ReferenceArrayInput>
-//     </SimpleForm>
-//   </Create>
-// );

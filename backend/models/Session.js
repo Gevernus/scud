@@ -9,12 +9,12 @@ const sessionSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-// Виртуальный идентификатор
+// Virtual `id` field for convenience in React-Admin
 sessionSchema.virtual("id").get(function () {
     return this._id.toString();
 });
 
-// Включение виртуальных полей при JSON-конверсии
+// Enabling virtual fields in JSON
 sessionSchema.set("toJSON", {
     virtuals: true,
 });

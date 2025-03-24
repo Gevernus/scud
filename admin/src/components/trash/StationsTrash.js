@@ -1,6 +1,11 @@
-import { List, Datagrid, TextField, ReferenceArrayField,
+import { 
+  List, 
+  Datagrid, 
+  TextField, 
+  ReferenceArrayField,
   SingleFieldList,
-  ChipField, } from 'react-admin';
+  ChipField, 
+} from 'react-admin';
 import RestoreButton from '../UI/RestoreButton';
 import { useUser } from '../../context/UserContext';
 import { PERMISSIONS_MODULES } from '../../permissions';

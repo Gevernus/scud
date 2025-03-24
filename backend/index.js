@@ -15,18 +15,6 @@ const { checkPermissionsMiddleware, PERMISSIONS_MODULES } = require("./permissio
 
 
 const app = express();
-// app.use(helmet({
-//     contentSecurityPolicy: {
-//         directives: {
-//             defaultSrc: ["'self'"], // Запрещаем загрузку внешних ресурсов
-//             scriptSrc: ["'self'", "https://telegram.org"], // Разрешаем Telegram Login
-//             imgSrc: ["'self'", "data:", "https://telegram.org"], // Разрешаем картинки из Telegram
-//             frameAncestors: ["'none'"], // Защита от Clickjacking
-//         },
-//     },
-//     referrerPolicy: { policy: "strict-origin-when-cross-origin" }, // Безопасная политика рефереров скрывает реферер, если запрос идёт на другой домен.
-//     frameguard: { action: "deny" }, // Блокируем встраивание в iframe
-// }));
 app.use(cors({
     exposedHeaders: ['Content-Range']
 }));
@@ -41,7 +29,7 @@ app.post("/api/front/users", async (req, res) => {
     const { telegramId, firstName, lastName, username, password, deviceId } = req.body;
 
     try {
-        // Проверяем количество пользователей в базе
+        // Checking the number of users in the database
         const userCount = await User.countDocuments();
         let user = await User.findOne({ telegramId });
         const registration = await Registration.findOne();
@@ -54,7 +42,7 @@ app.post("/api/front/users", async (req, res) => {
             });
         }
 
-        // Если пользователь уже есть, возвращаем его
+        // If the user already exists, we return it.
         if (user) {
             if (!user.deviceId.includes(deviceId)) {                
                 user.unsafe = true;
@@ -66,14 +54,14 @@ app.post("/api/front/users", async (req, res) => {
                     userName: `${user.firstName} ${user.lastName}`
                 });
             }
-             // Если пользователь подозрительный
+             // If the user is suspicious
             if ( user.unsafe && !registration.status ) {
                 return res.status(200).json({
                     isBlocked: true,
                     blockReason: "Отказано в доступе. Обнаружено несоответствие устройства, обратитесь к администратору."
                 });
             }
-            // Если регистрация разрешена запрашиваем пароль
+            // If registration is allowed, we request a password.
             if (user.unsafe && !password) {
                 return res.status(200).json({exists: false, user, verification: true });
             }
@@ -100,21 +88,21 @@ app.post("/api/front/users", async (req, res) => {
             return res.status(200).json({ exists: true, user, passwordVerified: true });
         }
 
-        // Если пользователей нет — создаем первого с правами админа
+        // If there are no users, we create the first one with admin rights.
         if (userCount === 0) {
             user = new User({
                 telegramId,
                 firstName,
                 lastName,
                 username,
-                permissions: 1048575, // Полные права администратора
+                permissions: 1048575, // Full administrator rights
                 deviceId,
             });
             await user.save();
             return res.status(201).json({ exists: true, user });
         }
 
-        // Если регистрация запрещена
+        // If registration is prohibited
         if (!registration || !registration.status) {
             await registerEvent({
                 eventType: "incident",
@@ -130,7 +118,7 @@ app.post("/api/front/users", async (req, res) => {
             return res.status(409).json({ error: `Username пользователя "${username}" уже занято` });
         }
 
-        // Если регистрация разрешена, но пароль не передан — просим его
+        // If registration is allowed, but the password has not been transmitted, we ask for it.
         if (!password) {
             return res.status(200).json({ exists: false, registrationAllowed: true });
         }
@@ -165,14 +153,14 @@ app.post("/api/front/users/lock", async (req, res) => {
     const { telegramId, firstName, lastName, username } = req.body;
 
     try {
-        // Проверяем, уже ли пользователь заблокирован
+        // Checking if the user has already been blocked
         const existingUser = await LockUsers.findOne({ telegramId });
         console.log(existingUser)
         if (existingUser) {
             return res.status(403).json({ error: "Пользователь уже заблокирован." });
         }
 
-        // Создаем нового заблокированного пользователя
+        // Creating a new blocked user
         const blockedUser = new LockUsers({
             telegramId,
             firstName,
@@ -181,15 +169,13 @@ app.post("/api/front/users/lock", async (req, res) => {
         });
 
         await blockedUser.save();
-        // Логируем 
+
         await registerEvent({
             eventType: "incident",
             description: `PIN-код неправильно введен 3 раза пользователь ${firstName} (username: ${username}) с телеграмм ID ${telegramId} был заблокирован.`,
             userId:telegramId,
             userName: `${firstName} ${lastName}`
         });
-
-        // console.log(`🚨 Пользователь ${username} (${telegramId}) был заблокирован.`);
 
         return res.status(200).json({ message: "Вы заблокированы после 3 неудачных попыток." });
 
@@ -246,7 +232,7 @@ app.post("/api/front/users/verification", async (req, res) => {
     try {
         let user = await User.findOne({ telegramId });
         
-        // Если пользователь уже есть, возвращаем его
+        // If the user already exists, we return it.
         if (user) {          
                 user.deviceId.push(deviceId);
                 user.unsafe = false;               
@@ -268,10 +254,10 @@ app.post("/api/front/users/verification", async (req, res) => {
     }
 });
 
-// Эндпоинт для получения списка компаний
+// Endpoint for getting a list of companies
 app.get("/api/front/companies", async (req, res) => {
     try {
-        const companies = await Counterparty.find({}, "_id fullName"); // Получаем только id и имя
+        const companies = await Counterparty.find({}, "_id fullName");
         res.json(companies);
     } catch (error) {
         console.error("Ошибка получения списка компаний:", error);
@@ -279,12 +265,12 @@ app.get("/api/front/companies", async (req, res) => {
     }
 });
 
-//Проверка пользователя в админки
+//User verification in the admin panel
 app.post("/api/admin/auth/check", async (req, res) => {
     const { telegramId } = req.body;
 
     try {
-        // Проверяем, есть ли пользователь в базе
+        // Checking if there is a user in the database
         const user = await User.findOne({ telegramId });
 
         if (!user) {
@@ -301,7 +287,7 @@ app.post("/api/admin/auth/check", async (req, res) => {
 
 const haversine = (lat1, lon1, lat2, lon2) => {
     const toRad = (value) => (value * Math.PI) / 180;
-    const R = 6371; // Радиус Земли в км
+    const R = 6371; // The radius of the Earth in km
 
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
@@ -313,7 +299,7 @@ const haversine = (lat1, lon1, lat2, lon2) => {
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c; // Расстояние в километрах
+    return R * c; // Distance in kilometers
 };
 
 const decodeQRData = (encryptedPayload) => {
@@ -413,7 +399,7 @@ app.post('/api/qr/scan', async (req, res) => {
             });
         }
         
-        // Проверяем, существует ли пользователь
+        // Checking if the user exists
         const user = await User.findOne({ _id: userId });
 
         if (!user) {
@@ -426,19 +412,18 @@ app.post('/api/qr/scan', async (req, res) => {
 
         userName = `${user.firstName} ${user.lastName}`;
 
-        // Проверяем, есть ли этот пользователь в списке разрешённых пользователей
+        // Checking if this user is in the list of allowed users.
         const isUserAllowed = station.users.some(stationUser => stationUser._id.equals(user._id));
         if (!isUserAllowed) {
             console.log(`User ${userId} is not allowed to access station ${deviceId}`);
 
-            // Проверяем, есть ли этот пользователь в списке attemptedUsers станции
+            // Checking if this user is in the attempted Users list of the station
             const alreadyAttempted = station.attemptedUsers.some(attempt => attempt.equals(user._id));
             if (!alreadyAttempted) {
                 station.attemptedUsers.push(user._id);
                 await station.save();
             }
 
-            // Создаем событие "incident"
             await registerEvent({
                 eventType: "incident",
                 description: `Попытка авторизации пользователя: ${user.firstName || "Неизвестно"} ${user.lastName || "Неизвестно"} (username: ${user.username || "Неизвестно"}) с ID ${userId} на станции ${station.name || "Неизвестно"} c ID ${deviceId} - доступ запрещен.`,
@@ -464,7 +449,7 @@ app.post('/api/qr/scan', async (req, res) => {
         });
         await session.save();
 
-        //проверяем режим станции
+        //checking the station mode
         if (station.nfcMode === 'always') {
             return res.status(200).json({
                 status: 'nfcMode_always',
@@ -474,7 +459,7 @@ app.post('/api/qr/scan', async (req, res) => {
             });
         }
 
-        // Проверяем совпадение локации
+        // Checking the location match
         if (!station.location){
             station.location = location;
             await station.save();
@@ -484,12 +469,12 @@ app.post('/api/qr/scan', async (req, res) => {
         const [latitude, longitude] = location.split(',').map(parseFloat);
 
         const distance = haversine(stationLat, stationLon, latitude, longitude);
-        const maxAllowedDistance = 0.01; // 10 метров
+        const maxAllowedDistance = 0.01; // 10 meters
         const distanceInMeters = distance * 1000;
         if (distance > maxAllowedDistance && (station.nfcMode === 'geoMismatch' || station.nfcMode === 'never')) {
             console.log(`Location mismatch: ${distance.toFixed(3)} km`);
 
-            // Создаем событие "Несовпадение локации incident"
+            // Creating the event "Location mismatch incident"
             await registerEvent({
                 eventType: "incident",
                 description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает со станцией ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
@@ -508,7 +493,7 @@ app.post('/api/qr/scan', async (req, res) => {
         session.status = 'approved';
         await session.save();
 
-        // Создаем событие "authorization"
+        // Creating the "authorization" event
         await registerEvent({
             eventType: "authorization",
             description: `Пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизирован на станции ${station.name || ""} с ID ${deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
@@ -523,7 +508,7 @@ app.post('/api/qr/scan', async (req, res) => {
             message: 'Успешно авторизован'
         });
     } catch (error) {
-        // Создаем событие "incident"
+        // Creating the "incident" event
         await registerEvent({
             eventType: "incident",
             description: `Авторизации пользователя ${userId} на станции ${deviceId} не удалась.`,
@@ -544,8 +529,6 @@ app.post('/api/qr/add', async (req, res) => {
     const { deviceId, name, companyName, description } = req.body;
     let stationName = name;
 
-    // Decode base64 QR data
-    // const { deviceId, sessionId } = decodeQRData(qrData);
     try {
         const existingStation = await Station.findOne({ deviceId });
         if (existingStation) {
@@ -569,8 +552,6 @@ app.post('/api/qr/add', async (req, res) => {
             });
         }
 
-        //Additional check: is the password encrypted
-        // const hashedPassword = await bcrypt.hash(password, 10);
 
         const station = new Station({
             deviceId,
@@ -608,7 +589,7 @@ app.post('/api/qr/add', async (req, res) => {
     }
 });
 
-//Универсальный эндпоинт для работы с NFC (сканирование + регистрация)
+//Universal endpoint for working with NFC (scanning + registration)
 app.post('/api/nfc-handler', async (req, res) => {
     try {
         const { tagId, sessionId, nfcName, nfcDescription, userId, location } = req.body;
@@ -630,12 +611,8 @@ app.post('/api/nfc-handler', async (req, res) => {
                 return res.status(400).json({ error: 'Не указано описание NFC-метки' });
             }
 
-            // Проверяем, есть ли у пользователя права на добавление меток
-            // if (!checkPermission(user.permissions, PERMISSIONS_MODULES["Nfc"].edit)) {
-            //     return res.status(403).json({ error: 'Недостаточно прав для регистрации NFC.' });
-            // }
 
-            // Создаем новую метку
+            // Creating a new nfc tag
             const nfcTag = new Nfc({ guid: tagId, nfcName, nfcDescription, location});
             await nfcTag.save();
 
@@ -672,10 +649,10 @@ app.post('/api/nfc-handler', async (req, res) => {
 
             const distance = haversine(stationLat, stationLon, latitude, longitude);
             distanceInMeters = distance * 1000;
-            const maxAllowedDistance = 0.01; // 10 метров
+            const maxAllowedDistance = 0.01; // 10 meters
 
             if (distance > maxAllowedDistance) {
-                // Создаем событие "Несовпадение локации incident"
+                // Creating the event "Location mismatch incident"
                 await registerEvent({
                     eventType: "incident",
                     description: `Местоположение пользователя: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} не совпадает с NFC меткой ${nfcTag.nfcName}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
@@ -721,7 +698,7 @@ app.post('/api/nfc-handler', async (req, res) => {
             session.status = 'approved';
             await session.save();            
 
-            // Создаем событие "authorization"
+            // Creating the "authorization" event
             await registerEvent({
                 eventType: "authorization",
                 description: `С помощью NFC был авторизован пользователь: ${user.firstName} ${user.lastName} (username: ${user.username}) с ID ${userId} авторизован на станции ${station.name || ""} с ID ${station.deviceId}. Расстояние: ${distanceInMeters.toFixed(0)} m`,
@@ -747,7 +724,7 @@ app.post('/api/nfc-handler', async (req, res) => {
     }
 });
 
-// Универсальная функция для регистрации события
+// Universal function for event registration
 const registerEvent = async ({ eventType, description, userId, stationDeviceId, nfcGuid, userName, stationName, nfcName }) => {
     try {
         const event = new Event({
@@ -769,11 +746,10 @@ const registerEvent = async ({ eventType, description, userId, stationDeviceId, 
     }
 };
 
-// Эндпоинт для регистрации события
+// Endpoint for event registration
 app.post("/api/front/events", async (req, res) => {
     const { eventType, description, userId, stationDeviceId, nfcGuid, userName, stationName, nfcName  } = req.body;
     try {
-        // В данном случае функция самостоятельно найдёт пользователя по telegramId
         const event = await registerEvent({ eventType, description, userId, stationDeviceId, nfcGuid, userName, stationName, nfcName });
         res.status(201).json({ message: "Event recorded successfully", event });
     } catch (error) {
@@ -782,7 +758,7 @@ app.post("/api/front/events", async (req, res) => {
     }
 });
 
-//функции для логирования событий удаления
+//functions for logging deletion events
 const logDeletion = async (Model, item) => {
     let description = "";
     let userId = "";
@@ -897,7 +873,7 @@ const logPermanentDeletion = async (Model, item) => {
         nfcName
     });
 };
-// Универсальная Функция для обработки маршрутов администратора
+// A universal function for processing administrator routes
 const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (req, res) => {
     try {
         let filter = req.query.filter ? JSON.parse(req.query.filter) : {};
@@ -905,13 +881,13 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
 
         const now = new Date();
 
-        // Получаем смещение от клиента (в минутах) и переводим в миллисекунды
+        // We get the offset from the client (in minutes) and convert it to milliseconds
         const timezoneOffset = req.headers["x-timezone-offset"] ? parseInt(req.headers["x-timezone-offset"]) * 60000 : 0;
         
-        // Приводим `now` к локальному времени пользователя перед `startOfDay()`
+        // Setting `now` to the user's local time before `startOfDay()`
         const userNow = new Date(now.getTime() - timezoneOffset);
 
-        // 🔹 Фильтрация по предустановленным диапазонам (сегодня, неделя, месяц)
+        // Filtering by preset ranges (today, week, month)
         if (filter.dateRange) {
             let start, end;
             switch (filter.dateRange) {
@@ -938,7 +914,7 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
             delete filter.dateRange;
         }
 
-        // 🔹 Фильтрация по произвольному диапазону дат
+        // Filtering by an arbitrary date range
         if (filter.startDate || filter.endDate) {
             let startDate = filter.startDate ? new Date(startOfDay(new Date(filter.startDate)).getTime() + timezoneOffset).toISOString() : null;
             let endDate = filter.endDate ? new Date(endOfDay(new Date(filter.endDate)).getTime() + timezoneOffset).toISOString() : null;
@@ -951,12 +927,12 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
             delete filter.endDate;
         }
 
-        // 🔹 Полнотекстовый поиск (по `attachedStation.name`)
+        // Full-text search (by `attached Station.name `)
         if (Model.modelName === "Nfc") {
             if (filter.q && filter.searchField === "attachedStation") {
-                // Вместо $options используем $lookup и $match
+                // Instead of $options, we use $lookup and $match
                 const stations = await mongoose.model("Station").find({
-                    name: new RegExp(filter.q, "i") // Используем RegExp вместо `$options`
+                    name: new RegExp(filter.q, "i") // We use RegExp instead of `$options`
                 });
     
                 const stationIds = stations.map(station => station._id);
@@ -966,12 +942,12 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
                 delete filter.searchField;
             }
         }
-        // 🔹 Полнотекстовый поиск (по `users.username nfc.nfcName`)
+        // Full-text search (by `users.username nfc.nfc Name`)
         if (Model.modelName === "Station") {
             if (filter.q && filter.searchField === "users") {
-                // Вместо $options используем $lookup и $match
+                // Instead of $options, we use $lookup and $match
                 const user = await mongoose.model("User").find({
-                    username: new RegExp(filter.q, "i") // Используем RegExp вместо `$options`
+                    username: new RegExp(filter.q, "i") // We use RegExp instead of `$options`
                 });
     
                 const userIds = user.map(user => user._id);
@@ -981,9 +957,9 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
                 delete filter.searchField;
             }
             if (filter.q && filter.searchField === "nfc") {
-                // Вместо $options используем $lookup и $match
+                // Instead of $options, we use $lookup and $match
                 const nfc = await mongoose.model("Nfc").find({
-                    nfcName: new RegExp(filter.q, "i") // Используем RegExp вместо `$options`
+                    nfcName: new RegExp(filter.q, "i") // We use RegExp instead of `$options`
                 });
     
                 const nfcIds = nfc.map(nfc => nfc._id);
@@ -993,44 +969,42 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
                 delete filter.searchField;
             }
         }    
-        // 🔹 Фильтрация пользователей по станциям ( `stations.name`)
+        // Filtering users by stations ( `stations.name `)
         if (Model.modelName === "User" && filter.q && filter.searchField === "stations") {
-            // Найти станции по имени
+            // Find stations by name
             const stations = await mongoose.model("Station").find({
                 name: new RegExp(filter.q, "i")
             });
         
-            // Собираем ID пользователей, которые есть в этих станциях
+            // We collect the user IDs that are in these stations
             const userIds = stations.flatMap(station => station.users);
         
-            // Фильтруем пользователей, у которых ID совпадает с найденными
+            // Filtering users whose ID matches the found ones.
             filter._id = { $in: userIds };
         
             delete filter.q;
             delete filter.searchField;
         }
 
-        // 🔹 Логируем фильтр, чтобы проверить, что даты верные
-        // console.log("Фильтр по датам (UTC):", filter.createdAt);
 
-        // Преобразование id в _id для отображения разрешенных пользователей в станциях
+        // Converting id to _id to display allowed users in stations
         if (filter.id) {
             filter._id = filter.id;
             delete filter.id;
         }
 
-        // Динамический поиск по выбранному столбцу       
+        // Dynamic search by selected column       
         if (filter.q && filter.searchField) {
             if (filter.searchField === "id" || filter.searchField === "_id") {
                 if (mongoose.Types.ObjectId.isValid(filter.q) && filter.q.length === 24) {
-                    // Точный поиск по ObjectId
+                    // Accurate search by ObjectId
                     filter._id = new mongoose.Types.ObjectId(filter.q);
                 } else {
-                    // Динамический поиск по ObjectId как строке
+                    // Dynamic search by ObjectId as a string
                     filter.$expr = { $regexMatch: { input: { $toString: "$_id" }, regex: filter.q, options: "i" } };
                 }
             } else {
-                // Динамический поиск по текстовым полям (username, email и т.д.)
+                // Dynamic search by text fields (username, email, etc.)
                 filter[filter.searchField] = { $regex: filter.q, $options: "i" };
             }
         
@@ -1051,13 +1025,13 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
                 existingRecords = [newRecord];
             }
 
-            // 🔹 Убираем пагинацию, так как запись всегда одна
+            // We remove pagination, since there is always one record.
             res.set("Content-Range", `registration 0-1/1`);
             res.set("Access-Control-Expose-Headers", "Content-Range");
             return res.json(existingRecords);
         }
 
-        // Разбираем сортировку и диапазон
+        // We analyze the sorting and range
         const [start, end] = req.query.range ? JSON.parse(req.query.range) : [0, 9];
         let [sortField, sortOrder] = req.query.sort ? JSON.parse(req.query.sort) : ["id", "ASC"];
         if (sortField === "id") sortField = "_id";
@@ -1077,7 +1051,7 @@ const handleAdminRoute = (Model, resourceName, additionalFilter = {}) => async (
     }
 };
 
-// Универсальные CRUD-обработчики
+// Universal CRUD handlers
 const handleGetOne = (Model) => async (req, res) => {
     try {
         const item = await Model.findById(req.params.id);
@@ -1091,18 +1065,14 @@ const handleGetOne = (Model) => async (req, res) => {
 
 const handleCreate = (Model) => async (req, res) => {
     try {
-        // Hashing password
         let data = req.body;
-        // if (data.password) {
-        //     data.password = await bcrypt.hash(data.password, 10)
-        // }
 
         const item = new Model(req.body);
         await item.save();
         res.status(201).json(item);
     } catch (error) {
         if (error.code === 11000) {
-            // Обрабатываем ошибку уникальности (дубликат)
+            // Handling the uniqueness error (duplicate)
             return res.status(400).json({ error: "значение являеться уникальным и уже существует." });
         }
         res.status(400).json({ error: error.message });
@@ -1111,21 +1081,17 @@ const handleCreate = (Model) => async (req, res) => {
 
 const handleUpdate = (Model) => async (req, res) => {
     try {
-        // Hashing password
-        // if(data.password) {
-        //     data.password = await bcrypt.hash(data.password, 10);
-        // }
         let data = req.body;
-        const user = req.user; // Получаем текущего пользователя
+        const user = req.user; // Getting the current user
         const userId = user?.id || "Системный процесс";
 
         if (Model.modelName === 'Registration' ) {
 
-            // Получаем старые данные перед изменением
+            // Getting old data before changing it
             const oldItem = await Model.findById(req.params.id);
             if (!oldItem) return res.status(404).json({ error: "Not found" });
     
-            // Проверяем, изменились ли `pass` или `status`
+            // Checking if the `pass` or `status` has changed
             const formatStatus = (status) => status ? "Разрешён" : "Запрещён";
             const changes = [];
             if (oldItem.pass !== data.pass) {
@@ -1135,7 +1101,7 @@ const handleUpdate = (Model) => async (req, res) => {
                 changes.push(`Режим регистрации изменён с "${formatStatus(oldItem.status)}" на "${formatStatus(data.status)}"`);
             }
     
-            // Если были изменения, записываем событие
+            // If there have been changes, we record the event.
             if (changes.length > 0 && Model.modelName === 'Registration') {
                 await registerEvent({
                     eventType: "registration",
@@ -1146,16 +1112,16 @@ const handleUpdate = (Model) => async (req, res) => {
             }
         }
 
-        // Если обновляется станция и в теле переданы разрешённые пользователи...
+        // If the station is being updated and the authorized users are transmitted in the body
         if (Model.modelName === 'Station' && data.users) {
-            // Получаем существующую станцию
+            // Getting an existing station
             const existingStation = await Model.findById(req.params.id);
             if (existingStation) {
-                // Преобразуем разрешённые пользователей в массив строк (если они могут быть объектами или ID)
+                // Converting the allowed users into an array of strings (if they can be objects or IDs)
                 const allowedUserIds = data.users.map(u => 
                 typeof u === 'object' ? u.id : u.toString()
                 );
-                // Отфильтровываем attemptedUsers, исключая те, что есть в allowedUserIds
+                // Filtering out attempted Users, excluding those in the allowed User Ids
                 const filteredAttempted = existingStation.attemptedUsers.filter(userId =>
                     !allowedUserIds.includes(userId.toString())
                 );
@@ -1163,19 +1129,19 @@ const handleUpdate = (Model) => async (req, res) => {
             }
 
             const oldItem = await Model.findById(req.params.id).populate("nfc");
-            // Получаем ID старых и новых NFC-меток
+            // We get the IDs of the old and new NFC tags
             const oldNfcIds = oldItem.nfc.map(nfc => nfc._id.toString());
             const newNfcIds = (data.nfc || []).map(id => id.toString());
 
-            // Определяем, какие метки были удалены и какие добавлены
-            const detachedNfcIds = oldNfcIds.filter(id => !newNfcIds.includes(id)); // Больше не привязаны
-            const attachedNfcIds = newNfcIds.filter(id => !oldNfcIds.includes(id)); // Новые привязанные
+            // We determine which labels have been deleted and which ones have been added.
+            const detachedNfcIds = oldNfcIds.filter(id => !newNfcIds.includes(id)); // No longer attached
+            const attachedNfcIds = newNfcIds.filter(id => !oldNfcIds.includes(id)); // New linked ones
             
-            const stationId = req.params.id; // ID текущей станции
+            const stationId = req.params.id; // ID of the current station
             
-            // Снимаем флаг `attached` у отвязанных меток
+            // Removing the `attached` flag from the unlinked labels.
             if (detachedNfcIds.length > 0) {
-                const detachedNfcs = await Nfc.find({ _id: { $in: detachedNfcIds } }); // Загружаем объекты NFC
+                const detachedNfcs = await Nfc.find({ _id: { $in: detachedNfcIds } }); // Uploading NFC objects
                 await Nfc.updateMany(
                     { _id: { $in: detachedNfcIds } },
                     { $set: { attached: false, attachedStation: null } }
@@ -1191,9 +1157,9 @@ const handleUpdate = (Model) => async (req, res) => {
                 }
             }
 
-            // Устанавливаем `attached = true` для новых привязанных меток
+            // Setting `attached = true` for newly attached labels
             if (attachedNfcIds.length > 0) {
-                const attachedNfcs = await Nfc.find({ _id: { $in: attachedNfcIds } }); // Загружаем объекты NFC
+                const attachedNfcs = await Nfc.find({ _id: { $in: attachedNfcIds } }); // Uploading NFC objects
                 await Nfc.updateMany(
                     { _id: { $in: attachedNfcIds } },
                     { $set: { attached: true, attachedStation: stationId } }
@@ -1215,7 +1181,7 @@ const handleUpdate = (Model) => async (req, res) => {
         res.json(item);
     } catch (error) {
         if (error.code === 11000) {
-            // Обрабатываем ошибку уникальности (дубликат)
+            // Handling the uniqueness error (duplicate)
             return res.status(400).json({ error: "значение являеться уникальным и уже существует." });
         }
         res.status(500).json({ error: error.message });
@@ -1231,7 +1197,7 @@ const handleDelete = (Model) => async (req, res) => {
         );
         if (!item) return res.status(404).json({ error: "Not found" });
 
-        // Вызываем универсальную функцию логирования события мягкого удаления
+        // Calling the universal soft deletion event logging function
         if (Model.modelName !== "Event") {await logDeletion(Model, item)}
     
         res.json({ message: "Удалено (soft delete)", item });
@@ -1256,25 +1222,25 @@ const handleRestore = (Model) => async (req, res) => {
 
 const handlePermanentDelete = (Model) => async (req, res) => {
     try {
-        // Найти объект перед удалением
+        // Find an object before deleting it
         const item = await Model.findById(req.params.id);
         if (!item) return res.status(404).json({ error: "Not found" });
 
-        // Проверяем, если удаляемая модель - это "Station"
+        // We check if the model being deleted is "Station"
         if (Model.modelName === 'Station') {
-            // Получаем все привязанные NFC-метки
+            // We get all the linked NFC tags
             const oldItem = await Model.findById(req.params.id).populate("nfc");
             
             if (oldItem && oldItem.nfc.length > 0) {
                 const detachedNfcIds = oldItem.nfc.map(nfc => nfc._id.toString());
 
-                // Обновляем `attached = false` и `attachedStation = null`
+                // Обычно `подключено = false` и `подключенная станция = null`
                 await Nfc.updateMany(
                     { _id: { $in: detachedNfcIds } },
                     { $set: { attached: false, attachedStation: null } }
                 );
 
-                // Логируем каждую отвязанную метку
+                // Logging each unlinked label
                 for (let nfc of oldItem.nfc) {
                     await registerEvent({
                         eventType: "NFC",
@@ -1286,9 +1252,9 @@ const handlePermanentDelete = (Model) => async (req, res) => {
             }
         }
 
-        // Удаление объекта
+        // Deleting an object
         await Model.findByIdAndDelete(req.params.id);
-        // Вызываем универсальную функцию логирования события полного удаления
+        // Calling the universal logging function for the complete deletion event
         if (Model.modelName !== "Event") {await logPermanentDeletion(Model, item)}
 
         res.json({ success: true });
@@ -1299,7 +1265,7 @@ const handlePermanentDelete = (Model) => async (req, res) => {
 };
 
 
-// Эндпоинты для админа (неудалённые объекты)
+// Admin endpoints (undeleted objects)
 app.get("/api/admin/users", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
     handleAdminRoute(User, "users"));
@@ -1313,7 +1279,7 @@ app.put("/api/admin/users/:id",
     handleUpdate(User));
 app.delete("/api/admin/users/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
-    handleDelete(User));  // Мягкое удаление
+    handleDelete(User));  // Soft removal
 
 app.get("/api/admin/events", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].view), 
@@ -1322,7 +1288,7 @@ app.get("/api/admin/events/:id",
     handleGetOne(Event, "events"));
 app.delete("/api/admin/events/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Журнал событий"].delete), 
-    handleDelete(Event));  // Мягкое удаление
+    handleDelete(Event));  // Soft removal
 
 app.get("/api/admin/stations", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].view), 
@@ -1337,7 +1303,7 @@ app.put("/api/admin/stations/:id",
     handleUpdate(Station));
 app.delete("/api/admin/stations/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Станции"].delete), 
-    handleDelete(Station));  // Мягкое удаление
+    handleDelete(Station));  // Soft removal
 
 app.get("/api/admin/counterparts", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
@@ -1352,7 +1318,7 @@ app.put("/api/admin/counterparts/:id",
     handleUpdate(Counterparty));
 app.delete("/api/admin/counterparts/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
-    handleDelete(Counterparty));  // Мягкое удаление
+    handleDelete(Counterparty));  // Soft removal
 
 app.get("/api/admin/registration", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Регистрация"].view), 
@@ -1379,7 +1345,7 @@ app.put("/api/admin/nfc/:id",
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Nfc"].edit), 
     handleUpdate(Nfc));   
 
-// Эндпоинты для работы с корзиной (только удалённые объекты)
+// Endpoints for working with the trash (deleted objects only)
 app.get("/api/admin/UsersTrash", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].view), 
     handleAdminRoute(User, "users", { deleted: true }));
@@ -1393,7 +1359,7 @@ app.get("/api/admin/counterpartyTrash",
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].view), 
     handleAdminRoute(Counterparty, "counterparts", { deleted: true }));
 
-// Эндпоинты для восстановления объектов из корзины
+// Endpoints for restoring objects from the trash
 app.post("/api/admin/trash/users/:id/restore", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
     handleRestore(User));
@@ -1407,7 +1373,7 @@ app.post("/api/admin/trash/counterparts/:id/restore",
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Контрагенты"].delete), 
     handleRestore(Counterparty));
 
-// Эндпоинты для окончательного удаления из корзины
+// Endpoints for final removal from the trash
 app.delete("/api/admin/usersTrash/:id", 
     checkPermissionsMiddleware(PERMISSIONS_MODULES["Пользователи"].delete), 
     handlePermanentDelete(User));

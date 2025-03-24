@@ -41,7 +41,7 @@ const DeviceIdField = ({ source }) => {
         }}
         disableEnforceFocus
         disableAutoFocus
-        sx={{ pointerEvents: 'none' }} // Убирает задержку скрытия
+        sx={{ pointerEvents: 'none' }} // Removes the hiding delay
       >
         <Box sx={{ p: 2, maxWidth: 450 }}>
           <List>

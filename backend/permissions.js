@@ -16,16 +16,15 @@ const checkPermission = (userPermissions, permissionFlag) => {
   return (userPermissions & permissionFlag) === permissionFlag;
 };
 
-// Функция для модификации прав (добавление/удаление)
+// Function for rights modification (add/remove)
 const modifyPermission = (userPermissions, permissionFlag) => {
   return userPermissions ^ permissionFlag;
 };
 
-// Middleware для проверки прав доступа
+// Middleware for checking access rights
 const checkPermissionsMiddleware =
   (requiredPermission) => async (req, res, next) => {
     try {
-      // Получаем telegramId из заголовков
       const telegramId = req.headers['x-telegram-id'];
 
       if (!telegramId) {
@@ -34,7 +33,6 @@ const checkPermissionsMiddleware =
           .json({ error: 'Доступ запрещен. Telegram ID не указан.' });
       }
 
-      // Проверяем, есть ли пользователь
       const user = await User.findOne({ telegramId });
       if (!user) {
         return res
@@ -42,7 +40,7 @@ const checkPermissionsMiddleware =
           .json({ error: 'Доступ запрещен. Пользователь не найден.' });
       }
 
-      // Проверяем, является ли пользователь администратором (имеет `access: 1`)
+      // Checking if the user is an administrator (has `access:1')
       const ADMIN_ACCESS = 1;
       if (!checkPermission(user.permissions, ADMIN_ACCESS)) {
         return res
@@ -53,14 +51,14 @@ const checkPermissionsMiddleware =
           });
       }
 
-      // Проверяем конкретные права пользователя
+      // We check the specific user rights
       if (!checkPermission(user.permissions, requiredPermission)) {
         return res
           .status(403)
           .json({ error: 'Недостаточно прав для выполнения этого действия.' });
       }
 
-      // Добавляем пользователя в `req`, чтобы использовать в дальнейшем
+      // Adding the user to the `req` to use in the future
       req.user = user;
 
       next();
@@ -70,7 +68,7 @@ const checkPermissionsMiddleware =
     }
   };
 
-// Экспортируем все функции и объект прав
+// Exporting all functions and the rights object
 module.exports = {
   PERMISSIONS_MODULES,
   checkPermission,

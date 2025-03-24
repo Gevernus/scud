@@ -7,9 +7,7 @@ const counterpartySchema = new mongoose.Schema({
     phone: { type: String }, 
     email: { type: String }, 
     description: { type: String }, 
-    createdBy: { type: String, required: true }, 
-    
-    // createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+    createdBy: { type: String, required: true },
     createdAt: { type: Date, default: Date.now }, // Date and time of creation
     updatedAt: { type: Date, default: Date.now }, // Date and time of the change
     deleted: { type: Boolean, default: false }  // Deletion flag

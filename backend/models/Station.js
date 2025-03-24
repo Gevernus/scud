@@ -31,12 +31,12 @@ stationSchema.pre("findOneAndUpdate", function (next) {
     next();
 });
 
-// Виртуальный идентификатор
+// Virtual `id` field for convenience in React-Admin
 stationSchema.virtual("id").get(function () {
     return this._id.toString();
 });
 
-// Включение виртуальных полей при JSON-конверсии
+// Enabling virtual fields in JSON
 stationSchema.set("toJSON", {
     virtuals: true,
 });

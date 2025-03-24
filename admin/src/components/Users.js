@@ -47,7 +47,6 @@ const UserFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'id', name: 'ID Пользователя' },
         { id: 'telegramId', name: 'Telegram ID' },
         { id: 'firstName', name: 'Имя' },
@@ -70,7 +69,6 @@ const UserFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
@@ -171,7 +169,6 @@ export const UserEdit = () => (
           <TextInput source="" label="Устройство" />
         </SimpleFormIterator>
       </ArrayInput>
-      {/* <BooleanInput source="unsafe" label="Подозрительный" /> */}
       <PermissionsInput source="permissions" />
     </SimpleForm>
   </Edit>

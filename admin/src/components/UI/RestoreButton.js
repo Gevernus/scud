@@ -15,7 +15,6 @@ const RestoreButton = ({ resource }) => {
         const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/admin'
         const url = `${apiUrl}/trash/${resource}/${record.id}/restore`;
         try {
-            // Формируем заголовки запроса, добавляя telegramId из контекста
             const headers = {
                 'Content-Type': 'application/json',
             };

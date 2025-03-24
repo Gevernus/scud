@@ -4,11 +4,11 @@ import createDataProvider from "./dataProvider";
 import { Dashboard } from "./components/Dashboard";
 import { UserList, UserEdit, UserCreate, UserShow } from "./components/Users";
 import { EventList } from "./components/Events";
-import {StationsList, StationsEdit, StationsCreate, StationsShow } from "./components/Stations";
+import {StationsList, StationsEdit, StationsShow } from "./components/Stations";
 import { CounterpartyList, CounterpartyEdit, CounterpartyCreate, CounterpartyShow } from "./components/Counterparts";
 import { RegistrationList, RegistrationEdit } from "./components/Registration";
 import { LockUsersList } from "./components/LockUsers";
-import { NfcList, NfcEdit, NfcShow, NfcCrete } from "./components/Nfc";
+import { NfcList, NfcEdit, NfcShow } from "./components/Nfc";
 
 import { UsersTrash } from "./components/trash/UsersTrash";
 import { EventsTrash } from "./components/trash/EventsTrash";
@@ -22,7 +22,6 @@ import { PERMISSIONS_MODULES } from "./permissions";
 const AdminWrapper = () => {
   const { user, loading, checkPermission } = useUser();
 
-  // Оборачиваем checkPermission в useCallback, чтобы избежать лишних ререндеров
   const hasAnyViewPermission = useMemo(() => {
     return Object.keys(PERMISSIONS_MODULES).some(
       (module) =>
@@ -31,7 +30,6 @@ const AdminWrapper = () => {
     );
   }, [checkPermission]);
 
-  // Используем useMemo для dataProvider, но кешируем HTTP-клиент
   const dataProvider = useMemo(() => createDataProvider(user?.telegramId), [user?.telegramId]);
 
   if (loading) return <p>🔄 Проверка доступа...</p>;
@@ -69,7 +67,6 @@ const AdminWrapper = () => {
           list={StationsList}
           edit={checkPermission(PERMISSIONS_MODULES["Станции"].edit) ? StationsEdit : null}
           show={StationsShow}
-          // create={checkPermission(PERMISSIONS_MODULES["Станции"].create) ? StationsCreate : null}
           options={{ label: "Станции" }}
         />
       )}
@@ -103,7 +100,6 @@ const AdminWrapper = () => {
           name="nfc"
           list={NfcList}
           edit={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcEdit : null}
-          // create={checkPermission(PERMISSIONS_MODULES["Метки NFC"].edit) ? NfcCrete : null}
           show={NfcShow}
           options={{ label: "Метки NFC" }}
         />

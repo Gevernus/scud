@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        WebApp.ready(); // Вынесено за пределы fetchUser
+        WebApp.ready();
 
         const fetchUser = async () => {
             try {
@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
                 
                 if (!tgUser) {
                     console.warn("⚠️ Пользователь Telegram не найден. Работаем без авторизации.");
-                    setLoading(false); // Завершаем загрузку, если нет пользователя
+                    setLoading(false); // Completing the download if there is no user
                     return;
                 }
 

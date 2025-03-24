@@ -8,7 +8,7 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
     const [error, setError] = useState(null);
     const [wrongAttempts, setWrongAttempts] = useState(0); //  Tracking invalid attempts
     const [isBlocked, setIsBlocked] = useState(false); // Blocking
-    const [isPasswordCorrect, setIsPasswordCorrect] = useState(false); // Показывать форму, если пароль правильный
+    const [isPasswordCorrect, setIsPasswordCorrect] = useState(false); // Show the form if the password is correct
 
     // Field fields
     const [formData, setFormData] = useState({
@@ -29,15 +29,15 @@ const RegisterForm = ({ apiUrl, onSuccess }) => {
         });
     };
 
-    // Список компаний
+    // List of companies
     const [companies, setCompanies] = useState([]);
-    // Загружаем компании с сервера
+    // Downloading companies from the server
     useEffect(() => {
         const fetchCompanies = async () => {
             try {
                 const response = await fetch(`${apiUrl}/front/companies`);
                 const data = await response.json();
-                setCompanies(data); // Устанавливаем компании в стейт
+                setCompanies(data); // We establish companies in the state
             } catch (error) {
                 console.error("Ошибка загрузки компаний:", error);
             }

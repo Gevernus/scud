@@ -15,11 +15,6 @@ import {
   required,
   Show,
   SimpleShowLayout,
-  Create,
-  CreateButton,
-  BooleanField,
-  ReferenceField,
-  FunctionField
 } from 'react-admin';
 import { useUser } from '../context/UserContext';
 import { PERMISSIONS_MODULES } from '../permissions';
@@ -40,7 +35,6 @@ const NfcFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'guid', name: 'NFC идентификатор' },
         { id: 'nfcName', name: 'Название' },
         { id: 'attachedStation', name: 'Станция' },
@@ -56,7 +50,6 @@ const NfcFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
@@ -82,7 +75,6 @@ export const NfcList = () => {
       sort={{ field: "createdAt", order: "DESC" }}    
       actions={(
         <div style={{display:"flex"}}>
-          {/* {(canCreate) && (<CreateButton />)} */}
           <ExportToExcelButton 
             resource="nfc" 
             referenceFields={{attachedStation: { reference: "stations", replaceField: "name" },}} 
@@ -124,32 +116,6 @@ export const NfcEdit = () => (
     </SimpleForm>
   </Edit>
 );
-
-// export const NfcCrete = () => (
-//   <Create>
-//     <SimpleForm toolbar={<CustomToolbar />}>
-//       <TextInput
-//         source="guid"
-//         label="NFC идентификатор"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput
-//         source="nfcName"
-//         label="Название"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput
-//         source="nfcDescription"
-//         label="Описание"
-//         validate={[required('Поле обязательно для заполнения')]}
-//       />
-//       <TextInput
-//         source="location"
-//         label="location"
-//       />
-//     </SimpleForm>
-//   </Create>
-// );
 
 export const NfcShow = () => (
   <Show>

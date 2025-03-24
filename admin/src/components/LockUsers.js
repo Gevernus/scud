@@ -20,7 +20,6 @@ const LockUsersFilter = (props) => (
       label="Поле для поиска"
       source="searchField"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'telegramId', name: 'Telegram ID' },
         { id: 'firstName', name: 'Имя' },
         { id: 'lastName', name: 'Фамилия' },
@@ -37,7 +36,6 @@ const LockUsersFilter = (props) => (
       label="Период"
       source="dateRange"
       choices={[
-        // { id: null, name: 'Без фильтра' },
         { id: 'today', name: 'Сегодня' },
         { id: 'week', name: 'Эта неделя' },
         { id: 'month', name: 'Этот месяц' },
